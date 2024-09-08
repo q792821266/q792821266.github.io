@@ -4,7 +4,7 @@
   
   
   <entry>
-    <title>RocketMQ</title>
+    <title>RocketMQ入门</title>
     <link href="/2024/09/08/RocketMQ/"/>
     <url>/2024/09/08/RocketMQ/</url>
     
@@ -13,14 +13,18 @@
     
     <categories>
       
-      <category>middileware MQ</category>
+      <category>middileware</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>middileware MQ</tag>
+      <tag>middileware</tag>
+      
+      <tag>mq</tag>
+      
+      <tag>RocketMQ</tag>
       
     </tags>
     
