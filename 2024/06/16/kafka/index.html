@@ -7,8 +7,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/q792821266/q792821266.github.io/img/fluid.png">
+  <link rel="icon" href="/q792821266/q792821266.github.io/img/fluid.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -19,11 +19,11 @@
     <meta name="description" content="Kafka是linkedin使用Scala编写具有高水平扩展和高吞吐量的分布式消息系统。目前的Kafka是scale和java混合编程实现的。Kafka对消息保存时根据Topic进行归类，发送消息者称为Producer，消息接收者称为Consumer，此外Kafka集群由多个kafka实例组成，每个实例（server）称为broker。无论是Kafka集群，还是producer和consume">
 <meta property="og:type" content="article">
 <meta property="og:title" content="kafka">
-<meta property="og:url" content="https://q792821266.github.io/2024/06/16/kafka/index.html">
+<meta property="og:url" content="https://github.com/q792821266/q792821266.github.io/2024/06/16/kafka/index.html">
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="Kafka是linkedin使用Scala编写具有高水平扩展和高吞吐量的分布式消息系统。目前的Kafka是scale和java混合编程实现的。Kafka对消息保存时根据Topic进行归类，发送消息者称为Producer，消息接收者称为Consumer，此外Kafka集群由多个kafka实例组成，每个实例（server）称为broker。无论是Kafka集群，还是producer和consume">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/indexImg/kafka_title.png">
+<meta property="og:image" content="https://github.com/q792821266/q792821266.github.io/indexImg/kafka_title.png">
 <meta property="article:published_time" content="2024-06-16T12:15:41.000Z">
 <meta property="article:modified_time" content="2024-06-18T08:12:18.035Z">
 <meta property="article:author" content="Jerry JIANG">
@@ -31,7 +31,7 @@
 <meta property="article:tag" content="mq">
 <meta property="article:tag" content="kafka">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/indexImg/kafka_title.png">
+<meta name="twitter:image" content="https://github.com/q792821266/q792821266.github.io/indexImg/kafka_title.png">
   
   
   
@@ -59,12 +59,12 @@
 <link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
 
-<link  rel="stylesheet" href="/css/main.css" />
+<link  rel="stylesheet" href="/q792821266/q792821266.github.io/css/main.css" />
 
 
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  <link id="highlight-css" rel="stylesheet" href="/q792821266/q792821266.github.io/css/highlight.css" />
   
-    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+    <link id="highlight-css-dark" rel="stylesheet" href="/q792821266/q792821266.github.io/css/highlight-dark.css" />
   
 
 
@@ -73,15 +73,15 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"github.com","root":"/q792821266/q792821266.github.io/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/q792821266/q792821266.github.io/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
       Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
     }
   </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
+  <script  src="/q792821266/q792821266.github.io/js/utils.js" ></script>
+  <script  src="/q792821266/q792821266.github.io/js/color-schema.js" ></script>
   
 
   
@@ -127,7 +127,7 @@
 <div class="header-inner" style="height: 60vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand" href="/q792821266/q792821266.github.io/">
       <strong>Jerry&#39;s Blog</strong>
     </a>
 
@@ -146,7 +146,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/" target="_self">
+              <a class="nav-link" href="/q792821266/q792821266.github.io/" target="_self">
                 <i class="iconfont icon-home-fill"></i>
                 <span>首页</span>
               </a>
@@ -158,7 +158,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/archives/" target="_self">
+              <a class="nav-link" href="/q792821266/q792821266.github.io/archives/" target="_self">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
               </a>
@@ -170,7 +170,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
+              <a class="nav-link" href="/q792821266/q792821266.github.io/categories/" target="_self">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
@@ -182,7 +182,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/tags/" target="_self">
+              <a class="nav-link" href="/q792821266/q792821266.github.io/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
               </a>
@@ -194,7 +194,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/about/" target="_self">
+              <a class="nav-link" href="/q792821266/q792821266.github.io/about/" target="_self">
                 <i class="iconfont icon-user-fill"></i>
                 <span>关于</span>
               </a>
@@ -224,7 +224,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/q792821266/q792821266.github.io/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -316,8 +316,8 @@
                 
                 <meta name="referrer" content="no-referrer"/>
 
-<p>Kafka是linkedin使用Scala编写具有高水平扩展和高吞吐量的分布式消息系统。目前的Kafka是scale和java混合编程实现的。<br>Kafka对消息保存时根据Topic进行归类，发送消息者称为Producer，消息接收者称为Consumer，此外Kafka集群由多个kafka实例组成，每个实例（server）称为broker。<br>无论是Kafka集群，还是producer和consumer都依赖于zookeeper来保证系统可用性，zk为集群保存一些meta信息。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647219047197-c01b0b5f-40f5-4acd-8bdc-9ad8a39d54d4.png#averageHue=%23dddddd&clientId=ue82b16c4-1585-4&from=paste&height=284&id=u6177d17c&originHeight=284&originWidth=853&originalType=binary&ratio=1&rotation=0&showTitle=false&size=54990&status=done&style=none&taskId=ud338bb68-555b-4bce-8757-1f4b665ecfd&title=&width=853" srcset="/img/loading.gif" lazyload alt="image.png"></p>
-<h1 id="主流MQ的对比"><a href="#主流MQ的对比" class="headerlink" title="主流MQ的对比"></a>主流MQ的对比</h1><p>kafka可以作为大数据系统的组件，正是因为kafka的高吞吐量的特性。<img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647219282859-742854b7-a65a-4bbe-adf5-191e0d4f078d.png#averageHue=%233a8bce&clientId=ue82b16c4-1585-4&from=paste&height=713&id=u3a084205&originHeight=713&originWidth=1770&originalType=binary&ratio=1&rotation=0&showTitle=false&size=471206&status=done&style=none&taskId=u0d4c9f17-d407-4163-9035-98a84c36a00&title=&width=1770" srcset="/img/loading.gif" lazyload alt="image.png">吞吐量方面：kafka&gt;RabbitMQ&gt;ActiveMQ<br>数据可用性、准确性保证：RabbitMQ&gt;ActiveMQ&gt;kafka<br>kafka注重批量数据，具有高可用（HA）、高水平扩展、高吞吐量的特性。kafka使用的是仿AMQP协议，在AMQP的基础上进行了修改。<br>集群方面，支持但不擅长意味着如果要进行集群就需要耗费相当的精力，可能也不方面扩展。而kafka天生就是以集群的方式存在，线上使用3个kafka集群才是对它的尊重。<br>再拿RocketMQ来对比一下，RocketMQ是阿里在kafka的基础上进行重写实现，所以很多方面都和kafka类似：数据的堆积、大吞吐量。它们两个最大的区别在于场景的适用。RocketMQ会更擅长业务系统，对事务支持很好，而Kafka更擅长数据领域，更关注数据的吞吐。</p>
+<p>Kafka是linkedin使用Scala编写具有高水平扩展和高吞吐量的分布式消息系统。目前的Kafka是scale和java混合编程实现的。<br>Kafka对消息保存时根据Topic进行归类，发送消息者称为Producer，消息接收者称为Consumer，此外Kafka集群由多个kafka实例组成，每个实例（server）称为broker。<br>无论是Kafka集群，还是producer和consumer都依赖于zookeeper来保证系统可用性，zk为集群保存一些meta信息。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647219047197-c01b0b5f-40f5-4acd-8bdc-9ad8a39d54d4.png#averageHue=%23dddddd&clientId=ue82b16c4-1585-4&from=paste&height=284&id=u6177d17c&originHeight=284&originWidth=853&originalType=binary&ratio=1&rotation=0&showTitle=false&size=54990&status=done&style=none&taskId=ud338bb68-555b-4bce-8757-1f4b665ecfd&title=&width=853" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"></p>
+<h1 id="主流MQ的对比"><a href="#主流MQ的对比" class="headerlink" title="主流MQ的对比"></a>主流MQ的对比</h1><p>kafka可以作为大数据系统的组件，正是因为kafka的高吞吐量的特性。<img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647219282859-742854b7-a65a-4bbe-adf5-191e0d4f078d.png#averageHue=%233a8bce&clientId=ue82b16c4-1585-4&from=paste&height=713&id=u3a084205&originHeight=713&originWidth=1770&originalType=binary&ratio=1&rotation=0&showTitle=false&size=471206&status=done&style=none&taskId=u0d4c9f17-d407-4163-9035-98a84c36a00&title=&width=1770" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png">吞吐量方面：kafka&gt;RabbitMQ&gt;ActiveMQ<br>数据可用性、准确性保证：RabbitMQ&gt;ActiveMQ&gt;kafka<br>kafka注重批量数据，具有高可用（HA）、高水平扩展、高吞吐量的特性。kafka使用的是仿AMQP协议，在AMQP的基础上进行了修改。<br>集群方面，支持但不擅长意味着如果要进行集群就需要耗费相当的精力，可能也不方面扩展。而kafka天生就是以集群的方式存在，线上使用3个kafka集群才是对它的尊重。<br>再拿RocketMQ来对比一下，RocketMQ是阿里在kafka的基础上进行重写实现，所以很多方面都和kafka类似：数据的堆积、大吞吐量。它们两个最大的区别在于场景的适用。RocketMQ会更擅长业务系统，对事务支持很好，而Kafka更擅长数据领域，更关注数据的吞吐。</p>
 <h2 id="Kafka主要特性"><a href="#Kafka主要特性" class="headerlink" title="Kafka主要特性"></a>Kafka主要特性</h2><p>官网称kafka是一个流处理平台，流平台需要如下特性：</p>
 <ul>
 <li>可发布和订阅流数据，类似于消息队列或者消息级消息系统</li>
@@ -326,14 +326,14 @@
 </ul>
 <h2 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h2><p>基于kafka构造实时流数据管道，让系统或应用之间可靠地获取数据；<br>构建实时流式应用程序，处理流数据或基于数据做出反应。流数据意味着数据不断产生，不断被处理。在处理数据的时候，可以判断出数据的类型，基于不同的数据做出不同的处理反应。如果消费数据中出现了问题，可以从某个点重新消息纠正，这也是流式应用程序的特点，既可以实时消息，也可以从之间某个数据点重新消费。</p>
 <h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><p>kafka实现的是仿AMQP协议，那我们先来看看什么是AMQP协议。</p>
-<h3 id="AMQP协议"><a href="#AMQP协议" class="headerlink" title="AMQP协议"></a>AMQP协议</h3><p>AMQP（Advanced Message Queuing Protocol）是一个提供统一消息服务的标准高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件而设计。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647220807463-f84c021c-09de-42f5-a43b-1bc76c0048c1.png#averageHue=%23f2f2f2&clientId=ub6769867-b391-4&from=paste&height=195&id=LjHoD&originHeight=195&originWidth=1310&originalType=binary&ratio=1&rotation=0&showTitle=false&size=52942&status=done&style=none&taskId=ub95c3417-8b3e-4f41-bcaf-15412eb28dd&title=&width=1310" srcset="/img/loading.gif" lazyload alt="image.png"><br>server：AMQP服务器，接收客户端连接，实现AMQP消息队列和路由功能的进程<br>producer：生产者，向Broker发布消息的客户端应用程序<br>consumer：消费者，向消息队列请求消息的客户端应用程序</p>
+<h3 id="AMQP协议"><a href="#AMQP协议" class="headerlink" title="AMQP协议"></a>AMQP协议</h3><p>AMQP（Advanced Message Queuing Protocol）是一个提供统一消息服务的标准高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件而设计。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647220807463-f84c021c-09de-42f5-a43b-1bc76c0048c1.png#averageHue=%23f2f2f2&clientId=ub6769867-b391-4&from=paste&height=195&id=LjHoD&originHeight=195&originWidth=1310&originalType=binary&ratio=1&rotation=0&showTitle=false&size=52942&status=done&style=none&taskId=ub95c3417-8b3e-4f41-bcaf-15412eb28dd&title=&width=1310" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>server：AMQP服务器，接收客户端连接，实现AMQP消息队列和路由功能的进程<br>producer：生产者，向Broker发布消息的客户端应用程序<br>consumer：消费者，向消息队列请求消息的客户端应用程序</p>
 <p>kafka仿AMQP，在于kafka的broker是以集群的形式存在，push 和pull操作的都是broker集群。除此以外，kafka是以多播的形式进行的，ActiveMQ和RabbitMQ的消息无论是排队（queue）还是多播消费方式只能被消费一次，而kafka是durable的，消息会存在堆积，那么消息就可以被消费多次，并且kafka还能做到广播消费。</p>
 <h3 id="Topic"><a href="#Topic" class="headerlink" title="Topic"></a>Topic</h3><p>数据主题，是kafka中用来代表一个数据流的一个抽象。发布数据时，可以用topic对数据进行分类，也作为订阅数据时的主题。一个Topic同时可以有多个producer、consumer。</p>
 <h3 id="Partation"><a href="#Partation" class="headerlink" title="Partation"></a>Partation</h3><p>每个partition时一个顺序的、不可变的record序列，partition中的record会被分配一个自增长的id，我们称之为offset。</p>
-<h3 id="Record"><a href="#Record" class="headerlink" title="Record"></a>Record</h3><p>每条记录都有key、value、timestamp三个消息<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647228049364-11b89b53-c308-4a7e-87c5-aea09be1bbec.png#averageHue=%23f3f3f3&clientId=ub6769867-b391-4&from=paste&height=412&id=u9cd6aa1c&originHeight=412&originWidth=1347&originalType=binary&ratio=1&rotation=0&showTitle=false&size=105243&status=done&style=none&taskId=u73acc42a-687a-42f1-a255-4796667f6e6&title=&width=1347" srcset="/img/loading.gif" lazyload alt="image.png"><br>消息在Partition不断递增， 且有序有唯一ID，但是这个有序只保证在Partition层面上的，topic级别以上都不保证有序了。如果你想要保证topic级别下有序，额那就让topic只有一个partition就可以了。其实很多时候我们只需要保证一类数据的有序性，利用hash（key）%Count（partition）将同类的数据放到同一个partiton就可以保证数据的有序性。比如交易数据，我只需要保证股票类有序，基金类有序，而不需要保证全部的有序。</p>
+<h3 id="Record"><a href="#Record" class="headerlink" title="Record"></a>Record</h3><p>每条记录都有key、value、timestamp三个消息<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647228049364-11b89b53-c308-4a7e-87c5-aea09be1bbec.png#averageHue=%23f3f3f3&clientId=ub6769867-b391-4&from=paste&height=412&id=u9cd6aa1c&originHeight=412&originWidth=1347&originalType=binary&ratio=1&rotation=0&showTitle=false&size=105243&status=done&style=none&taskId=u73acc42a-687a-42f1-a255-4796667f6e6&title=&width=1347" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>消息在Partition不断递增， 且有序有唯一ID，但是这个有序只保证在Partition层面上的，topic级别以上都不保证有序了。如果你想要保证topic级别下有序，额那就让topic只有一个partition就可以了。其实很多时候我们只需要保证一类数据的有序性，利用hash（key）%Count（partition）将同类的数据放到同一个partiton就可以保证数据的有序性。比如交易数据，我只需要保证股票类有序，基金类有序，而不需要保证全部的有序。</p>
 <p>那么在kafka中如何定位一条数据呢？Topic:Partition:offset。</p>
-<h3 id="Replication"><a href="#Replication" class="headerlink" title="Replication"></a>Replication</h3><p>每个partition还会被非制导其他的服务器作为replication，这是一种冗余备份策略。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647227997992-0d358483-c078-435e-a865-113bf28e649a.png#averageHue=%23d5d5d5&clientId=ub6769867-b391-4&from=paste&height=342&id=p1wNv&originHeight=342&originWidth=1535&originalType=binary&ratio=1&rotation=0&showTitle=false&size=100330&status=done&style=none&taskId=u3cbc2453-0797-4e7d-baf6-f1a922a10c2&title=&width=1535" srcset="/img/loading.gif" lazyload alt="image.png"></p>
-<p>假如总共有12T的数据需要被存储处理。每个机器只有3T的磁盘容量，那么数据就应该被分成4分，被存储到4个机器上，每份都是3T，我们称其为<strong>数据分片</strong>。每个数据分片都不是完整的数据，4个分片合并才能被称为是完整数据。通过这样的数据分片，我们存储起来了单个机器不能存储的大数据。并且我们提高了并发级别：如果是使用一台能存储12T的数据的机器，那么只能实现单个机器上处理。而分了4个分片之后，原先只能在一个机器上完成的操作，我们能实现4个分片同时处理，且服务器的压力也被分散了，提高了并发级别，读写性能。降低了数据丢失的风险，如果12T数据出现数据损坏，那么整个12T数据将不可用，分为4个分片将这种风险也降低了。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647226891322-81ce1eec-1c72-40e0-850e-dfb30134c4ca.png#averageHue=%23f8f8f7&clientId=ub6769867-b391-4&from=paste&height=377&id=u3988b90e&originHeight=377&originWidth=957&originalType=binary&ratio=1&rotation=0&showTitle=false&size=126331&status=done&style=none&taskId=u6d5d214e-8c4c-44b5-bc9e-860318ac899&title=&width=957" srcset="/img/loading.gif" lazyload alt="image.png"><br>在此基础上难道没有缺点吗？最大的问题就是数据的可用性非常差。如果分片所属的机器宕机了，那么上面的数据就完全不可用了，并且整个数据的完整性都失去了，这就是可用性差。为此我们将每个机器存储设置为6T，这样每个机器就能多存一份其他分区的备份。对外提供服务的partition（如图中的p0-p3）被称为 Leader Partition ，kafka集群中的leader指的就是这个Leader Partition（LP），这个leader和follower的概念和其他的MQ是有所不同，而Replication Partition（RP）就是Follower Partition（FR）。kafka中的FR只是冗余备份，不提供任何服务。只有在LP宕机之后才由FP来提供，如果由多个FP那么就选举出一个新的分片来做LP去提供服务。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647227542002-b99c3878-7768-4527-8496-dfd0c0ea0eb5.png#averageHue=%23f6f5df&clientId=ub6769867-b391-4&from=paste&height=520&id=u3d1991bd&originHeight=520&originWidth=1113&originalType=binary&ratio=1&rotation=0&showTitle=false&size=179244&status=done&style=none&taskId=u584358e1-d3b9-4e4f-bf24-4951c9fe1aa&title=&width=1113" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h3 id="Replication"><a href="#Replication" class="headerlink" title="Replication"></a>Replication</h3><p>每个partition还会被非制导其他的服务器作为replication，这是一种冗余备份策略。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647227997992-0d358483-c078-435e-a865-113bf28e649a.png#averageHue=%23d5d5d5&clientId=ub6769867-b391-4&from=paste&height=342&id=p1wNv&originHeight=342&originWidth=1535&originalType=binary&ratio=1&rotation=0&showTitle=false&size=100330&status=done&style=none&taskId=u3cbc2453-0797-4e7d-baf6-f1a922a10c2&title=&width=1535" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"></p>
+<p>假如总共有12T的数据需要被存储处理。每个机器只有3T的磁盘容量，那么数据就应该被分成4分，被存储到4个机器上，每份都是3T，我们称其为<strong>数据分片</strong>。每个数据分片都不是完整的数据，4个分片合并才能被称为是完整数据。通过这样的数据分片，我们存储起来了单个机器不能存储的大数据。并且我们提高了并发级别：如果是使用一台能存储12T的数据的机器，那么只能实现单个机器上处理。而分了4个分片之后，原先只能在一个机器上完成的操作，我们能实现4个分片同时处理，且服务器的压力也被分散了，提高了并发级别，读写性能。降低了数据丢失的风险，如果12T数据出现数据损坏，那么整个12T数据将不可用，分为4个分片将这种风险也降低了。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647226891322-81ce1eec-1c72-40e0-850e-dfb30134c4ca.png#averageHue=%23f8f8f7&clientId=ub6769867-b391-4&from=paste&height=377&id=u3988b90e&originHeight=377&originWidth=957&originalType=binary&ratio=1&rotation=0&showTitle=false&size=126331&status=done&style=none&taskId=u6d5d214e-8c4c-44b5-bc9e-860318ac899&title=&width=957" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>在此基础上难道没有缺点吗？最大的问题就是数据的可用性非常差。如果分片所属的机器宕机了，那么上面的数据就完全不可用了，并且整个数据的完整性都失去了，这就是可用性差。为此我们将每个机器存储设置为6T，这样每个机器就能多存一份其他分区的备份。对外提供服务的partition（如图中的p0-p3）被称为 Leader Partition ，kafka集群中的leader指的就是这个Leader Partition（LP），这个leader和follower的概念和其他的MQ是有所不同，而Replication Partition（RP）就是Follower Partition（FR）。kafka中的FR只是冗余备份，不提供任何服务。只有在LP宕机之后才由FP来提供，如果由多个FP那么就选举出一个新的分片来做LP去提供服务。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647227542002-b99c3878-7768-4527-8496-dfd0c0ea0eb5.png#averageHue=%23f6f5df&clientId=ub6769867-b391-4&from=paste&height=520&id=u3d1991bd&originHeight=520&originWidth=1113&originalType=binary&ratio=1&rotation=0&showTitle=false&size=179244&status=done&style=none&taskId=u584358e1-d3b9-4e4f-bf24-4951c9fe1aa&title=&width=1113" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"></p>
 <h2 id="核心API"><a href="#核心API" class="headerlink" title="核心API"></a>核心API</h2><p>kafka有四个核心api：</p>
 <ul>
 <li>producer：允许一个应用程序发布一串流式的数据到一个或者多个kafka topic。</li>
@@ -343,7 +343,7 @@
 </ul>
 <p>你可能会对streams API有疑问，我好像自己可以通过producer和consumer来实现类似stream的功能，为什么还要提供一个streams这样一个API呢？<br>实际上streams就是通过producer和consumer来实现的。streams api的作用在于简化topic传递数据之间进行类似java stream一样的操作，封装了这种stream的算子（join、group、filter），这样我们更能集中在数据处理本身。</p>
 <p>下面将详细介绍一下几个API，但是使用的就不会详细说，使用方式基本都是引包然后写点图中差不多的代码，主要是以理解工作原理为主。</p>
-<h3 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h3><p><img src="https://cdn.nlark.com/yuque/0/2021/png/1980660/1623634608725-a7a483d6-b22e-4af8-bbda-c9153e2bd869.png#averageHue=%23dedede&height=384&id=ddLyI&originHeight=384&originWidth=1396&originalType=binary&ratio=1&rotation=0&showTitle=false&size=174665&status=done&style=none&title=&width=1396" srcset="/img/loading.gif" lazyload alt="image.png"><br>重点是需要理解下面三个配置： </p>
+<h3 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h3><p><img src="https://cdn.nlark.com/yuque/0/2021/png/1980660/1623634608725-a7a483d6-b22e-4af8-bbda-c9153e2bd869.png#averageHue=%23dedede&height=384&id=ddLyI&originHeight=384&originWidth=1396&originalType=binary&ratio=1&rotation=0&showTitle=false&size=174665&status=done&style=none&title=&width=1396" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>重点是需要理解下面三个配置： </p>
 <ol>
 <li>batch.size  : Producer会为每个partition维护一个buffer缓冲，用来记录还没有发送的数据，每个缓冲区内存大小用batch.size指定，默认是16k。由于每个partition都有自己的buffer，那么在此时保证了有序性。如果消息的大小超过了buffer的大小，那么消息将不会经过buffer，直接发送出去。</li>
 <li>linger.ms : linger.ms为buffer中的数据在达到batch.size前，需要等待的时间，即buffer的数据最多等待多久发送出去。如果没有配置这个值，那么消息会被直接发送出去，而不需要等到buffer打满。</li>
@@ -364,22 +364,22 @@
 <p>指定offset</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java">      <span class="hljs-comment">//指定offset。seek一定要在poll方法调用之后才能拿到，否则抛出异常</span><br>Set&lt;TopicPartition&gt; assignement = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;&gt;();<br>      <span class="hljs-keyword">if</span>(assignement.size() == <span class="hljs-number">0</span>)&#123;<br>          consumer.poll(<span class="hljs-number">100</span>);<br>          assignement = consumer.assignment();<br>      &#125;<br>      System.out.printf(<span class="hljs-string">&quot; === consumer assignment : %s \n&quot;</span>,assignement);<br>      consumer.seek(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TopicPartition</span>(TOPIC,<span class="hljs-number">0</span>),<span class="hljs-number">10</span>);<br><br></code></pre></td></tr></table></figure>
 
-<h3 id="Consumer-API"><a href="#Consumer-API" class="headerlink" title="Consumer API"></a>Consumer API</h3><p>producer api相对来说会比较简单，consumer是kafka比较复杂的一块。<br>我们知道kafka是一个集群，每个broker上数据都不是完整的，每个机器会存储别的分片数据的备份（replication）来提高可用性。kafka使用zk来存储元数据，比如 broker ID、 HostName、IP:Port，topic的名字，每个topic有多少个Partition，Replication及保存在哪个broker上<br>等元素据都会交由zk来存储维护。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647479064852-6fadcee9-2987-45f2-a2ff-e7a3dc3dff37.png#averageHue=%23e9e9e9&clientId=u3412e353-d070-4&from=paste&height=453&id=u02b3d24a&originHeight=453&originWidth=853&originalType=binary&ratio=1&rotation=0&showTitle=false&size=103790&status=done&style=none&taskId=u8f18e2c1-5620-4a8a-9c80-aeb0744fc87&title=&width=853" srcset="/img/loading.gif" lazyload alt="image.png"><br>提一句，zk是一个分布式信息协调服务，注册中心、配置中心都只是其中一种用法。zk集群和kafka 、HDFS、ES集群最大的不同就是，zk集群中的每一个节点存储的数据都是完整的，其他的只是存储了一部分数据，是不完整的。zk在设计的时候不追求性能，更保证数据的高可用、数据一致性，每次写入数据都是一个事务，真正做到只有所有zk节点写入同步成功才会返回写入成功，基于这个原因，zk节点越多性能会越差。我们增加zk节点是为了集群的可用性，容灾，而不是为了提高zk的性能。更多zk内容可以看看zookeeper。这里讲的可用性其实是CAP中的P，即分区容错。</p>
-<p>kafka的消费方式和其他的传统MQ（Active）消费方式有所不同。pub数据到ActiveMQ到sub出去拉取被消费，不管是广播还是队列（queue）的消费方式，消息始终只能被消费一次。但是kafka中，因为消息在kafka是会落地的，只要不被清理，数据会一直存在，消费者就可以从特定的点消费，那么消息是可以被消费多次的。<br>在kafka中有个consumer group的概念，里面可以存在多个消费者。每个consumer有且只能消费一个partition，这种使用group的方式可以很好地提高了并发量，且并发度间接受到partition的控制。而partition可以被不同group的consumer消费，但是同一个group下只能被一个consumer消费。这样的机制使得在不同group下的consumer能够消费相同的partition，这样就做到了多次消费。如果group中的consumer数量多余partition，那么多出来的一个consumer会“饿死”，貌似久了会报错，所以一般consumer数量会设置比partition数量少。如果consumer的数量比partition少，那么多的partition会分配给谁这个是随机的，不知道是否可以指定。<br>group中consumer如果挂掉了，那么group会帮我们做容错，分配给正常的节点。且进度并不会从新开始而是继续消费，如果从头消费，那么就可能是我们不希望看到的重复消费了。这个消费进度并不是存在客户端，不会随着客户端宕机而消失。<br>kafka的consumer都是以group的形式来存在的。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647500814342-04b5b7bb-a558-4d8b-9037-09d111a218f5.png#averageHue=%23f7f4f4&clientId=u93a9fbe0-b705-4&from=paste&height=562&id=u0aa39059&originHeight=562&originWidth=1307&originalType=binary&ratio=1&rotation=0&showTitle=false&size=238606&status=done&style=none&taskId=ud1c0de80-f712-412c-91ef-50c921440c0&title=&width=1307" srcset="/img/loading.gif" lazyload alt="image.png"><br>考虑一个问题，即使不使用group的概念，我们限制一个consumer只能消费一个partition，这样也是可以做到快速消费和负载均衡的。实际上group的作用更多的不同的消费需求做消费（进度）隔离，实现重复消费。在kafka中partition里面数据有offset的概念，每个offset（偏移量）下就是代表的一个记录、一条数据。我们直到通过topic+partitionId+offset可以定位一条数据，每个consumer在消费的时候会有自己的消费进度。可能比如 p1:8 ；p2:1;p3:1;p4:0  表示partition1 消费到第8条数据,p2消费到1以此类推。不同的group可能会存在消费进度不一样的情况。groupId相同的consumer属于同一个group，同一个group下共享一个消费进度，所以消费进度是包含了所有partition的消费情况的（即P1-P4，而不是独立开来，这点要确认）。在kafka早期的版本这个消费进度是保存在zk中，因为这个消费进度会频繁更新，zk的压力会增大，后来kafka使用了一个专门的topic（_offset_topic_）来存储。<br>更准确一点，保存的消费进度需要有什么东西呢？groupId,topic_name,partition_id,offset。宕机之后接收的consumer就能通过这些信息继续消费。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647499831481-db7e1909-f57d-4aaa-a700-60ab080ec524.png#averageHue=%23f7f7f7&clientId=u93a9fbe0-b705-4&from=paste&height=543&id=u3eefc778&originHeight=543&originWidth=1323&originalType=binary&ratio=1&rotation=0&showTitle=false&size=195767&status=done&style=none&taskId=u5514e46b-35fc-4935-b06f-07b2a7bbafd&title=&width=1323" srcset="/img/loading.gif" lazyload alt="image.png"></p>
-<p>实例代码：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647506436655-6783d8cc-7d83-424c-bef5-231aad212651.png#averageHue=%23fdfcfb&clientId=u0a311782-ace7-4&from=paste&height=754&id=u4ec02400&originHeight=754&originWidth=1813&originalType=binary&ratio=1&rotation=0&showTitle=false&size=637597&status=done&style=none&taskId=uf38fae56-410b-4596-a114-83455cdabc1&title=&width=1813" srcset="/img/loading.gif" lazyload alt="image.png"><br>prop中有个key.deserializer和value.deserializer，数据在kafka以二进制的方式存在磁盘，我们传送过来的数据可能是各种类型，String、Double都可能，这时候我们需要进行序列化，在producer端进行序列化，消费者端进行反序列化。这是个加密解密的过程。这个过程包括两个过程，一个key，一个value，为什么会有两个东西呢？难道kafka的存储方式是K-V的形式存储的？如果是K-V存储方式，那么这个K-V的key和代码中的key是同一个东西吗？K-V的value是消息本身，那么K自然是要能唯一标识这个消息的K，我们直到在kafka中唯一标识消息的东西是topic\partition\offset这三样组成，所以这个K就应当是这三个东西，但是实际上实现可能并不是这样，我们所说的topic\partition\offset是一种方便我们理解的一种逻辑上的表达。但实际上kafka并不是K-V的存储，并不能通过K去查询。而props中的key和kafka的K-V没有任何关系。<br>像实例代码中key就是写死的常量。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647507391615-5bd4152d-98e3-4232-b4ce-fd23e984990a.png#averageHue=%23fdfbf7&clientId=u0a311782-ace7-4&from=paste&height=150&id=u6c68718f&originHeight=150&originWidth=1084&originalType=binary&ratio=1&rotation=0&showTitle=false&size=66709&status=done&style=none&taskId=uf317c64f-a91a-42e1-a0d8-55bea4c261b&title=&width=1084" srcset="/img/loading.gif" lazyload alt="image.png"><br>我们在往kafka写入数据的时候，可能存在多个partition，那么就设计消息分发，我们可能希望某个消息固定发送到一个partition上，那么这个key就是用在这个时候，如果key&#x3D;null，代表的是轮询partition存储，当key!&#x3D;null的时候就是做hash计算%count(partitions)。这个是key的作用。这就是为什么每次使用kafka去写入数据都可以决定写不写这个key，kafka对这个key的要求不严格，甚至key是同一个。估计是因为同时配置了key和value，让人不禁想起了map这种基础的结构带来了误解。我们也可以指定partition。key可以帮助我们控制数据写入的方式，间接上控制了数据的顺序。<br>poll方法可以传入一个timeoutMs，在没有到达超时时间，客户端会保持长连接直到超时，减少连接的次数。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647508576860-7e87403d-17bf-46a3-acfe-96da4eff9d7d.png#averageHue=%23f2f1e1&clientId=u0a311782-ace7-4&from=paste&height=594&id=u9d52f02e&originHeight=594&originWidth=1226&originalType=binary&ratio=1&rotation=0&showTitle=false&size=408201&status=done&style=none&taskId=u1b9b604f-8c83-4176-bf8c-7dc6485a610&title=&width=1226" srcset="/img/loading.gif" lazyload alt="image.png"><br>我们接收到的是ConsumerRecords对象，api就不过多介绍了。<br>关注这行代码：<code>props.setProperty(&quot;enable.auto.commit&quot;,&quot;true&quot;)</code> 这个并不是一个ack，而是commit消费进度，这里代表是自动提交消费进度。<strong>自动提交会在每次poll的时候会将上次的消费进度提交过去</strong>。正常关闭consumer的话在关闭的时候也会提交消费进度。<br>这个autocommit有个两个坑：</p>
+<h3 id="Consumer-API"><a href="#Consumer-API" class="headerlink" title="Consumer API"></a>Consumer API</h3><p>producer api相对来说会比较简单，consumer是kafka比较复杂的一块。<br>我们知道kafka是一个集群，每个broker上数据都不是完整的，每个机器会存储别的分片数据的备份（replication）来提高可用性。kafka使用zk来存储元数据，比如 broker ID、 HostName、IP:Port，topic的名字，每个topic有多少个Partition，Replication及保存在哪个broker上<br>等元素据都会交由zk来存储维护。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647479064852-6fadcee9-2987-45f2-a2ff-e7a3dc3dff37.png#averageHue=%23e9e9e9&clientId=u3412e353-d070-4&from=paste&height=453&id=u02b3d24a&originHeight=453&originWidth=853&originalType=binary&ratio=1&rotation=0&showTitle=false&size=103790&status=done&style=none&taskId=u8f18e2c1-5620-4a8a-9c80-aeb0744fc87&title=&width=853" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>提一句，zk是一个分布式信息协调服务，注册中心、配置中心都只是其中一种用法。zk集群和kafka 、HDFS、ES集群最大的不同就是，zk集群中的每一个节点存储的数据都是完整的，其他的只是存储了一部分数据，是不完整的。zk在设计的时候不追求性能，更保证数据的高可用、数据一致性，每次写入数据都是一个事务，真正做到只有所有zk节点写入同步成功才会返回写入成功，基于这个原因，zk节点越多性能会越差。我们增加zk节点是为了集群的可用性，容灾，而不是为了提高zk的性能。更多zk内容可以看看zookeeper。这里讲的可用性其实是CAP中的P，即分区容错。</p>
+<p>kafka的消费方式和其他的传统MQ（Active）消费方式有所不同。pub数据到ActiveMQ到sub出去拉取被消费，不管是广播还是队列（queue）的消费方式，消息始终只能被消费一次。但是kafka中，因为消息在kafka是会落地的，只要不被清理，数据会一直存在，消费者就可以从特定的点消费，那么消息是可以被消费多次的。<br>在kafka中有个consumer group的概念，里面可以存在多个消费者。每个consumer有且只能消费一个partition，这种使用group的方式可以很好地提高了并发量，且并发度间接受到partition的控制。而partition可以被不同group的consumer消费，但是同一个group下只能被一个consumer消费。这样的机制使得在不同group下的consumer能够消费相同的partition，这样就做到了多次消费。如果group中的consumer数量多余partition，那么多出来的一个consumer会“饿死”，貌似久了会报错，所以一般consumer数量会设置比partition数量少。如果consumer的数量比partition少，那么多的partition会分配给谁这个是随机的，不知道是否可以指定。<br>group中consumer如果挂掉了，那么group会帮我们做容错，分配给正常的节点。且进度并不会从新开始而是继续消费，如果从头消费，那么就可能是我们不希望看到的重复消费了。这个消费进度并不是存在客户端，不会随着客户端宕机而消失。<br>kafka的consumer都是以group的形式来存在的。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647500814342-04b5b7bb-a558-4d8b-9037-09d111a218f5.png#averageHue=%23f7f4f4&clientId=u93a9fbe0-b705-4&from=paste&height=562&id=u0aa39059&originHeight=562&originWidth=1307&originalType=binary&ratio=1&rotation=0&showTitle=false&size=238606&status=done&style=none&taskId=ud1c0de80-f712-412c-91ef-50c921440c0&title=&width=1307" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>考虑一个问题，即使不使用group的概念，我们限制一个consumer只能消费一个partition，这样也是可以做到快速消费和负载均衡的。实际上group的作用更多的不同的消费需求做消费（进度）隔离，实现重复消费。在kafka中partition里面数据有offset的概念，每个offset（偏移量）下就是代表的一个记录、一条数据。我们直到通过topic+partitionId+offset可以定位一条数据，每个consumer在消费的时候会有自己的消费进度。可能比如 p1:8 ；p2:1;p3:1;p4:0  表示partition1 消费到第8条数据,p2消费到1以此类推。不同的group可能会存在消费进度不一样的情况。groupId相同的consumer属于同一个group，同一个group下共享一个消费进度，所以消费进度是包含了所有partition的消费情况的（即P1-P4，而不是独立开来，这点要确认）。在kafka早期的版本这个消费进度是保存在zk中，因为这个消费进度会频繁更新，zk的压力会增大，后来kafka使用了一个专门的topic（_offset_topic_）来存储。<br>更准确一点，保存的消费进度需要有什么东西呢？groupId,topic_name,partition_id,offset。宕机之后接收的consumer就能通过这些信息继续消费。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647499831481-db7e1909-f57d-4aaa-a700-60ab080ec524.png#averageHue=%23f7f7f7&clientId=u93a9fbe0-b705-4&from=paste&height=543&id=u3eefc778&originHeight=543&originWidth=1323&originalType=binary&ratio=1&rotation=0&showTitle=false&size=195767&status=done&style=none&taskId=u5514e46b-35fc-4935-b06f-07b2a7bbafd&title=&width=1323" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"></p>
+<p>实例代码：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647506436655-6783d8cc-7d83-424c-bef5-231aad212651.png#averageHue=%23fdfcfb&clientId=u0a311782-ace7-4&from=paste&height=754&id=u4ec02400&originHeight=754&originWidth=1813&originalType=binary&ratio=1&rotation=0&showTitle=false&size=637597&status=done&style=none&taskId=uf38fae56-410b-4596-a114-83455cdabc1&title=&width=1813" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>prop中有个key.deserializer和value.deserializer，数据在kafka以二进制的方式存在磁盘，我们传送过来的数据可能是各种类型，String、Double都可能，这时候我们需要进行序列化，在producer端进行序列化，消费者端进行反序列化。这是个加密解密的过程。这个过程包括两个过程，一个key，一个value，为什么会有两个东西呢？难道kafka的存储方式是K-V的形式存储的？如果是K-V存储方式，那么这个K-V的key和代码中的key是同一个东西吗？K-V的value是消息本身，那么K自然是要能唯一标识这个消息的K，我们直到在kafka中唯一标识消息的东西是topic\partition\offset这三样组成，所以这个K就应当是这三个东西，但是实际上实现可能并不是这样，我们所说的topic\partition\offset是一种方便我们理解的一种逻辑上的表达。但实际上kafka并不是K-V的存储，并不能通过K去查询。而props中的key和kafka的K-V没有任何关系。<br>像实例代码中key就是写死的常量。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647507391615-5bd4152d-98e3-4232-b4ce-fd23e984990a.png#averageHue=%23fdfbf7&clientId=u0a311782-ace7-4&from=paste&height=150&id=u6c68718f&originHeight=150&originWidth=1084&originalType=binary&ratio=1&rotation=0&showTitle=false&size=66709&status=done&style=none&taskId=uf317c64f-a91a-42e1-a0d8-55bea4c261b&title=&width=1084" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>我们在往kafka写入数据的时候，可能存在多个partition，那么就设计消息分发，我们可能希望某个消息固定发送到一个partition上，那么这个key就是用在这个时候，如果key&#x3D;null，代表的是轮询partition存储，当key!&#x3D;null的时候就是做hash计算%count(partitions)。这个是key的作用。这就是为什么每次使用kafka去写入数据都可以决定写不写这个key，kafka对这个key的要求不严格，甚至key是同一个。估计是因为同时配置了key和value，让人不禁想起了map这种基础的结构带来了误解。我们也可以指定partition。key可以帮助我们控制数据写入的方式，间接上控制了数据的顺序。<br>poll方法可以传入一个timeoutMs，在没有到达超时时间，客户端会保持长连接直到超时，减少连接的次数。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647508576860-7e87403d-17bf-46a3-acfe-96da4eff9d7d.png#averageHue=%23f2f1e1&clientId=u0a311782-ace7-4&from=paste&height=594&id=u9d52f02e&originHeight=594&originWidth=1226&originalType=binary&ratio=1&rotation=0&showTitle=false&size=408201&status=done&style=none&taskId=u1b9b604f-8c83-4176-bf8c-7dc6485a610&title=&width=1226" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>我们接收到的是ConsumerRecords对象，api就不过多介绍了。<br>关注这行代码：<code>props.setProperty(&quot;enable.auto.commit&quot;,&quot;true&quot;)</code> 这个并不是一个ack，而是commit消费进度，这里代表是自动提交消费进度。<strong>自动提交会在每次poll的时候会将上次的消费进度提交过去</strong>。正常关闭consumer的话在关闭的时候也会提交消费进度。<br>这个autocommit有个两个坑：</p>
 <ol>
 <li>会导致重复消费问题。在最后一次处理完数据，刚刚好写入DB完成之后，consumer宕机了，那么22就没有被提交到服务端，服务端只有16，那么就会重复拉取17-22的数据，那么DB就可能出现两次数据。</li>
 </ol>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647567397657-3cd1cce7-ef9a-45a8-9f19-97a03511c579.png#averageHue=%23f4efee&clientId=u93b90d58-7339-4&from=paste&height=866&id=g1Mus&originHeight=866&originWidth=1430&originalType=binary&ratio=1&rotation=0&showTitle=false&size=439528&status=done&style=none&taskId=uc951d299-d084-487b-8121-532c66f2614&title=&width=1430" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647567397657-3cd1cce7-ef9a-45a8-9f19-97a03511c579.png#averageHue=%23f4efee&clientId=u93b90d58-7339-4&from=paste&height=866&id=g1Mus&originHeight=866&originWidth=1430&originalType=binary&ratio=1&rotation=0&showTitle=false&size=439528&status=done&style=none&taskId=uc951d299-d084-487b-8121-532c66f2614&title=&width=1430" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"></p>
 <ol start="2">
 <li>同样是自动提交，但是这次是我们设置了个<code>minBatchSize</code>，用意是当数据满足20+条的时候才插入到DB中。如果此时你还是使用自动配置的设置，那么两边的落地的方式时不一致的。kafka依然是提交上一次的，而DB却是分批次提交，这样就可能出现一边提交一边未提交的情况，在这段时间如果系统出现故障，那就出现了不一致的问题。</li>
 </ol>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647568917802-845217f4-8a49-4eec-8fb7-66957282a4e3.png#averageHue=%23fcfcfb&clientId=u93b90d58-7339-4&from=paste&height=859&id=ub5e483b1&originHeight=859&originWidth=1550&originalType=binary&ratio=1&rotation=0&showTitle=false&size=790909&status=done&style=none&taskId=u69d883e7-8997-4e35-ab43-7d7a209a0ac&title=&width=1550" srcset="/img/loading.gif" lazyload alt="image.png"><br>这个问题只要不自动提交就能处理。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647587716305-40cf46bc-8f41-4021-8e18-2e3fc09f01db.png#averageHue=%23fcfcfa&clientId=u231c5563-e539-4&from=paste&height=847&id=u98a70409&originHeight=847&originWidth=1704&originalType=binary&ratio=1&rotation=0&showTitle=false&size=704727&status=done&style=none&taskId=u7bba69fa-0fb0-4b3f-8275-96092882a59&title=&width=1704" srcset="/img/loading.gif" lazyload alt="image.png"><br>从上面两个例子我们可以看出来，自动提交存在的问题还是比较大，数据如果比较重要的话，还是自己手动控制提交的好。AutoCommit给予我们的只是操作上的方便而已。虽然还是分了两步，但是比自动提交稍微可控一点。我们不必害怕插入失败commit成功的问题，因为只要加个判断，在insertiToDB成功才commit进度的方式就能避免这个问题。不要考虑使用事务控制，因为kafka所解决的问题吞吐量大，如果使用事务那就有点反其道而行之的感觉了。但是有可能出现insertDB成功，但是commit失败的情况，这种情况就会出现数据重复的问题，的确需要处理，DB做幂等性控制，比如设置唯一主键的方式，让kafka过来的重复数据无法commit，但是这种做法又会影响到insertDB成功之后commit的流程，不太好解决。<br>手动提交保证的语义是at least once，即最少一次。而自动提交会出现丢数据也会出现数据重复的问题。</p>
-<p><strong>我们要怎么样保证消费数据恰好落地一次，消费一次呢？</strong><br>那我们就需要就需要做到数据落地以及消费进度提交两个操作的原子性，这样就可以保证exactly once。<br>有个方案，我们把数据落地到mysql，那么就需要设计这样的表，第一列存储kafka Info，这个kafka info就是当前的offset，我们每一次把数据都往mysql写的时候，要知道数据都有对应的partition和offset，这个kafka info就是当前数据的pid和offset。当topic确认之后，通过pid和offset唯一确认一个数据。<br>这种做法等于说是用来解决我们上面提出的幂等性控制问题， 如果我们直接对消息落地的表操作，那就会出现影响程序流程的问题，那么以这种引入第二张表的形式来控制。这种做法，我们可以不用是消息进度落地，却能够让数据落地，并且记录了消费进度与数据的关系。当consumer宕机后重新启动消费的时候，我们就可以去差这个表，查到对应pid中的消费到哪个offset，就可以接着消费，这样就不会重复消费，也不会丢失数据。消费进度和数据落地在这张表和为了一个操作，并且没有依赖事务，所以不依赖能提供事务的mysql等工具，在某些不支持事务的工具中（hive）也能实现。注意的是consumer重新启动的时候就需要先去这个表里面查询。现在看来是比较理想的解决方案。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647653848911-08fb8a05-8165-4a50-bc49-b8d5ee0ccfab.png#averageHue=%23f7f7f7&clientId=uad2d1815-38f4-4&from=paste&height=784&id=ucd395811&originHeight=784&originWidth=1425&originalType=binary&ratio=1&rotation=0&showTitle=false&size=131743&status=done&style=none&taskId=ub7fbfced-b5b3-451a-b770-66fa4d75129&title=&width=1425" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647568917802-845217f4-8a49-4eec-8fb7-66957282a4e3.png#averageHue=%23fcfcfb&clientId=u93b90d58-7339-4&from=paste&height=859&id=ub5e483b1&originHeight=859&originWidth=1550&originalType=binary&ratio=1&rotation=0&showTitle=false&size=790909&status=done&style=none&taskId=u69d883e7-8997-4e35-ab43-7d7a209a0ac&title=&width=1550" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>这个问题只要不自动提交就能处理。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647587716305-40cf46bc-8f41-4021-8e18-2e3fc09f01db.png#averageHue=%23fcfcfa&clientId=u231c5563-e539-4&from=paste&height=847&id=u98a70409&originHeight=847&originWidth=1704&originalType=binary&ratio=1&rotation=0&showTitle=false&size=704727&status=done&style=none&taskId=u7bba69fa-0fb0-4b3f-8275-96092882a59&title=&width=1704" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>从上面两个例子我们可以看出来，自动提交存在的问题还是比较大，数据如果比较重要的话，还是自己手动控制提交的好。AutoCommit给予我们的只是操作上的方便而已。虽然还是分了两步，但是比自动提交稍微可控一点。我们不必害怕插入失败commit成功的问题，因为只要加个判断，在insertiToDB成功才commit进度的方式就能避免这个问题。不要考虑使用事务控制，因为kafka所解决的问题吞吐量大，如果使用事务那就有点反其道而行之的感觉了。但是有可能出现insertDB成功，但是commit失败的情况，这种情况就会出现数据重复的问题，的确需要处理，DB做幂等性控制，比如设置唯一主键的方式，让kafka过来的重复数据无法commit，但是这种做法又会影响到insertDB成功之后commit的流程，不太好解决。<br>手动提交保证的语义是at least once，即最少一次。而自动提交会出现丢数据也会出现数据重复的问题。</p>
+<p><strong>我们要怎么样保证消费数据恰好落地一次，消费一次呢？</strong><br>那我们就需要就需要做到数据落地以及消费进度提交两个操作的原子性，这样就可以保证exactly once。<br>有个方案，我们把数据落地到mysql，那么就需要设计这样的表，第一列存储kafka Info，这个kafka info就是当前的offset，我们每一次把数据都往mysql写的时候，要知道数据都有对应的partition和offset，这个kafka info就是当前数据的pid和offset。当topic确认之后，通过pid和offset唯一确认一个数据。<br>这种做法等于说是用来解决我们上面提出的幂等性控制问题， 如果我们直接对消息落地的表操作，那就会出现影响程序流程的问题，那么以这种引入第二张表的形式来控制。这种做法，我们可以不用是消息进度落地，却能够让数据落地，并且记录了消费进度与数据的关系。当consumer宕机后重新启动消费的时候，我们就可以去差这个表，查到对应pid中的消费到哪个offset，就可以接着消费，这样就不会重复消费，也不会丢失数据。消费进度和数据落地在这张表和为了一个操作，并且没有依赖事务，所以不依赖能提供事务的mysql等工具，在某些不支持事务的工具中（hive）也能实现。注意的是consumer重新启动的时候就需要先去这个表里面查询。现在看来是比较理想的解决方案。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647653848911-08fb8a05-8165-4a50-bc49-b8d5ee0ccfab.png#averageHue=%23f7f7f7&clientId=uad2d1815-38f4-4&from=paste&height=784&id=ucd395811&originHeight=784&originWidth=1425&originalType=binary&ratio=1&rotation=0&showTitle=false&size=131743&status=done&style=none&taskId=ub7fbfced-b5b3-451a-b770-66fa4d75129&title=&width=1425" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"></p>
 <p>我们使用自动或手动地提交进度，甚至在外部保存消费进度，主要目的就是为了重新消费的时候，知道从哪里开始消费。</p>
 <p>kafka中怎么样做到数据不丢失？<br>ACK 设置成all， 保证消息存储到replication partition。设置合理ISR，保证多个replication partition都同步LP成功。</p>
-<h3 id="Stream-API"><a href="#Stream-API" class="headerlink" title="Stream API"></a>Stream API</h3><p>stream api是用来做流处理的,不间断地处理数据。<br>那么流程序的作用或者意义是什么呢？（java lambda 是一种语法，和流处理没有太大的关系）<br>流程序是和批处理程序相对的。数据一般以流的形式产生的，在传统处理方式中，不断产生的数据会被累计起来，成为一个大的数据集（Master DataSet），那么我们就对这些数据进行批处理（Batch），得到新的结果集（PreComputed views），然后我们就可以展示或者查询、使用这个结果集。这种批处理的处理方式存在一个问题，那就是数据存在延迟，数据的产生和结果查询存在时间差，不是实时的。且数据量一般会很大，都是在夜间进行数据抽取，防止影响业务正常运行。流处理就是为了补充这个实时性处理问题，在数据产生的时候就开始不停地process，并且实时地写入到增量的结果集（increment），这个结果集也是要支持实时写入，这个结果集在实时变化，进行查询得到的也是实时的数据。这就是流程序的作用。<br>这种架构就是Lambda架构。和java lambda是没有关系的。在以前流程序是不稳定的，很有可能一个错误的数据就导致系统崩溃，所以批处理和流程序一起合作处理，批处理保证数据一定会存在，而流处理保证数据的实时性。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647655810386-1c86ac8d-dc80-4a81-a306-95020f4d7881.png#averageHue=%23f9f8f8&clientId=uad2d1815-38f4-4&from=paste&height=756&id=u8add80e3&originHeight=756&originWidth=1862&originalType=binary&ratio=1&rotation=0&showTitle=false&size=234184&status=done&style=none&taskId=u0c9f427a-4f84-4721-9202-b78a0f0cc7a&title=&width=1862" srcset="/img/loading.gif" lazyload alt="image.png"><br>比较麻烦的是，我们要同时维护两套系统，无论系统业务逻辑变更、新增都需要对两个系统做维护，比较麻烦。<br>kafka的流程序可能是比较简单，并没有什么值得讨论的东西。<br>当前流行的架构是Flink或者Spark。流程序的数据会被放入到kafka里面，起到流数据存储的作用，数据会在kafka落地并保证顺序，然后使用比较流行的大数据技术，比如早期的spark 或 出现的较晚但是阿里在推的Flink，它们基于一套api就能实现流处理和批处理，所谓流批一体。Spark的流批一体做的没有Flink完善，Flink的有点就是这，这种架构省去了两次开发的麻烦。并且没有kafka，spark&#x2F;Flink如果顶不住或者其他的情况宕机了，那么数据就真丢了，有了kafka之后就算宕机了，重新启动再消费就行了。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647656288234-e0b38ceb-ab5e-4cf8-81c2-de13199a3974.png#averageHue=%23fbfbfb&clientId=uad2d1815-38f4-4&from=paste&height=743&id=ud348af7f&originHeight=743&originWidth=1800&originalType=binary&ratio=1&rotation=0&showTitle=false&size=163564&status=done&style=none&taskId=ub62bf5f2-4390-49c3-8230-105a9b5cbcb&title=&width=1800" srcset="/img/loading.gif" lazyload alt="image.png"></p>
-<p>正统的流处理程序有 Spark、Flink、Storm。这些平台的使用都是有成本的，都是需要从新搭建的。kafka的stream api就是个java程序，使用起来方便。这可能就是kafka为什么自称能做流处理的原因吧。<br>api的使用就不多讲了，直接看看代码：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647658566634-8adccad3-751b-42f6-9a72-03c8d447d56b.png#averageHue=%23f2f0e5&clientId=uad2d1815-38f4-4&from=paste&height=779&id=u692cfc5e&originHeight=779&originWidth=1432&originalType=binary&ratio=1&rotation=0&showTitle=false&size=758215&status=done&style=none&taskId=u5de71d45-bc24-46a1-90d8-b4b668c8388&title=&width=1432" srcset="/img/loading.gif" lazyload alt="image.png"><br>介绍一下，首先要写一些配置参数，比如程序名称，连接参数，key value的序列化。创建一个KStream。stream api需要从一个input topic输入，然后输出到一个output topic，这两个都需要配置，<code>KStream&lt;String,String&gt; textLines = builder.stream(stram-plaintxt-input)</code> 就是指定了input topic，这样我们就拿到了一个流，接下来对流进行处理。示例代码我们是想进行count，count完成放到一个topic中。<br>可以自己试着实现一个，跑一下理解会更深刻。</p>
+<h3 id="Stream-API"><a href="#Stream-API" class="headerlink" title="Stream API"></a>Stream API</h3><p>stream api是用来做流处理的,不间断地处理数据。<br>那么流程序的作用或者意义是什么呢？（java lambda 是一种语法，和流处理没有太大的关系）<br>流程序是和批处理程序相对的。数据一般以流的形式产生的，在传统处理方式中，不断产生的数据会被累计起来，成为一个大的数据集（Master DataSet），那么我们就对这些数据进行批处理（Batch），得到新的结果集（PreComputed views），然后我们就可以展示或者查询、使用这个结果集。这种批处理的处理方式存在一个问题，那就是数据存在延迟，数据的产生和结果查询存在时间差，不是实时的。且数据量一般会很大，都是在夜间进行数据抽取，防止影响业务正常运行。流处理就是为了补充这个实时性处理问题，在数据产生的时候就开始不停地process，并且实时地写入到增量的结果集（increment），这个结果集也是要支持实时写入，这个结果集在实时变化，进行查询得到的也是实时的数据。这就是流程序的作用。<br>这种架构就是Lambda架构。和java lambda是没有关系的。在以前流程序是不稳定的，很有可能一个错误的数据就导致系统崩溃，所以批处理和流程序一起合作处理，批处理保证数据一定会存在，而流处理保证数据的实时性。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647655810386-1c86ac8d-dc80-4a81-a306-95020f4d7881.png#averageHue=%23f9f8f8&clientId=uad2d1815-38f4-4&from=paste&height=756&id=u8add80e3&originHeight=756&originWidth=1862&originalType=binary&ratio=1&rotation=0&showTitle=false&size=234184&status=done&style=none&taskId=u0c9f427a-4f84-4721-9202-b78a0f0cc7a&title=&width=1862" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>比较麻烦的是，我们要同时维护两套系统，无论系统业务逻辑变更、新增都需要对两个系统做维护，比较麻烦。<br>kafka的流程序可能是比较简单，并没有什么值得讨论的东西。<br>当前流行的架构是Flink或者Spark。流程序的数据会被放入到kafka里面，起到流数据存储的作用，数据会在kafka落地并保证顺序，然后使用比较流行的大数据技术，比如早期的spark 或 出现的较晚但是阿里在推的Flink，它们基于一套api就能实现流处理和批处理，所谓流批一体。Spark的流批一体做的没有Flink完善，Flink的有点就是这，这种架构省去了两次开发的麻烦。并且没有kafka，spark&#x2F;Flink如果顶不住或者其他的情况宕机了，那么数据就真丢了，有了kafka之后就算宕机了，重新启动再消费就行了。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647656288234-e0b38ceb-ab5e-4cf8-81c2-de13199a3974.png#averageHue=%23fbfbfb&clientId=uad2d1815-38f4-4&from=paste&height=743&id=ud348af7f&originHeight=743&originWidth=1800&originalType=binary&ratio=1&rotation=0&showTitle=false&size=163564&status=done&style=none&taskId=ub62bf5f2-4390-49c3-8230-105a9b5cbcb&title=&width=1800" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"></p>
+<p>正统的流处理程序有 Spark、Flink、Storm。这些平台的使用都是有成本的，都是需要从新搭建的。kafka的stream api就是个java程序，使用起来方便。这可能就是kafka为什么自称能做流处理的原因吧。<br>api的使用就不多讲了，直接看看代码：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/1980660/1647658566634-8adccad3-751b-42f6-9a72-03c8d447d56b.png#averageHue=%23f2f0e5&clientId=uad2d1815-38f4-4&from=paste&height=779&id=u692cfc5e&originHeight=779&originWidth=1432&originalType=binary&ratio=1&rotation=0&showTitle=false&size=758215&status=done&style=none&taskId=u5de71d45-bc24-46a1-90d8-b4b668c8388&title=&width=1432" srcset="/q792821266/q792821266.github.io/img/loading.gif" lazyload alt="image.png"><br>介绍一下，首先要写一些配置参数，比如程序名称，连接参数，key value的序列化。创建一个KStream。stream api需要从一个input topic输入，然后输出到一个output topic，这两个都需要配置，<code>KStream&lt;String,String&gt; textLines = builder.stream(stram-plaintxt-input)</code> 就是指定了input topic，这样我们就拿到了一个流，接下来对流进行处理。示例代码我们是想进行count，count完成放到一个topic中。<br>可以自己试着实现一个，跑一下理解会更深刻。</p>
 <h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><p>kafka的应用场景比较多，这里详细介绍一下，大多数情况下是作为带存储的消息队列在使用，官方说可以作为流数据处理平台。</p>
 <h2 id="消息系统"><a href="#消息系统" class="headerlink" title="消息系统"></a>消息系统</h2><p>消息系统被用于各种场景，如解耦数据生产者，缓存未处理的消息。kafka可以作为传统消息系统的替代者，与传统消息系统相比，kafka有更好的吞吐量、更好的可用性， 这有利于处理大规模的消息。还有更大的区别在于消费者方面，具体可以看consumer。<br>根据经验，通常消息传递对消息吞吐量要求比较低，但可能要求较低的端到端延迟，并经常依赖kafka可靠的durable机制。<br>在这方面，kafka可以和传统的消息传递系统ActiveMQ和RabbitMQ媲美。高并发的场景下，其他的MQ在放入到MQ（partition级别）时还能做到保证有序，但是高并发多个消费者消费的情况下（异步），是没有办法保证消息消费的顺序的。而kafka在消费端可以通过一个消费者消费一个partition的方式保证消费有序。值得注意的是这种保证顺序的方案。</p>
 <h2 id="存储系统"><a href="#存储系统" class="headerlink" title="存储系统"></a>存储系统</h2><p>写入到kafka上的数据是会落地到磁盘上的，并且有冗余备份，kafka允许producer等待确认，通过配置，可实现直到所有的replication完成复制才算写入完成，这样可以保证数据的可用性。<br>Kafka认真对待存储，并允许client自行控制读取位置，你可以认为kafka是一种特殊的文件系统，它能够提供高性能、低延迟、高可用的日志提交存储。<br>kafka使用了顺序读与顺序写，所以很快。实际上kafka的存储是建立在<strong>磁盘+内存</strong>两者上，同时实现的高速读取与写入，最终落地磁盘，这样就能实现数据重复消费。<br>kafka是一种<strong>流存储</strong>系统，和其他传统的数据存取系统相比（hdfs、mysql），流存储的特别是保证了数据落地的顺序，这样流程序消费数据的时候就能进行数据回溯，即如果数据在某个点出现问题，那么程序能够找到错误的点，从这个数据点开始继续往前消费，甚至可以从整个数据从头开始消费（回放），这就是顺序存储的好处。</p>
@@ -408,7 +408,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/middileware/" class="category-chain-item">middileware</a>
+  <a href="/q792821266/q792821266.github.io/categories/middileware/" class="category-chain-item">middileware</a>
   
   
 
@@ -423,11 +423,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/middileware/" class="print-no-link">#middileware</a>
+        <a href="/q792821266/q792821266.github.io/tags/middileware/" class="print-no-link">#middileware</a>
       
-        <a href="/tags/mq/" class="print-no-link">#mq</a>
+        <a href="/q792821266/q792821266.github.io/tags/mq/" class="print-no-link">#mq</a>
       
-        <a href="/tags/kafka/" class="print-no-link">#kafka</a>
+        <a href="/q792821266/q792821266.github.io/tags/kafka/" class="print-no-link">#kafka</a>
       
     </div>
   
@@ -440,7 +440,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>kafka</div>
-      <div>https://q792821266.github.io/2024/06/16/kafka/</div>
+      <div>https://github.com/q792821266/q792821266.github.io/2024/06/16/kafka/</div>
     </div>
     <div class="license-meta">
       
@@ -484,7 +484,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/06/18/zookeeper/" title="zookeeper">
+                      <a href="/q792821266/q792821266.github.io/2024/06/18/zookeeper/" title="zookeeper">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">zookeeper</span>
                         <span class="visible-mobile">上一篇</span>
@@ -674,8 +674,8 @@
 
 <script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
 <script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
+<script  src="/q792821266/q792821266.github.io/js/events.js" ></script>
+<script  src="/q792821266/q792821266.github.io/js/plugins.js" ></script>
 
 
   <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
@@ -697,7 +697,7 @@
 
 
   
-    <script  src="/js/img-lazyload.js" ></script>
+    <script  src="/q792821266/q792821266.github.io/js/img-lazyload.js" ></script>
   
 
 
@@ -796,9 +796,9 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
-  <script defer src="/js/leancloud.js" ></script>
+  <script defer src="/q792821266/q792821266.github.io/js/leancloud.js" ></script>
 
-  <script  src="/js/local-search.js" ></script>
+  <script  src="/q792821266/q792821266.github.io/js/local-search.js" ></script>
 
 
 
@@ -806,7 +806,7 @@
 
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
+<script  src="/q792821266/q792821266.github.io/js/boot.js" ></script>
 
 
   
