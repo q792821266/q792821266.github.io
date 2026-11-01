@@ -1,0 +1,882 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="锁Lock包类的层次结构 ReentrantReadWriteLock是ReadWirteLock接口的典型实现，里面包含两把锁ReadLock和WriteLock，这两个都是Lock接口的实现。本次会先说明Lock接口的结构，与ReentrantLock的使用。 Lock接口中的方法 前四个方法都是提供获取锁的方法：  lock()：不死不休，意味着拿不到锁不会停止，会一直自旋。 tryLock">
+<meta property="og:type" content="article">
+<meta property="og:title" content="J.U.C并发编程中的锁">
+<meta property="og:url" content="https://q792821266.github.io/yuque/16436242/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="锁Lock包类的层次结构 ReentrantReadWriteLock是ReadWirteLock接口的典型实现，里面包含两把锁ReadLock和WriteLock，这两个都是Lock接口的实现。本次会先说明Lock接口的结构，与ReentrantLock的使用。 Lock接口中的方法 前四个方法都是提供获取锁的方法：  lock()：不死不休，意味着拿不到锁不会停止，会一直自旋。 tryLock">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e535b18fcb6eb3c5b15532e3f3472b9ed4b56ab129a168961218ab22b263edb7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7ca6ca97cf624b7b7c6e1e03a600023059ad57ebe10e3706347daab2603e4a1a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6bcb6037f51c078cb912ae33d1f6f40516304e4ed08f45b66e30cdf73fd47bad.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/acfd960e7a0f43630c6368208b262b57a7bef0f7e291c1e7bb8b97c170ab2659.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b85ba66ed451f1c0603205c962be981581e74178ec6f9894270e3480ecaa66b7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/869ae84acc42ddde229bc36f3d3b570eabbb186c6a53c845598abe645d588edf.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/30dc1301607cac8b1a9a6f4919e5c8edd801913305488861ddb7223142ce8544.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9614fcc2a1669fb22c2e7264105a9ba9b0038369c8693a9b1bc32aa5ffd869ae.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a4dfbe8a22ddc978b1518e2ee8fca5df6ba5cff01b3a32e29dda8de0f592237d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/018eda25bdcbf80eb9e339459a335b508c2827906e2f370a454d03a40b7a643b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fa1ff3e7ec3133821918502050817064a8b213e24e19b4c3a477179fc95a095a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/838d2b46c0a2a253f264b8d9d5f0ab173076ca99209e6e2e2f0a7debd4d65496.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/654fc52c29f9071493b0954a7c3e4c5969cff61360a3acd05d8162b553e7811e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f3e4266782d8bf251804b1d531f695e4f7695545ea096911d312f7e96f77dfee.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2e693f3ad6637facc400ad4f5d52ec039d6b6631dd49e1abf0fd9b75d928c2bf.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dc732cd84d4b541a627df3675645e2043af5edce18c4cee35c9021aa9fc9b169.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fb280c6a4941be7312fd9c38902e1df377e219ff8807947eac682e4441aeeed1.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f2ee37e46fd0186d40d6b8e1a219340119230a1afd4ee3256ce796c7ca012038.png">
+<meta property="article:published_time" content="2022-01-07T05:33:28.000Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.470Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JUC">
+<meta property="article:tag" content="锁">
+<meta property="article:tag" content="ReentrantLock">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/e535b18fcb6eb3c5b15532e3f3472b9ed4b56ab129a168961218ab22b263edb7.png">
+  
+  
+  
+  <title>J.U.C并发编程中的锁 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="J.U.C并发编程中的锁"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-01-07 13:33" pubdate>
+          2022年1月7日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">J.U.C并发编程中的锁</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h1><h2 id="Lock包类的层次结构"><a href="#Lock包类的层次结构" class="headerlink" title="Lock包类的层次结构"></a>Lock包类的层次结构</h2><p><img src="/yuque-assets/e535b18fcb6eb3c5b15532e3f3472b9ed4b56ab129a168961218ab22b263edb7.png" srcset="/img/loading.gif" lazyload></p>
+<p>ReentrantReadWriteLock是ReadWirteLock接口的典型实现，里面包含两把锁ReadLock和WriteLock，这两个都是Lock接口的实现。本次会先说明Lock接口的结构，与ReentrantLock的使用。</p>
+<h2 id="Lock接口中的方法"><a href="#Lock接口中的方法" class="headerlink" title="Lock接口中的方法"></a>Lock接口中的方法</h2><p><img src="/yuque-assets/7ca6ca97cf624b7b7c6e1e03a600023059ad57ebe10e3706347daab2603e4a1a.png" srcset="/img/loading.gif" lazyload></p>
+<p>前四个方法都是提供获取锁的方法：</p>
+<ul>
+<li>lock()：不死不休，意味着拿不到锁不会停止，会一直自旋。</li>
+<li>tryLock()：浅尝辄止，意味着只是一次，拿不到就放弃，返回</li>
+<li>tryLock(long time,TimeUnit unit)：过时不候，在一定时间内会去尝试获取锁</li>
+<li>lockInterruptibly()：是否停止抢锁由别的线程决定，别的线程通知它别抢了 就真不抢了</li>
+</ul>
+<p>lock()最常用，lockInterruptibly()更加昂贵，有的实现可能并不会实现这个方法，当真的需要响应中断时再考虑使用。</p>
+<p>这里可以运行一下示例代码，加深印象。</p>
+<h3 id="Condition"><a href="#Condition" class="headerlink" title="Condition"></a>Condition</h3><p>相对于Object中的wait()、notify()、notifyAll()和synchronized的配合使用关系，与lock对应的是Condition，它需要和Lock配合使用，提供了多个等待集合，实现更精确的控制。Condition.await()方法帮我们释放锁并挂起线程，signal()唤醒线程。</p>
+<p>JAVA中各种锁使用死锁的总结</p>
+<p><img src="/yuque-assets/6bcb6037f51c078cb912ae33d1f6f40516304e4ed08f45b66e30cdf73fd47bad.png" srcset="/img/loading.gif" lazyload></p>
+<p>死锁方式一指的是 在调用挂起方法（suspend、park）线程持有对象的锁，当线程挂起时不会释放锁，所以在后续的操作中如果要先获取锁再解锁就会导致死锁问题。示例见图</p>
+<p><img src="/yuque-assets/acfd960e7a0f43630c6368208b262b57a7bef0f7e291c1e7bb8b97c170ab2659.png" srcset="/img/loading.gif" lazyload></p>
+<p>解锁次数要和加锁次数一致，这样别的线程才有机会去争抢到锁，否则是锁是处于未释放的状态的哦，如果释放多次会报告IllegalMonitorStateException的错误。</p>
+<p>重量级锁（synchronized）是依赖管程机制即monitor实现的由JVM提供 ，ReentrantLock 则是依赖于JDK提供的AQS机制</p>
+<p><em>示例代码见Demo3_Condition ，思考：一个线程能否调用两次await()？会产生什么样的效果。</em></p>
+<p><em>试着自己实现一个阻塞队列?</em></p>
+<h2 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h2><p>ReentrantLock是Lock接口的重入锁实现，对比于synchronized ，synchronized 里面会有entryList 锁池 和 waitSet 等待池，ReentrantLock里面的等待池就是Condition。synchronized 是JVM提供的，使用的是Monitor对象监视器，管程机制，而ReentrantLock是JDK提供的，底层原理是AQS，要清楚两者的区别</p>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>waiters：就是等待队列，对应于synchronized 里面的锁池 entryList，waiters只有一个，保存需要获取锁的操作信息。Condition可以由多个。</p>
+<p>owner：存储锁的持有线程</p>
+<p>count：重入次数</p>
+<p><img src="/yuque-assets/b85ba66ed451f1c0603205c962be981581e74178ec6f9894270e3480ecaa66b7.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p>获取到锁的线程会被记录到owner，然后count做+1操作，每次重入都会使count+1，每次解锁都会使count-1，直到count=0时，抹除owner信息，如果继续解锁，就会报告illegalMonitorStateException</p>
+<p><img src="/yuque-assets/869ae84acc42ddde229bc36f3d3b570eabbb186c6a53c845598abe645d588edf.png" srcset="/img/loading.gif" lazyload></p>
+<p>更具体的场景：</p>
+<p>T1~T4线程都来争取锁，假如只有T2成功了，那么owner就会被修改成T2，count被修改成1，这些修改都是由CAS帮我们保证正确性的。<del>怎么判断这个东西锁是否被占用呢？可能是看owner是否为null，也可能是判断count是否等于0，这个没有细讲，但其实谁先谁后又好像都无所谓，只是处理方式的区别而已。</del></p>
+<p>先判断count 是否为0，count为0就用CAS抢锁，抢锁成功就去修改owner，失败就会进入waiters等待队列；如果count不为0，就再去看owner是否为自己，不为自己就进入等待队列，是自己就进行重入。<img src="/yuque-assets/30dc1301607cac8b1a9a6f4919e5c8edd801913305488861ddb7223142ce8544.png" srcset="/img/loading.gif" lazyload></p>
+<p>失败的线程T1 T3 T4就会进入waiters里面，进入等待队列的线程状态时waiting的。</p>
+<p><img src="/yuque-assets/9614fcc2a1669fb22c2e7264105a9ba9b0038369c8693a9b1bc32aa5ffd869ae.png" srcset="/img/loading.gif" lazyload></p>
+<p>而当T2线程没有解锁然后来再次抢锁的时候，T2会先去判断owner是不是自己，如果是就会count+1，这就是重入。为什么owner和count的修改可以保证不被分割呢？因为其实count被修改之后救等于说抢到了锁，之后的操作都是在抢到锁之后的安全操作。</p>
+<p><img src="/yuque-assets/a4dfbe8a22ddc978b1518e2ee8fca5df6ba5cff01b3a32e29dda8de0f592237d.png" srcset="/img/loading.gif" lazyload></p>
+<p>建议自己实现一个ReentrantLock。</p>
+<h2 id="Synchronized-VS-Lock"><a href="#Synchronized-VS-Lock" class="headerlink" title="Synchronized VS Lock"></a>Synchronized VS Lock</h2><p>**Synchronized **</p>
+<ul>
+<li>优点</li>
+</ul>
+<ol>
+<li>使用简单，语义清晰，哪里需要点哪里</li>
+<li>由JVM**提供，提供了多种优化方案（锁粗化、锁消除、偏向锁、轻量级锁）</li>
+<li>锁的释放由JVM完成，不需要人工干预，降低了死锁的可能性</li>
+</ol>
+<ul>
+<li>缺点</li>
+</ul>
+<ol>
+<li>无法实现一些锁的高级功能：公平锁、中断锁、超时锁、读写锁、共享锁等等</li>
+</ol>
+<p><strong>Lock</strong></p>
+<ul>
+<li><p>优点</p>
+</li>
+<li><p>所有Synchronized不能做到的 Lock都能实现</p>
+</li>
+<li><p>根据自己的需求灵活实现</p>
+</li>
+<li><p>缺点</p>
+</li>
+<li><p>需要手动释放锁，使用不当容易造成死锁</p>
+</li>
+</ul>
+<h2 id="ReadWriteLock"><a href="#ReadWriteLock" class="headerlink" title="ReadWriteLock"></a>ReadWriteLock</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>维护一对关联锁，一个只用于读操作，一个只用于写操作；读锁可以由多个线程持有（共享锁），写锁是排他锁（互斥锁）。同一时间，两把锁不能被不同线程持有。</p>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>能想到的，ReentrantLock每次只能由一个线程去访问资源，其他线程只能等待，并发度等于1，效率肯定是不高的。像如果我们只是进行读取的话，就没必要去抢锁了。这种我们允许读操作同时进行的情况下，我们就能使用ReadWriteLock来并发读，提高我们的并发度，提高性能。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Demo6_ReadWrite01</span> {<br><br>    <span class="hljs-keyword">volatile</span> <span class="hljs-type">long</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br><br>    <span class="hljs-type">Lock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantLock</span>();<br>    <span class="hljs-comment">//ReadWriteLock rwLock = new ReentrantReadWriteLock();</span><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">read</span><span class="hljs-params">()</span> {<br>        lock.lock();<br><br>        <span class="hljs-type">long</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> i;<br><br>        lock.unlock();<br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">write</span><span class="hljs-params">()</span> {<br>        lock.lock();<br><br>        i++;<br><br>        lock.unlock();<br>    }<br><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException {<br>        <span class="hljs-keyword">final</span> <span class="hljs-type">Demo6_ReadWrite01</span> <span class="hljs-variable">demo</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Demo6_ReadWrite01</span>();<br>        <span class="hljs-type">long</span> <span class="hljs-variable">startTme</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>;i&lt;=<span class="hljs-number">30</span>; i++){<br>            <span class="hljs-type">int</span> <span class="hljs-variable">n</span> <span class="hljs-operator">=</span> i;<br>            <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() {<br>                <span class="hljs-meta">@Override</span><br>                <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> {<br>                    <span class="hljs-type">long</span> <span class="hljs-variable">starttime</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br><br>                    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j=<span class="hljs-number">0</span>; j&lt;<span class="hljs-number">400000</span>; j++){<br>                        <span class="hljs-keyword">if</span> (n==<span class="hljs-number">0</span>) demo.write();<br>                        <span class="hljs-keyword">else</span> demo.read();<br>                    }<br>                }<br>            }).start();<br>        }<br><br>        <span class="hljs-type">long</span> <span class="hljs-variable">endTime</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br>        System.out.println(<span class="hljs-string">"耗时："</span>+ (endTime - startTme));<br>    }<br><br><br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>虽然ReadWriteLock持有两把锁，但是读写时互斥的，不存在读写同时持有的问题。</p>
+<p>有意思的是HashTable的方法是加入了Synchronized的，本身是线程安全的实现，但为什么我们不常用它呢？JDK注释都说让我们去用ConcurrentHashMap。其实就是因为HashTable 的get()和put()都用Synchronized修饰了，等于加了互斥锁，性能不好，ConcurrentHashMap是更好的选择。</p>
+<p><img src="/yuque-assets/018eda25bdcbf80eb9e339459a335b508c2827906e2f370a454d03a40b7a643b.png" srcset="/img/loading.gif" lazyload></p>
+<p>Demo7_Map通过改造HashMap来给HashMap实现了线程安全，且效率不低。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Demo7_Map</span> {<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Map&lt;String, Object&gt; m = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span>  <span class="hljs-type">ReentrantReadWriteLock</span> <span class="hljs-variable">rwl</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantReadWriteLock</span>();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Lock</span> <span class="hljs-variable">r</span> <span class="hljs-operator">=</span> rwl.readLock();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Lock</span> <span class="hljs-variable">w</span> <span class="hljs-operator">=</span> rwl.writeLock();<br><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">get</span><span class="hljs-params">(String key)</span>{<br>        r.lock();<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-keyword">return</span> m.get(key);<br>        }<span class="hljs-keyword">finally</span> {<br>            r.unlock();<br>        }<br>    }<br><br>    <span class="hljs-keyword">public</span> Object[] allkeys(){<br>        r.lock();<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-keyword">return</span> m.keySet().toArray();<br>        }<span class="hljs-keyword">finally</span> {<br>            r.unlock();<br>        }<br>    }<br><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">put</span><span class="hljs-params">(String key, Object obj)</span>{<br>        w.lock();<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-keyword">return</span> m.put(key, obj);<br>        }<span class="hljs-keyword">finally</span> {<br>            w.unlock();<br>        }<br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">clear</span><span class="hljs-params">()</span>{<br>        w.lock();<br>        <span class="hljs-keyword">try</span> {<br>            m.clear();<br>        }<span class="hljs-keyword">finally</span> {<br>            w.unlock();<br>        }<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="/yuque-assets/fa1ff3e7ec3133821918502050817064a8b213e24e19b4c3a477179fc95a095a.png" srcset="/img/loading.gif" lazyload></p>
+<p>逻辑结构和之前的实现差不多，count分为了两种，一个readCount，一个writeCount，需要注意的是owner只表示写锁的占有者。</p>
+<p>当T1线程去抢写锁的时候，T1会检查readCount是否为0 ，readCount为0说明读锁没有被占用才能够去抢写锁，因为读写是互斥的。readCount为0 ，说明没有人占有写锁，这时候我们就可以尝试去修改写锁，于是就去判断writeCount是否为0，是否已经被占用，为0就进行CAS操作，再去把owner值改成T1，表示现在T1线程持有写锁了。其实大致的流程和ReentrantLock是差不多的，主要就是多了一步，读的时候去检查写，写的时候去检查读。</p>
+<p><img src="/yuque-assets/838d2b46c0a2a253f264b8d9d5f0ab173076ca99209e6e2e2f0a7debd4d65496.png" srcset="/img/loading.gif" lazyload></p>
+<p>当T1线程再过来了，这时候其实等于要做重入了，也是先去看看readCount是否为0，为0说明读锁没有被占用，那我就可以去加写锁，于是去看看writeCount是否为0， writeCount不为0了，说明写锁被占用，那就去看看占用的线程是不是当前线程，如果是就去做重入操作把writeCount+1变成2，如果不是就进入waiter等待。</p>
+<p><img src="/yuque-assets/654fc52c29f9071493b0954a7c3e4c5969cff61360a3acd05d8162b553e7811e.png" srcset="/img/loading.gif" lazyload></p>
+<p>而后T2线程过来，同样的它需要判断readCount，然后判断writeCount，在去判断owner，明显T2会进去到waiters里面等待。</p>
+<p><img src="/yuque-assets/f3e4266782d8bf251804b1d531f695e4f7695545ea096911d312f7e96f77dfee.png" srcset="/img/loading.gif" lazyload></p>
+<p>现在T1线程要释放锁了。释放一次writeCount从2变成1，这时候是没有完全释放的，还需要释放一次，从1变成0 ，这时候才会把owner设置成null。其他线程这个时候才能过来抢锁。为了区分，下面把读锁的线程名字改成了T3、T4、T5</p>
+<p><img src="/yuque-assets/2e693f3ad6637facc400ad4f5d52ec039d6b6631dd49e1abf0fd9b75d928c2bf.png" srcset="/img/loading.gif" lazyload></p>
+<p>锁被释放完之后 waiters里面的队列会被唤醒来抢锁，在不考虑外来线程的情况下，加入T2线程抢到锁了，这个时候T3来抢锁，流程其实差不多，只是说T3是个读线程会先去看看writeCount，再看readCount，再考虑需不需要看owner。如果碰到下面这种writeCount不为0的情况，那就直接进入到等待队列：</p>
+<p><img src="/yuque-assets/dc732cd84d4b541a627df3675645e2043af5edce18c4cee35c9021aa9fc9b169.png" srcset="/img/loading.gif" lazyload></p>
+<p>等到T2线程解锁的时候，T3会被唤醒抢锁，这时候T3就能抢到读锁（抢锁的步骤都一样就不再赘述了），readCount加1 。队列头部也是个读线程，也会被唤醒，去获取读锁，修改readCount值，这时候还是需要使用CAS的，因为不排除有非队列的线程进来直接获取读锁。T4 T5线程都获取到了读锁，此时readCount为3。这样就实现了读锁的共享。且只有读锁全部释放完readCount重新变为0之后写锁才能被获取到。</p>
+<p><img src="/yuque-assets/fb280c6a4941be7312fd9c38902e1df377e219ff8807947eac682e4441aeeed1.png" srcset="/img/loading.gif" lazyload></p>
+<p>有个问题就是waiters里面存放了两种线程，读线程和写线程，怎么知道线程是读还是写呢？这个时候waiters里面就不是直接存的Thread了，而是一种带线程读写标志的实现，可以直接获取到线程的读写性。</p>
+<p>原理流程大概就是这么个情况，建议自己去动手写一下ReentrantLock和ReadWriteLock。</p>
+<h2 id="并发工具类"><a href="#并发工具类" class="headerlink" title="并发工具类"></a>并发工具类</h2><p>CycliBarrier : 一批一批放行，就像打滴滴一样，司机要凑齐一车人才开车。实现原理是ReentrantLock</p>
+<p>FutureTask：Thread的run方法是没有返回值的，如果想要拿到线程执行后的结果，当然如果设置外部变量，然后在线程内部修改或保存，也能拿到线程执行结果。而JAVA其实已经帮我们实现了这个操作，那就是Callable接口。需要注意的是，要将实现Callable的类用FutureTask包装一下，才能传入Thread去执行，因为FuturnTask实现了Runnable接口，Thread只实现了Runnable。</p>
+<p>FutureTask的get方法是阻塞的，只有能拿到结果时候才会执行。注意：FutureTask创建后，只能被使用一次。FutureTask是有状态的，如果执行过了，他就不具有可执行的能力了。</p>
+<h3 id="fork-join并发处理框架"><a href="#fork-join并发处理框架" class="headerlink" title="fork/join并发处理框架"></a>fork/join并发处理框架</h3><p>在同一个JVM进程中对任务进行拆分。ForkJoinPool是ExecuorService接口的实现。它专为了能递归分解成小任务的工作而设计。fork/join 框架将任务分配给线程池中的工作线程。</p>
+<p>使用fork/join框架的第一步是编写执行一部分工作的代码。类似伪代码：</p>
+<p>如果（当前工作部分足够小）</p>
+<p>直接执行工作；</p>
+<p>否则</p>
+<p>把工作拆分成多个部分，用线程执行这两个部分的工作并等待结果。</p>
+<p>这种单位工作伪代码会被包装成RecursiveTask（能返回结果）或者是RecursiveAction。</p>
+<p>通俗点讲，fork是任务划分的过程，join是结果合并的过程。</p>
+<p><img src="/yuque-assets/f2ee37e46fd0186d40d6b8e1a219340119230a1afd4ee3256ce796c7ca012038.png" srcset="/img/loading.gif" lazyload></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="category-chain-item">并发编程</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Java/" class="print-no-link">#Java</a>
+      
+        <a href="/tags/JUC/" class="print-no-link">#JUC</a>
+      
+        <a href="/tags/%E9%94%81/" class="print-no-link">#锁</a>
+      
+        <a href="/tags/ReentrantLock/" class="print-no-link">#ReentrantLock</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>J.U.C并发编程中的锁</div>
+      <div>https://q792821266.github.io/yuque/16436242/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年1月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/63207191/" title="锁相关：Synchronized从使用到原理">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">锁相关：Synchronized从使用到原理</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/63083367/" title="原子性：Atomic相关和CAS机制">
+                        <span class="hidden-mobile">原子性：Atomic相关和CAS机制</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

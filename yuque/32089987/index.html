@@ -1,0 +1,1520 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一款高性能的Java RPC框架。 架构async：异步调用 sync：同步调用  连通性 注册中心负责服务地址的注册和查找，相当于一个目录服务，服务提供者和消费者都只在启动时与注册中心交互，注册中心不转发请求，压力较小。 监控中心负责统计各个服务被调用的情况，次数或者调用时长等，统计现在内存中汇总一次后每分钟发送一次到监控中心服务器，以报表展示。 服务提供者向注册中心注册服务，向监控中心汇报服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dubbo">
+<meta property="og:url" content="https://q792821266.github.io/yuque/32089987/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="一款高性能的Java RPC框架。 架构async：异步调用 sync：同步调用  连通性 注册中心负责服务地址的注册和查找，相当于一个目录服务，服务提供者和消费者都只在启动时与注册中心交互，注册中心不转发请求，压力较小。 监控中心负责统计各个服务被调用的情况，次数或者调用时长等，统计现在内存中汇总一次后每分钟发送一次到监控中心服务器，以报表展示。 服务提供者向注册中心注册服务，向监控中心汇报服务">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c78b720803ba723d8a62ec7607b118c5a826e64b50f0156e01e430f0a33e4b42.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ba515e4b70a2c230cdb7fca9b960f3ba81ca4599ed4d43f0b9e7d3987e63e344.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5e2d215268fc8d844d0273dced8fe1de8d4408117b0fb3389aae28e79a79ffb0.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/47aa6904c597e11176d8ccaa004e4a9c5f6f3bcade4c0228bbc4898d07d01489.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/89834d6f06249f8726e7f785a72676ddfe92f9b1c28acf2c884440a7f70da2ac.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/78049fa4beb60e48e16296da5855d63143a63565555e6886a7c66a4385f9781e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/12650be80201c56d0ed48c2035b314477e864c229533d2aa293a5406e6024b0e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a178384260d17a251a493f8bea1227418c034c45b5dd1bc1ba156fb9fc2f22b3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/659d5c48c0a7f7698a19cbabbc73b9753bd6db8d0af2c45d76c028b2713ef7af.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/71cdecd5cf0f97f2d14c06931f0b09fb1a8e73b218fb4dd5e2542aa13d7412e2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/16236c5a9166d86354fb5ae978268d4caa490acca884d6f1957e73327b6d9764.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6fa0d9a1cd0b22d5aca77fc2e572afdcf1984a5ceb4eb2891c8147055a7177a6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/456ac03f8353286a2693d5826e87a6fc152eb114bcad21bdede6050721f91ea6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f62b31c96955c4b14ea0360a421492f23cb4594b46e9f7d45f91137fc21667cf.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/34317ccf49201dabad4ca3088b34403d8b37320d48e0bbbb261b39a6789c8baf.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6b20be6a1b1845d4bec2f40b4809e8d2d0db69d3e1d573ba9f64868758585e78.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/73767125d53821e83d05fbd2d82339b339b924037cae927b2966ad34a1300184.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fab99c9dce402fe58ecda05b096182f9fa9b6f7ae16e9c26927746e0fb9fb7e5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/77b3a26ad2b9873a75576244833bb7ba8705373e5e43aa01f691c072a169a5af.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/58a6df66f8ba23ed6aa9697950200ca8d2d454b87bc7c3161cebfec60861770c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5561052fbe8303c296455c93002c0a7f9a844672d9a1609bad590bab7707a4a8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8549a3fdaa44fde6eb8a30a69711dd3d8e7e08956935db5573d89a8b81dbfbb1.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/90d3b2bd96fcf438d86d865e2562ce0b5720c6944d11e96496bca7e62e7b9cf5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/313e51936e9a7aaa35185b994d84bf039b58a4d1dd463480c7f3f6dc5875bfa5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/292cc1360ef0def0699c0579647ff33604bcb8e81f625c431e2493fc38908fd9.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/88ab3e86dc72eadc74cd55a0350595578667f58b69e64aaadf698d4aedde6e53.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/599dceaaa73d4fe906926576ed5c5f47d5c17639e861ddfcc4f20cede525b803.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/62a6d17c9b9feeac2a2c3f6a6962b74bce785c126162b154dc600ef6fc37602d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d6cd5d4bb984bc43f6b2fd3f776594c817d45c8b60505c5bcae2709c6fa44c73.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f6894a323e9af4d7a8c4d01996e56343517afb106e276acdcf9b214d4329ad1a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/918840cedfc07a473eb5f7ab195e2462ef414b800ad44e70d9a47f605a1e88b1.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/cdcd29578c7688b7aba760d6ea278705b8d69b42bd172fbbfe1e04a44f4a3665.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8ae9c97eb0e6c146c6098a6aec58040310332b275e389373dcd76f3b65e5919c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/46af7300c83e5c1ba6d0b7b2bff811cc0e63e89d1f8a2146fb5cd8880f90150d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e8c09d57e791890e838b4e511f940666623143599865dbef99ffd82810a42ffb.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f86df44aa7f9e1762603b1c13096571c477be5b877c045c1f9512ee8ad7ce73c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6d0b4d953b12bcdf98830fb2b895f18eddbbf26322788a96dcd741971c61df50.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a826e71f897f0fc1930885edeb7342c8a143f8e6942335907c689e4aba3148e7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3738975216c876b5cf0a7452376a71a91948a2d7182e7f291e13e509a92792b2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/42d49a89ff0c193d39b533c694d455613129acf60075d195467a334422bfbe45.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/536e1b5f97c387afc4f150ffdfef49483c75f4da374916458e3f4cc6a8d9da4f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1e173e13c418202f9ea96f3666f1789837f10ff4465c3e65f5f38571735f464d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b0b58c8446d8ca5617dd9e4d1df7e98ef1eeb05a4dbe1b91a1dacbd517ea5fd6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ef07a43e7d08baffd6e75cb536de5269ceff95ba33165a4d2c6ed795e9062f78.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7d3c3ed971fd5a83427f20d337cb3c43043a9369abf306f498a9d09480666635.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c76a865e9bcc47e1ba4607d9e9f347c2ae43de893da737558ea8aefe4e87561d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/223b39420093af100c19e8e977b9ceb30ad884e8c37596afce2268902d3e5bcc.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/61c97df36708871d6d02f152bba0c7394805758f4a36a9adf08a89ec2af5ed98.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c83b7bf87635af672c7096a2d67defefc40bc310b77d78af8cfc39bc8d094fb8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4962405b2e4c15af98bf9219469ac1a89591571451a03171cb81895c3e7320d4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6e23231bbaa985b9942821840d621d37cc0fc0a28a81e983a32822d8e104f38a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e419ba2a84a743d062ccf97e99204978326aaf304d6a639ea672fc1697055972.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/38ae62acc098221e5fe89aedee08facc5d379d4c89e5b8b78d8ff77094d36367.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a9cb4559f0e01e1a939340d3e589c366aff391de7fd334b79fe01b7b9f05ed1f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2a696ae0459fc1e353bf6a81bd2b42f91edcf4fe8a8082388fdd1ced22286107.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/501abd7ee15544e50e51be2caeac10147a2ed85ff52185934e69bc0a6892551e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/cfd6dfed83c63b088e605e73887cb17beee6899d3b9ceddf2f732d2f1e1c114a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/accc8f43a7d4263f7b9043b54b96d220aee8c67ee411a1fa189caccb8504d0d8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6e1f282ac73cd6c4f58c7b92fe4b27afa80665c1fd8ed3af1c10e76252c8dd66.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6ff9ad9bf56087b79ada954bd47913069e95e76ff68bcbe0d7869de4188a98ad.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8d696dcc1ade55314ce7362283edb438b179563644d326277adba4f71b8e0740.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a361f126463a22b516d9f0b1b056590386f708f1f497b955bce23ae6fc2c92c4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c72d06884893f6bc23ae285da1a9bf5cab465b3e03c74e759c5094a87c4f3d05.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e4c8134861bb994b5253c54dad4ece2780aff4918d30e39355dc3471f9cd64fd.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8fe0f8b339fe1291966ca1bc6147a86dbe23cc6c84a19ea3d296ca56f6ba7108.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ac0d96358ff3f4847e82f1d648f127afffc74b5607bc453ce19fd752f3a820c3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/cd42ebd55373907ddec19814d7d42600f47331db2b384e5f99a20ac098a176b7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/64706980b8ef19b0859c957a65d7de3eb8259ea2faf57c201cc03d3dbbc3d60e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c97d99b262121063fc7fbd3444830d13e008ce2f9f0c598fd432f18ad48950df.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2ec376f9f987ba21300f65c815f88cecdf94f02cb7566896e009feb717c1cebd.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5fa4059110b361202d1db28ef8e2f215d8ba275160680b6b771a3fbdf88ee200.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3e8e25299ea0d39bfcbdcc116765bee744f639ae3d14d5bdd06dca38f9e40017.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f7efccd8a672c2b6143348436c347401ecf6fc38b712437c56ef9cc2ebe4bd1e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dc5def427c51b5fe4664560ceed222c2b3e140351f2ee4c877c7517ca8f79938.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f8fb8710a736517b407f4cec0a91fcc4e395d99808a08480a2b71ea0ad372f95.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/212c0950cef1f9a6560fa4766a3047cb27369c0307095b708f2fb958f9e86d73.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5f2268e0c9054b66bb8f2c45ed26e4e751593370e8ab30b26ef946313f4e48e1.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ed5b387f2089d739ef9891e8688e6da33ae27a0163c41e84ef06e735b1f51c53.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dc0fa170c432748cdc0b661f76169ebe682f3208718230c43a23aa02ade3fb21.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/370fd3cdd7b1bdf5a912622ba3956e062d156d0c407b931b4e12cc028226238e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3ee1b7a7081bdd9e64f85598c92cdd992e7f789477339f057c3b70f45c877c51.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6a9781c180c6404e16f1836ca554fa672d66e4ffb5697309bee56dab63da27aa.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/970d0f0a947d69e1403352bff04b715f524c00b47e3598b78b2be00b3aeb6a9b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/cf47b00f94582865348daed2582bee45d625383d9619b3411e974afa2fd7ac12.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a454f3c9bfec218d7d95b3985d951845e64b605a92414f57f6a5e9ce935880e8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/89f3ad3d86c7ff85ae6d48122c34e5258900f700d1db932df737739a21ac5b61.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0a36d8c8a5deece63ef5147143b42942c6d5b51c7a843c915e01e9aa92e00e12.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/07b9d426d41882803471097721bf0a5d303133194d4c72947bba68cb8077407f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/54fe96c2d825f6d6251bf7ea63472ede4b2a85f72877e04ccf0edfc1522fbcd7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/677d090f4d80f88ec9d8af21d7f2b7768f0594adc0a66833880cc91d28a76441.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0c3a898c282467dca71fd87c02e0108e08660348600027d3161e4d239f534ef4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2bd6af40d37dee7f95465f4e993b8d9871ef0d0f57c72ef41fb4d8a31ed09db8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7514e047eb2cff654527a06dab2e04b95584c37e0a8781140b04bbd140e0b9c9.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/438d5bac806cdc30ff1bb0e065962cf4255f9e775c666030890c811d87285349.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3cb6e1c7fd9a74aada6dfcf28ec4ca1638cf00fc77b13dc71a2e10a490a266b6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/58c65a1d60096d8ef162493e209d6a16c1d137e24b4be78ac6169286757153a3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/548d90599c78ef86100708e39ed2ffccef247aa771bca897547de77c2f948803.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f861d648578540fd4de866f549af79063fff2c05a3942b6096266c7c711d1f08.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/09a52fc5f271ce76b1be29b6c322f80771adaec0909d51fbf0ca46e8447c22f7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f274684092c64505c18f8d16f5700b4fbf7c4ea74db0f240d6e557df0aa433ea.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1529fe15ad2bc736865ad2423bc17fb47a911b2e9ddd6bf11f1dc8208440b30f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/761b88ee393e4f7f7a7eecd02a8941c787eac45fc664185def0cdd4e3925c3b9.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/28a87b56f22c09844cf3d4c5acf7a707a3a3bcf2dcdaca8de9025a85a92bd106.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7e52f7320fe6456b6943660fbad0c628c963c004550620f50c4da61abb214459.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bcbbd4198178224ea32fd16dafc3e92ac3f266028a9cd8c7acf4c680081b94ed.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/55a3362a2cd6f8736ce9a7dfe0008182cbf65fbc1a39d0621fc13e1c1c5c5d57.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b6d5c0d1ebc08f30f2478d8ffa0d0b483419f368f117f07b41a97ee45e5bb782.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d7d0213c96bbf59ba0f1ee4bee377a2fa0a81a8b51dc68ab138d364288a1b4e0.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/40d3e519d1d0cea02f6d6e71fdea6768a0193df310dd019be03aaf57aa618448.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bf0c837b82b3967e41ed02003c4196bd302a72631a56fd77e2ce39e379a32275.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/75b60b04bb30ab407c01b2b4c61db614fd8054cf27591340fcf80c7ebb89b055.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d90bd1b68f38abf5b75942af732242d4ada41b470ce05c4e4788efe4d380f748.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fcea6ed1129b0963a80de86c1e77731ba6e6f3a9dc4a5c0e0ed6e933ad62a99e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7ea14e2beb576fe400bbbcbe683805e6adbe2640abf9d7af257fc47e7e83b378.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fc710d171cf1aaf3a50acb709c838d196ce9d97d084abb6a8f1b8c465a89db58.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5c1ea45227dff0b5980c8e9480a597c88c9686161612194fa6142b0b112540b8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e10bbfa70c905d369f8ef6908df65e5ab8638c6c4dfc0f185a322f3a097fa9eb.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9e231f584f1739ec92558033cb3b4d438d38754d1be276ba4c408a3f00a3d99a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7c240f22cae44cf5a0b0a4353180365fc19e1bbdf9b39762cda8cc6642822de3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9c87b6cc801886acfb984a2e024c6df746cbcdf70031ed829a5f67b5a644e639.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5c667c47a78cadff841c56bd462ff1a1afcfefa78ca0f9c4e932000230a75602.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f6e995733491b2595617ab72f2edb7d5c0f03d9a7e5dc985038492742e7c2212.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4dc79241fa83619f63d9d57f967a8904683fbc042cf77be89155d0b53533d4fe.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6a960faed4b6102ff286fc60be7e5f18b041bc7e78d11166c340bf578c3c30e2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/654deb08c951a135a7a811f14fd93373e0d39b7ef35d27a6ff185d375326c178.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0ea903368685bc1e284d311e701d0c8ba50a35f1bbd2f6484875a9055fe1ae05.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1e434a4b51c6ac31598143d12dbfa13208399e9c2b19cdf87e494fd01afec399.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/976bbbf1cf211c61bc1e45b53d202403198b5a0a9325ab2ab2bd0a295db22f09.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8ddc2ac731aba0db8698675af13e0f54de0fbd6dead044a7bdf803efc511e0ee.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/aff34b876bb0df522e5cf20b3238315f497278caa8e6b219465cce6ea68f9cdc.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/77d5c80a2d702843aba8b9f6cadeed813c44d3ec4f5b231570a5c25033f18252.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8b3cb3fc3b3b4c3e15f7a6e58b20d531cbc69a5fb98f37f4f5a5e5d46c50e298.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/79f388f8abc5308e9744a683ac3f38b5f5a1d68ff987410f61a7c86286f44a37.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/11e75bc9d4e1e4d2609e3ae9ddeaab4b09bc2bd68b70c302f6fe15802049b1d3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/681b1120316a00c4396caf974c54b2cfb69716ecf5b376d15c32ec20f4487aaf.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/84d72981bb915fda9786ea3374e0c7a1e3a5019c2cf68d2eb33affa53ceab352.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ae03d95b285cfb3b49cb6f4ae69f5ff0a201c69beb0ea1639c0f77d889740605.png">
+<meta property="article:published_time" content="2022-04-06T02:40:33.379Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.453Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="RPC">
+<meta property="article:tag" content="服务治理">
+<meta property="article:tag" content="Dubbo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/c78b720803ba723d8a62ec7607b118c5a826e64b50f0156e01e430f0a33e4b42.png">
+  
+  
+  
+  <title>Dubbo - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Dubbo"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-04-06 10:40" pubdate>
+          2022年4月6日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          86 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Dubbo</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>一款高性能的Java RPC框架。</p>
+<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><p>async：异步调用 sync：同步调用</p>
+<p><img src="/yuque-assets/c78b720803ba723d8a62ec7607b118c5a826e64b50f0156e01e430f0a33e4b42.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="连通性"><a href="#连通性" class="headerlink" title="连通性"></a>连通性</h2><ol>
+<li>注册中心负责服务地址的注册和查找，相当于一个目录服务，服务提供者和消费者都只在启动时与注册中心交互，注册中心不转发请求，压力较小。</li>
+<li>监控中心负责统计各个服务被调用的情况，次数或者调用时长等，统计现在内存中汇总一次后每分钟发送一次到监控中心服务器，以报表展示。</li>
+<li>服务提供者向注册中心注册服务，向监控中心汇报服务调用时长（不包含网络开销）</li>
+<li>服务消费者向注册中心获取服务提供方的地址列表，并根据负载均衡算法直接调用提供方，同时汇报调用时间到监控中心（包含网络开销）</li>
+<li>注册中心，服务提供者，服务消费者三者之间均为长连接，监控中心除外。</li>
+<li>注册中心通过长连接感知服务提供者的存在，一旦服务提供者宕机，事件会立刻被推动给消费者。</li>
+<li>注册中心与监控中心宕机，并不会影响消费者与提供者之间的交互，因为消费者端是会缓存提供者列表的。</li>
+<li>注册中心与监控中心都是可选的，消费者可以选择直连提供者。</li>
+</ol>
+<h2 id="健壮性"><a href="#健壮性" class="headerlink" title="健壮性"></a>健壮性</h2><ol>
+<li>监控中心不影响使用，只丢失采样数据</li>
+<li>数据库宕机之后，注册中心仍然可以通过缓存提供提供者列表，但是不能注册新的服务</li>
+<li>注册中心对等集群，宕机会自动切换</li>
+<li>注册中心全部宕机，提供者和消费者可以通过自身本地缓存通讯</li>
+<li>服务者无状态，任意一台宕机，消费者无感，不影响消费者使用</li>
+<li>服务提供者全部宕机后，消费者应用无法使用，并且会无限次重连，等待服务提供者恢复。也就是说消费者不会因为生产者挂掉而宕机，只是服务不可用。</li>
+</ol>
+<h1 id="调用流程"><a href="#调用流程" class="headerlink" title="调用流程"></a>调用流程</h1><p><img src="/yuque-assets/ba515e4b70a2c230cdb7fca9b960f3ba81ca4599ed4d43f0b9e7d3987e63e344.png" srcset="/img/loading.gif" lazyload></p>
+<p>图上展示的其实比较清晰了。</p>
+<p>有客户端和服务端，客户端在消费者这边，服务端有具体的服务实现。</p>
+<p>假如消费者端有个类需要调用服务，Java里面如果需要在本类中调用远端的代码，那么就需要用到代理对象（Proxy），代理对象会帮助我们请求到服务端对应的实现。这个请求的过程就会涉及到网络通信（还有网络协议比如TCP），，Proxy要传输请求参数，网络传输就涉及到序列化和反序列，客户端将请求参数序列化转为字节码在网络上传输到服务端，服务端再将字节码反序列化成具体的对象，这个过程dubbo中在传输层实现。服务端可能会接收到大量的请求，所以用到线程池就执行具体的服务逻辑。</p>
+<p>这个调用流程涉及到动态代理，序列化反序列化，网络编程，网络协议，线程池。</p>
+<h1 id="如何使用dubbo"><a href="#如何使用dubbo" class="headerlink" title="如何使用dubbo"></a>如何使用dubbo</h1><h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><ul>
+<li><p>服务提供者</p>
+</li>
+<li><p>独立的服务（普通java程序），以单独的服务存在</p>
+</li>
+<li><p>集成在现有的应用中（增强应用服务能力），比如现有的web系统要与第三方进行rpc交互。</p>
+</li>
+<li><p>消费端</p>
+</li>
+<li><p>在消费应用中调用远程服务</p>
+</li>
+<li><p>在服务提供者中调用远程服务。本身是个服务提供者，但是其中一个服务需要另外的程序提供服务，所以提供者也可以调用别的程序服务。</p>
+</li>
+</ul>
+<h2 id="使用步骤"><a href="#使用步骤" class="headerlink" title="使用步骤"></a>使用步骤</h2><ol>
+<li>引入相关依赖，版本就自己确认修改，这里使用netty做网络层，所以要添加netty的依赖。</li>
+</ol>
+<p><img src="/yuque-assets/5e2d215268fc8d844d0273dced8fe1de8d4408117b0fb3389aae28e79a79ffb0.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>配置dubbo框架（提供三种配置方式）</li>
+<li>服务的开发</li>
+<li>配置服务</li>
+<li>启动，调用服务</li>
+</ol>
+<p>了解一下：</p>
+<p>dubbo依赖说明：<a target="_blank" rel="noopener" href="http://dubbo.apache.org/zh-cn/docs/user/dependencies.html"><del>http://dubbo.apache.org/zh-cn/docs/user/dependencies.html</del></a>~~ ~~（dubbo已更新到dubbo3，原页面不可用）</p>
+<p><img src="/yuque-assets/47aa6904c597e11176d8ccaa004e4a9c5f6f3bcade4c0228bbc4898d07d01489.png" srcset="/img/loading.gif" lazyload></p>
+<p>缺省依赖的意思就是可以选择性的依赖，如果有别的实现方式，可以替换掉缺省依赖或者直接不需要。因为dubbo的动态代理是对接口进行代理，所以可以直接使用jdk动态代理，所以可以不使用javasisit.jar。如果不是集成spring的方式开发，而是使用dubbo api的方式开发那就不需要spring-context,jar。 如果网络层实现用的mina、grizzly 那就不必使用netty，甚至如果rmi的话 都不需要引入网络层三方包。</p>
+<p>可选依赖，按照自己的开发需要选择。可以看到依赖的版本非常低，如果用新版本的话又会出现不兼容的问题，这个问题在后面的学习也会讲解。</p>
+<p><img src="/yuque-assets/89834d6f06249f8726e7f785a72676ddfe92f9b1c28acf2c884440a7f70da2ac.png" srcset="/img/loading.gif" lazyload><img src="/yuque-assets/78049fa4beb60e48e16296da5855d63143a63565555e6886a7c66a4385f9781e.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="配置Dubbo框架"><a href="#配置Dubbo框架" class="headerlink" title="配置Dubbo框架"></a>配置Dubbo框架</h2><p>配置Dubbo框架（而不是服务）有三种配置方式：</p>
+<ol>
+<li>spring schema xml方式 ，适用于spring应用</li>
+<li>注解方式，适用于spring应用，需要2.6.3及以上版本</li>
+<li>API方式，API方式仅用于OpenAPI，ESB，Test ，Mock 等系统集成。</li>
+</ol>
+<p>普通服务提供方或消费方，请采用xml的方式使用dubbo。尽量不用API方式，比较繁琐枯燥。但是还是建议了解一下，有助于我们理解与学习dubbo的源码，其他方式最终其实都会被解析转为api的方式。</p>
+<p>代码都有演示。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs java"><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ApiProviderConfiguration</span> {<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception {<br>		<span class="hljs-comment">// 服务实现</span><br>		<span class="hljs-type">DemoService</span> <span class="hljs-variable">demoService</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DemoServiceImpl</span>();<br><br>		<span class="hljs-comment">// 当前应用配置。 请学习ApplicationConfig的API</span><br>		<span class="hljs-type">ApplicationConfig</span> <span class="hljs-variable">application</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ApplicationConfig</span>();<br>		application.setName(<span class="hljs-string">"hello-world-app"</span>);<br><br>		<span class="hljs-comment">// 连接注册中心配置。 请学习RegistryConfig的API</span><br>		<span class="hljs-type">RegistryConfig</span> <span class="hljs-variable">registry</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RegistryConfig</span>(<span class="hljs-string">"224.5.6.7:1234"</span>, <span class="hljs-string">"multicast"</span>);<br><br>		<span class="hljs-comment">// 服务提供者协议配置</span><br>		<span class="hljs-type">ProtocolConfig</span> <span class="hljs-variable">protocol</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProtocolConfig</span>();<br>		protocol.setName(<span class="hljs-string">"dubbo"</span>);<br>		protocol.setPort(<span class="hljs-number">12345</span>);<br>		protocol.setThreads(<span class="hljs-number">200</span>);<br><br>		<span class="hljs-comment">// 注意：ServiceConfig为重对象，内部封装了与注册中心的连接，以及开启服务端口</span><br>		<span class="hljs-comment">// 服务提供者暴露服务配置。请学习ServiceConfig的API</span><br>		<span class="hljs-comment">// 此实例很重，封装了与注册中心的连接，请自行缓存，否则可能造成内存和连接泄漏</span><br>		ServiceConfig&lt;DemoService&gt; service = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ServiceConfig</span>&lt;DemoService&gt;();<br>		service.setApplication(application);<br>		service.setRegistry(registry); <span class="hljs-comment">// 多个注册中心可以用setRegistries()</span><br>		service.setProtocol(protocol); <span class="hljs-comment">// 多个协议可以用setProtocols()</span><br>		service.setInterface(DemoService.class);<br>		service.setRef(demoService);<br>		service.setVersion(<span class="hljs-string">"1.0.0"</span>);<br><br>		<span class="hljs-comment">// 暴露及注册服务</span><br>		service.export();<br><br>		System.in.read(); <span class="hljs-comment">// 按任意键退出</span><br>	}<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>通过给ServiceConfig指定不同的registry或者Protocol，可以让服务注册到不同的registry或使用不同的协议。</p>
+<p>具体的配置参数可以通过官方文档来补充学习。</p>
+<h3 id="springboot中集成"><a href="#springboot中集成" class="headerlink" title="springboot中集成"></a>springboot中集成</h3><h4 id="方式一：-EnableDubbo注解"><a href="#方式一：-EnableDubbo注解" class="headerlink" title="方式一：@EnableDubbo注解"></a>方式一：@EnableDubbo注解</h4><ol>
+<li>在springboot的启动类上加@EnableDubbo注释开始dubbo（服务提供者、消费者都是一样的，扫描的包可能不一样）</li>
+</ol>
+<p><img src="/yuque-assets/12650be80201c56d0ed48c2035b314477e864c229533d2aa293a5406e6024b0e.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>dubbo相关配置</li>
+</ol>
+<p>spring.main.allow-bean-definition-overriding:true，是spring中的配置表示bean是否可以被覆盖。</p>
+<p>可以看到注册的信息地址信息、协议的信息都在application.yml配置。</p>
+<p><img src="/yuque-assets/a178384260d17a251a493f8bea1227418c034c45b5dd1bc1ba156fb9fc2f22b3.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="方式二：使用starter"><a href="#方式二：使用starter" class="headerlink" title="方式二：使用starter"></a>方式二：使用starter</h4><ol>
+<li>添加dubbo-spring-boot-starter依赖</li>
+</ol>
+<p><img src="/yuque-assets/659d5c48c0a7f7698a19cbabbc73b9753bd6db8d0af2c45d76c028b2713ef7af.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>配置方式和方式一一样，但是不需要使用enable的注解了，但是配置文件中要配置上dubbo扫描的包，通过dubbo.scan.base-packages参数指定扫描的包。提供端和消费者端设置方式一样。</li>
+</ol>
+<p><img src="/yuque-assets/71cdecd5cf0f97f2d14c06931f0b09fb1a8e73b218fb4dd5e2542aa13d7412e2.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<p>Dubbo上手使用是很简单的。</p>
+<p>话虽这么说，我自己尝试的时候就出现各种问题。</p>
+<p><img src="/yuque-assets/16236c5a9166d86354fb5ae978268d4caa490acca884d6f1957e73327b6d9764.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/6fa0d9a1cd0b22d5aca77fc2e572afdcf1984a5ceb4eb2891c8147055a7177a6.png" srcset="/img/loading.gif" lazyload></p>
+<p>一直没成功，回头再解决了。</p>
+<hr>
+<h1 id="Dubbo-特性"><a href="#Dubbo-特性" class="headerlink" title="Dubbo 特性"></a>Dubbo 特性</h1><p>关于特性的学习，我们会分为4个板块来学习：</p>
+<ol>
+<li>注册中心</li>
+<li>多协议</li>
+<li>服务相关特性</li>
+<li>其他特性</li>
+</ol>
+<h2 id="注册中心"><a href="#注册中心" class="headerlink" title="注册中心"></a>注册中心</h2><p>通过学习注册中心，我们需要：</p>
+<ol>
+<li>知悉dubbo支持多种类型的注册中心，具体有哪些类型</li>
+<li>掌握Multicast 、zookeeper两种注册中心的配置、使用</li>
+<li>了解多注册中心场景</li>
+<li>了解注册中心常用配置项</li>
+<li>了解注册中心扩展方式</li>
+<li>掌握注册中心的源码工作原理</li>
+</ol>
+<blockquote>
+<p>《dubbo特性详解-注册中心》中将详细描述注册中心，包括使用方式，场景，扩展等。本文只做部分介绍。</p>
+</blockquote>
+<h3 id="多注册中心"><a href="#多注册中心" class="headerlink" title="多注册中心"></a>多注册中心</h3><p>注册中心支持包括：</p>
+<ul>
+<li>Multicast 注册中心</li>
+<li>Zookeeper注册中心</li>
+<li>Redis注册中心</li>
+<li>Simple注册中心</li>
+</ul>
+<h4 id="Muticast"><a href="#Muticast" class="headerlink" title="Muticast"></a>Muticast</h4><p>使用方式<img src="/yuque-assets/456ac03f8353286a2693d5826e87a6fc152eb114bcad21bdede6050721f91ea6.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>工作原理</strong></p>
+<p>使用网络传输，网络网关，需要依赖路由器。</p>
+<p><img src="/yuque-assets/f62b31c96955c4b14ea0360a421492f23cb4594b46e9f7d45f91137fc21667cf.png" srcset="/img/loading.gif" lazyload></p>
+<ol>
+<li>提供方启动时广播自己的地址，一般用UDP</li>
+<li>消费方启动时广播订阅请求，告诉网络我需要订阅某个服务，这个时候要把自己（消费）地址送上，这样提供者收到广播消息才知道去哪里连接</li>
+<li>提供方收到订阅请求时，单播自己的地址给订阅者，如果设置了unicast=false，则广播给订阅者</li>
+<li>消费者收到提供方的地址时，连接该地址进行RPC调用</li>
+</ol>
+<p><strong>特点</strong></p>
+<ul>
+<li>multicat 注册中心不需要启动任何中心节点，没有哪个节点充当注册中心的角色，只要组播地址一样，就可以相互发现</li>
+<li>组播受网络结构限制，只适合小规模应用或开发阶段使用。组播地址段：224.0.0.0 - 239.225.225.225</li>
+</ul>
+<p>组播是一种网络传输的一种方式。这里再扩展一下网络传播的方式：</p>
+<ol>
+<li>单播，点对点传输，比如TCP</li>
+<li>广播</li>
+<li>组播，类似于建立群，你发送的东西，只有群里的人才知道。组的建立需要有路由器。A服务器启动之后要指定一个地址进行组播，然后与路由器交互，告知路由器，申请加入某个组地址（假如224.2.3.4），路由器就会记录这个组地址下有哪些IP（目前有IP为A的机器），其他机器启动起来也是一样的，告诉路由器要加入同一个组就可以了。这样组播的消息就由路由器帮忙组播到组内其他的机器。</li>
+</ol>
+<h4 id="Zookeeper注册中心"><a href="#Zookeeper注册中心" class="headerlink" title="Zookeeper注册中心"></a>Zookeeper注册中心</h4><p><strong>使用配置</strong></p>
+<ol>
+<li>在provider和consumer中增加zookeeper客户端jar包依赖，版本要与服务端的zookeeper版本一致</li>
+</ol>
+<p><img src="/yuque-assets/34317ccf49201dabad4ca3088b34403d8b37320d48e0bbbb261b39a6789c8baf.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>Dubbo支持zkclient和curator两种客户端实现，dubbo2.6.6版本默认情况下用的是curator</li>
+</ol>
+<p><img src="/yuque-assets/6b20be6a1b1845d4bec2f40b4809e8d2d0db69d3e1d573ba9f64868758585e78.png" srcset="/img/loading.gif" lazyload></p>
+<p>无论使用哪个客户端都要引入各自的依赖：</p>
+<p><img src="/yuque-assets/73767125d53821e83d05fbd2d82339b339b924037cae927b2966ad34a1300184.png" srcset="/img/loading.gif" lazyload></p>
+<p>curator的依赖自带来zk的依赖，如果版本和服务器zk版本不一致，那就需要排除curator的zk依赖之后，再单独引入。</p>
+<p><img src="/yuque-assets/fab99c9dce402fe58ecda05b096182f9fa9b6f7ae16e9c26927746e0fb9fb7e5.png" srcset="/img/loading.gif" lazyload></p>
+<p>如果zk使用的集群部署：<img src="/yuque-assets/77b3a26ad2b9873a75576244833bb7ba8705373e5e43aa01f691c072a169a5af.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>工作原理</strong></p>
+<p><img src="/yuque-assets/58a6df66f8ba23ed6aa9697950200ca8d2d454b87bc7c3161cebfec60861770c.png" srcset="/img/loading.gif" lazyload></p>
+<p>服务提供者启动时，向/dubbo/<em>com.foo.BarService</em>（实际的全类名）/provider 目录下写入自己的URL地址。根节点，默认为dubbo，下面是服务节点，然后是Type，具体服务存放的是一个完整的URL。</p>
+<p>消费者启动时，要做两件事：订阅/dubbo/<em>com.foo.BarService</em>/provider目录下的提供者URL地址，并且向/dubbo/<em>com.foo.BarService</em>/consumers 目录写一下自己的URL地址。</p>
+<p>监控中心启动时，订阅/dubbo/<em>com.foo.BarService</em> 目录下的所有提供者和消费者URL地址。</p>
+<p>基于zookeeper注册中心的话会有如下支持：</p>
+<ol>
+<li>当提供者出现断电异常停机时，注册中心能自动删除提供者信息。原理是watch机制。（我认为节点是临时节点 断开连接了节点就没有了，难道不是临时节点？）</li>
+<li>当注册中心重启时，能自动恢复注册数据，以及订阅请求。dubbo内部有重试机制</li>
+<li>当会话过期时，能自动恢复注册数据，以及订阅请求</li>
+<li>当设置&lt;dubbo:registry check=”false”/&gt;时，记录失败注册和订阅请求，后台定时重试。这个参数检查应用是否能够与注册中心建立连接，如果为true时，连接不同程序会启动失败。如果为false，应用能启动成功，但是服务肯定不可以用，但是会不停重试</li>
+<li>可以通过&lt;dubbo:registry username=”admin” password=”1234”/&gt; 设置zookeeper登录信息</li>
+<li>可以通过&lt;dubbo:registry group=”dubbo”/&gt;设置zookeeper的根节点，不设置将使用无根树，意味着可以通过group来完成分组管理</li>
+<li>支持*号通配符，&lt;dubbo:reference group=”*“ version=”*“/&gt;，可以订阅服务的所有分组和所有版本的提供者</li>
+</ol>
+<p>同一个zookeeper，可以分成多组注册中心</p>
+<p><img src="/yuque-assets/5561052fbe8303c296455c93002c0a7f9a844672d9a1609bad590bab7707a4a8.png" srcset="/img/loading.gif" lazyload></p>
+<p>使用的时候用registry id来指定使用。</p>
+<p>zk适合作为dubbo的注册中心，工业强度高可用于生产环境，推荐。</p>
+<p>Dubbo支持同一个服务向多个注册中心同时注册，或者不同服务分别注册到不同的注册中心上去，甚至可以同时引用在不同注册中心上的同名服务。</p>
+<h4 id="多注册中心使用方式"><a href="#多注册中心使用方式" class="headerlink" title="多注册中心使用方式"></a>多注册中心使用方式</h4><p><img src="/yuque-assets/8549a3fdaa44fde6eb8a30a69711dd3d8e7e08956935db5573d89a8b81dbfbb1.png" srcset="/img/loading.gif" lazyload></p>
+<p>default=false ，表示不作为默认的注册中心、</p>
+<p>比如，中文站有些服务来不及在青岛部署，只在杭州部署，而青岛的其他应用需要应用此服务，就可以将服务通过是注册到两个注册中心。</p>
+<p><img src="/yuque-assets/90d3b2bd96fcf438d86d865e2562ce0b5720c6944d11e96496bca7e62e7b9cf5.png" srcset="/img/loading.gif" lazyload></p>
+<p>比如：CRM有些服务是专门为国际站设置的，而有些服务是专门为中文站涉及的。</p>
+<p><img src="/yuque-assets/313e51936e9a7aaa35185b994d84bf039b58a4d1dd463480c7f3f6dc5875bfa5.png" srcset="/img/loading.gif" lazyload></p>
+<p>比如：CRM需要同时调用中文站和国际站的PC2服务，PC2在两边均有注册，接口和版本号都一样，但是连接的数据库不同。</p>
+<h3 id="支持多种使用场景"><a href="#支持多种使用场景" class="headerlink" title="支持多种使用场景"></a>支持多种使用场景</h3><p>为了方便开发、测试、人工管理，注册中心提供多种使用场景支持：</p>
+<ul>
+<li>只订阅，用于本身即是提供者也是消费者，但是服务提供没有准备好，不希望暴露服务</li>
+<li>只注册</li>
+</ul>
+<p><img src="/yuque-assets/292cc1360ef0def0699c0579647ff33604bcb8e81f625c431e2493fc38908fd9.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>直连提供者，开发及测试环境下，经常需要绕过注册中心，只测试指定的服务提供者，这个时候可能需要点对点直连，点对点直连方式将以服务接口为单位，忽略注册中心的提供者列表，A接口配置点对点也不会影响B接口从注册中心获取列表</li>
+</ul>
+<p><img src="/yuque-assets/88ab3e86dc72eadc74cd55a0350595578667f58b69e64aaadf698d4aedde6e53.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/599dceaaa73d4fe906926576ed5c5f47d5c17639e861ddfcc4f20cede525b803.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>静态服务，意味着接收到注册信息后，还需要人工开启，不然将不可用</li>
+</ul>
+<p><img src="/yuque-assets/62a6d17c9b9feeac2a2c3f6a6962b74bce785c126162b154dc600ef6fc37602d.png" srcset="/img/loading.gif" lazyload></p>
+<p>除了上述说的4点，其实模式是动态服务的。详细用法配置见《dubbo特性详解-注册中心》</p>
+<h3 id="注册中心的扩展"><a href="#注册中心的扩展" class="headerlink" title="注册中心的扩展"></a>注册中心的扩展</h3><p>通过扩展接口</p>
+<ul>
+<li>org.apache.dubbo.registry.RegistryFactory</li>
+<li>org.apache.dubbo.registry.Registry</li>
+</ul>
+<p>就能对注册中心实现扩展</p>
+<p><img src="/yuque-assets/d6cd5d4bb984bc43f6b2fd3f776594c817d45c8b60505c5bcae2709c6fa44c73.png" srcset="/img/loading.gif" lazyload></p>
+<p>接口说明</p>
+<p><img src="/yuque-assets/f6894a323e9af4d7a8c4d01996e56343517afb106e276acdcf9b214d4329ad1a.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/918840cedfc07a473eb5f7ab195e2462ef414b800ad44e70d9a47f605a1e88b1.png" srcset="/img/loading.gif" lazyload><img src="/yuque-assets/cdcd29578c7688b7aba760d6ea278705b8d69b42bd172fbbfe1e04a44f4a3665.png" srcset="/img/loading.gif" lazyload></p>
+<p>只截取了两个方法详情，还有别的方法需要实现。</p>
+<p><img src="/yuque-assets/8ae9c97eb0e6c146c6098a6aec58040310332b275e389373dcd76f3b65e5919c.png" srcset="/img/loading.gif" lazyload></p>
+<p>已有实现的扩展</p>
+<p><img src="/yuque-assets/46af7300c83e5c1ba6d0b7b2bff811cc0e63e89d1f8a2146fb5cd8880f90150d.png" srcset="/img/loading.gif" lazyload></p>
+<p>实现了上述的两个接口之后，还需要去自己项目的META-INF/dubbo/org.apache.dubbo.registry.RegistryFactory中新增一下：</p>
+<p><img src="/yuque-assets/e8c09d57e791890e838b4e511f940666623143599865dbef99ffd82810a42ffb.png" srcset="/img/loading.gif" lazyload></p>
+<p>完成之后 xxx这个东西就可以在配置文件中使用了</p>
+<p><code>&lt;dubbo:registry id="xxx1" address="xxx://ip:port"/&gt;</code></p>
+<p>dubbo本身的实现：</p>
+<p><img src="/yuque-assets/f86df44aa7f9e1762603b1c13096571c477be5b877c045c1f9512ee8ad7ce73c.png" srcset="/img/loading.gif" lazyload></p>
+<p>具体示例请从另外文档中学习。</p>
+<hr>
+<h2 id="多协议"><a href="#多协议" class="headerlink" title="多协议"></a>多协议</h2><p>通过本次学习，我们可以：</p>
+<ol>
+<li>了解dubbo支持哪些协议，各协议的适用场景、性能情况</li>
+<li>掌握dubbo协议的适用</li>
+<li>掌握多协议使用用法</li>
+<li>账务协议的配置项</li>
+<li>了解协议的扩展方式</li>
+<li>掌握协议的源码构成，协作调用关系（工作原理）</li>
+</ol>
+<blockquote>
+<p>《dubbo特性详解-多协议》中有完整的介绍。</p>
+</blockquote>
+<p>dubbo支持非常多的协议</p>
+<p><img src="/yuque-assets/6d0b4d953b12bcdf98830fb2b895f18eddbbf26322788a96dcd741971c61df50.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="dubbo协议"><a href="#dubbo协议" class="headerlink" title="dubbo协议"></a>dubbo协议</h3><p>Dubbo是一种默认协议，采用单一长连接和NIO异步通讯，适合于小数据量大并发的服务调用，以及服务消费者机器数远大于服务提供者机器数的情况。</p>
+<h4 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h4><p>缺省协议，使用基于mina 1.1.7和hessian 3.2.1的tbremoting交互。</p>
+<ul>
+<li>连接个数：单连接</li>
+<li>连接方式：长连接</li>
+<li>传输协议：TCP</li>
+<li>传输方式：NIO异步传输</li>
+<li>序列化：Hessian 二进制序列化</li>
+<li>适用范围：传入传出参数数据包较小，建议小于100K，消费者必提供者多，单一消费者无法压满提供者，尽量不要用dubbo协议传输大文件或超大字符串</li>
+<li>适用场景：常规远程服务方法调用，请求某个远端方法， 提供一些参数，接收返回结果</li>
+</ul>
+<p><img src="/yuque-assets/a826e71f897f0fc1930885edeb7342c8a143f8e6942335907c689e4aba3148e7.png" srcset="/img/loading.gif" lazyload></p>
+<p>传输层可以选择适用mina，netty或者是grizzy。其他的部件也可以选择不同的处理或实现方式。</p>
+<h4 id="约束"><a href="#约束" class="headerlink" title="约束"></a>约束</h4><ul>
+<li>参数及返回值需要实现Serializable接口</li>
+<li>参数与返回值不能自定义实现List 、map、Number、Date、Calendar等接口，只能适用JDK自带的实现，因为hessian会做特殊处理，自定义实现类的属性值都会丢失</li>
+<li>Hessian序列化只传成员属性值和值的类型，不传方法或静态变量，服务端和客户端对领域对象并不需要完全一致，而是按照最大匹配原则，具体兼容情况：</li>
+</ul>
+<p><img src="/yuque-assets/3738975216c876b5cf0a7452376a71a91948a2d7182e7f291e13e509a92792b2.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="使用配置"><a href="#使用配置" class="headerlink" title="使用配置"></a>使用配置</h4><p><img src="/yuque-assets/42d49a89ff0c193d39b533c694d455613129acf60075d195467a334422bfbe45.png" srcset="/img/loading.gif" lazyload></p>
+<p>配置协议也有很多选项，协议名，端口，服务端使用用网络协议，客户端使用协议，header部分使用协议，序列化方式，字符集，线程池模式，线程池内线程数量，线程池任务队列容量，io线程池线程数量，传输buffer大小。</p>
+<p><img src="/yuque-assets/536e1b5f97c387afc4f150ffdfef49483c75f4da374916458e3f4cc6a8d9da4f.png" srcset="/img/loading.gif" lazyload></p>
+<p>更具体的可以在文档或者官网查看到。</p>
+<p>dubbo协议缺省设置为每个服务每个提供者每个消费者使用单一长连接，如果数据量较大，可以选择使用多个连接。可以在服务提供端、消费端配置多连接。在提供者端配置也是给到消费者端使用的，在消费者端生效， 只是说当消费者端没有设置的时候就可以由服务端来限制，提供者去注册服务的时候也会把这个配置注册上去，消费者端就可以生效。当然消费者端可以单独配置。</p>
+<p><img src="/yuque-assets/1e173e13c418202f9ea96f3666f1789837f10ff4465c3e65f5f38571735f464d.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>&lt;dubbo:service connections=”0”&gt;或&lt;dubbo:reference connections=”0”&gt;表示该服务使用JVM共享长连接，意味着同一个JVM内只使用同一个连接，不管是不是同一个服务。</li>
+<li>&lt;dubbo:service connections=”1”&gt;或&lt;dubbo:reference connections=”1”&gt;表示该服务使用独立长连接</li>
+<li>&lt;dubbo:service connections=”2”&gt;或&lt;dubbo:reference connections=”2”&gt;表示该服务使用独立两条长连接</li>
+</ul>
+<p>在NIO的情况下，其实并不需要使用很多的连接。</p>
+<p>为了防止服务端被大量连接撑挂，可在服务提供端限制大接受连接数，以实现服务提供方的自我保护，不然客户端不合理的设置可以压垮服务端：</p>
+<p><code>&lt;dubbo:protocol name="dubbo" accepts="1000"/&gt;</code>】</p>
+<h4 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h4><p><img src="/yuque-assets/b0b58c8446d8ca5617dd9e4d1df7e98ef1eeb05a4dbe1b91a1dacbd517ea5fd6.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="高效的Java序列化协议（Kryo和FST）"><a href="#高效的Java序列化协议（Kryo和FST）" class="headerlink" title="高效的Java序列化协议（Kryo和FST）"></a>高效的Java序列化协议（Kryo和FST）</h4><p>启用Kryo和FST的方式比较简答，只需要在Dubbo RPC的XML配置中添加一个属性：</p>
+<p><img src="/yuque-assets/ef07a43e7d08baffd6e75cb536de5269ceff95ba33165a4d2c6ed795e9062f78.png" srcset="/img/loading.gif" lazyload></p>
+<p>要让Kryo和FST完全发挥高性能，最好是将那些需要被序列化的类注册到dubbo系统中，可以通过如下回调接口实现：</p>
+<p><img src="/yuque-assets/7d3c3ed971fd5a83427f20d337cb3c43043a9369abf306f498a9d09480666635.png" srcset="/img/loading.gif" lazyload></p>
+<p>临时解析会导致性能下降，所以提前添加预处理会更好。</p>
+<h3 id="RMI协议"><a href="#RMI协议" class="headerlink" title="RMI协议"></a>RMI协议</h3><p>java自带的标准远程方法调用协议。RMI协议采用JDK标准的java.rmi.*实现，采用阻塞式短链接和JDK标准序列化方式。</p>
+<p>注意：如果正在使用RMI提供服务给外部访问，同时应用里依赖了老的common-collections包的情况下，存在反序列化安全风险。dubbo本身不依赖这个包，解决方法就是将common-collections3升级到3.2.2，common-collection4升级到4.1.</p>
+<h4 id="特性-1"><a href="#特性-1" class="headerlink" title="特性"></a>特性</h4><ul>
+<li>连接个数：多连接</li>
+<li>连接方式：短连接</li>
+<li>传输协议：TCP</li>
+<li>传输方式：同步传输</li>
+<li>序列化：java标准二进制序列化</li>
+<li>适用范围：传入传出参数数据包大小混合，消费者和提供者个数差不多，可传文件</li>
+<li>适用场景：常规的远程服务方法调用，与原生RMI服务交互操作</li>
+</ul>
+<h4 id="约束-1"><a href="#约束-1" class="headerlink" title="约束"></a>约束</h4><ul>
+<li>参数及返回值需实现Serializable接口</li>
+<li>dubbo配置中的超时时间对RMI无效，需要使用JAVA启动参数设置：<code>-Dsun.rmi.transport.tcp.responseTimeout=3000</code>，更多RMI优化参数</li>
+</ul>
+<p>dubbo.properties配置：</p>
+<p><img src="/yuque-assets/c76a865e9bcc47e1ba4607d9e9f347c2ae43de893da737558ea8aefe4e87561d.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p><img src="/yuque-assets/223b39420093af100c19e8e977b9ceb30ad884e8c37596afce2268902d3e5bcc.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="hessian协议"><a href="#hessian协议" class="headerlink" title="hessian协议"></a>hessian协议</h3><p>Hessian协议用于集成Hessian的服务，Hessian底层采用Http通讯，采用servlet暴露服务，Dubbo缺省内嵌Jetty作为服务器实现。</p>
+<p>Dubbo的Hessian协议可以与原生的Hessian服务交互操作，意味着提供者用Dubbo的Hessian协议暴露服务，那么消费者可以直接用标准Hessian接口调用；如果提供者用标准Hessian协议暴露服务，那么消费方用Dubbo的Hessian协议也可以实现调用。</p>
+<h4 id="特性-2"><a href="#特性-2" class="headerlink" title="特性"></a>特性</h4><ul>
+<li>连接个数：多连接</li>
+<li>连接方式：短连接</li>
+<li>传输协议：HTTP</li>
+<li>传输方式：同步传输</li>
+<li>序列化：Hessian二进制序列化</li>
+<li>适用范围：传入传出参数数据包较大，提供者比消费者个数多，提供者压力较大，可传文件</li>
+<li>使用场景：页面传输，文件传输，或与原生Hessian服务交互</li>
+</ul>
+<h4 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h4><p>使用时只需要加入这个依赖就可以了</p>
+<p><img src="/yuque-assets/61c97df36708871d6d02f152bba0c7394805758f4a36a9adf08a89ec2af5ed98.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="约束-2"><a href="#约束-2" class="headerlink" title="约束"></a>约束</h4><ul>
+<li>参数及返回值要实现Serializable接口</li>
+<li>参数与返回值不能自定义实现List 、map、Number、Date、Calendar等接口，只能适用JDK自带的实现，因为hessian会做特殊处理，自定义实现类的属性值都会丢失</li>
+</ul>
+<h4 id="配置-1"><a href="#配置-1" class="headerlink" title="配置"></a>配置</h4><p><img src="/yuque-assets/c83b7bf87635af672c7096a2d67defefc40bc310b77d78af8cfc39bc8d094fb8.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/4962405b2e4c15af98bf9219469ac1a89591571451a03171cb81895c3e7320d4.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="特别说明"><a href="#特别说明" class="headerlink" title="特别说明"></a>特别说明</h4><p>Dubbo长期未更新（现在直接出了Dubbo3），适用hessian协议方式时，如果适用jetty作为服务器，推荐的依赖版本Jetty:6.1.26在maven仓库已经不存在了。如果新的Jetty版本则会报告如下错误：</p>
+<p><img src="/yuque-assets/6e23231bbaa985b9942821840d621d37cc0fc0a28a81e983a32822d8e104f38a.png" srcset="/img/loading.gif" lazyload></p>
+<p>而这个org.mortbay.log.Logger这个包也挺难找的。</p>
+<p>基于这种情况，我们可以替换Jetty为tomcat，但是dubbo-2.6.6版本支持的tomcat版本tomcat-8.5.x及以下版本。如果是在springboot应用中使用，使用的内嵌版本的tomcat版本可能会过高，需要降低版本。</p>
+<p>服务端相关依赖</p>
+<p><img src="/yuque-assets/e419ba2a84a743d062ccf97e99204978326aaf304d6a639ea672fc1697055972.png" srcset="/img/loading.gif" lazyload></p>
+<p>然后配置协议的服务端使用tomcat:</p>
+<p><img src="/yuque-assets/38ae62acc098221e5fe89aedee08facc5d379d4c89e5b8b78d8ff77094d36367.png" srcset="/img/loading.gif" lazyload></p>
+<p>而消费端只是使用hessian协议，所以消费端只需要引入hessian协议就可以：</p>
+<p><img src="/yuque-assets/a9cb4559f0e01e1a939340d3e589c366aff391de7fd334b79fe01b7b9f05ed1f.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="http协议"><a href="#http协议" class="headerlink" title="http协议"></a>http协议</h3><p>基于HTTP表单的远程调用协议，采用spring好的HttpInvoker实现（2.3.0以上版本支持）</p>
+<h4 id="特性-3"><a href="#特性-3" class="headerlink" title="特性"></a>特性</h4><ul>
+<li>连接个数：多连接</li>
+<li>连接方式：短连接</li>
+<li>传输协议：Http</li>
+<li>传输方式：同步传输</li>
+<li>序列化：表单序列化，就是平时网页的那种表单提交格式 进行序列化</li>
+<li>适用范围：传入传出参数数据包大小不定、混合，提供者比消费者个数多，可用浏览器查看，可用表单或URL传入参数，暂不支持传文件。</li>
+<li>适用场景：需同时给应用程序和浏览器JS使用的服务。</li>
+</ul>
+<h4 id="约束-3"><a href="#约束-3" class="headerlink" title="约束"></a>约束</h4><ul>
+<li>参数及返回值符合bean规范</li>
+</ul>
+<h4 id="配置-2"><a href="#配置-2" class="headerlink" title="配置"></a>配置</h4><p><img src="/yuque-assets/2a696ae0459fc1e353bf6a81bd2b42f91edcf4fe8a8082388fdd1ced22286107.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/501abd7ee15544e50e51be2caeac10147a2ed85ff52185934e69bc0a6892551e.png" srcset="/img/loading.gif" lazyload></p>
+<p>注意，如果使用servlet派发请求：</p>
+<ul>
+<li>协议的端口<code>&lt;dubbo:protocol port="8080" /&gt;</code> 必须要与servlet容器的端口相同</li>
+<li>协议的上下文路径<code>&lt;dubbo:protocol contextpath="foo"&gt;</code>必须与servlet应用的上下文路径相同</li>
+</ul>
+<h4 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h4><p>如果要使用http协议的话有两种方式：</p>
+<ol>
+<li>开启独立的http服务</li>
+</ol>
+<p>服务端配置：</p>
+<p><img src="/yuque-assets/cfd6dfed83c63b088e605e73887cb17beee6899d3b9ceddf2f732d2f1e1c114a.png" srcset="/img/loading.gif" lazyload></p>
+<p>默认使用jetty服务，2.6.6版本下使用jetty不方便（上面有讲到），就换成tomcat。消费端不需要特殊处理。</p>
+<p>要注意的是，本身我们启动springboot的web应用会指定server.port这样的配置，这个是启动springboot的tomcat的端口，为我们提供web服务的端口配置，而上面的dubbo.protocol.port的端口会再启动一个tomcat实例为我们提供RPC调用微服务。这种方式就是单独开启服务。</p>
+<p><img src="/yuque-assets/accc8f43a7d4263f7b9043b54b96d220aee8c67ee411a1fa189caccb8504d0d8.png" srcset="/img/loading.gif" lazyload></p>
+<p>zk上面的查询到的服务信息：</p>
+<p><img src="/yuque-assets/6e1f282ac73cd6c4f58c7b92fe4b27afa80665c1fd8ed3af1c10e76252c8dd66.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>配置Servlet Bridge Server，与本身应用的web应用公用http服务</li>
+</ol>
+<p>服务端配置：</p>
+<ol>
+<li>配置dubbo协议</li>
+</ol>
+<p><img src="/yuque-assets/6ff9ad9bf56087b79ada954bd47913069e95e76ff68bcbe0d7869de4188a98ad.png" srcset="/img/loading.gif" lazyload></p>
+<p>关键点在server:servlet 和port:8080 。</p>
+<p>注意：因为是共享http服务，所以端口、上下文要与web应用（如果有配置要与应用一致)）一致。上面介绍了另外启动实例的方法，那么要怎么保持一直，应该就不那么难理解了。</p>
+<ol start="2">
+<li>配置桥接servlet</li>
+</ol>
+<p><img src="/yuque-assets/8d696dcc1ade55314ce7362283edb438b179563644d326277adba4f71b8e0740.png" srcset="/img/loading.gif" lazyload></p>
+<p>意味着所有的请求进来之后会根据设置的urlMapping来转发给RPC来进行调用。</p>
+<p>dubbo支持的众多协议，后面根据学习的时候再补充吧。要知道怎么各个协议的特性和使用场景，以便开发时选择合适的协议。</p>
+<h3 id="各个协议的性能报告"><a href="#各个协议的性能报告" class="headerlink" title="各个协议的性能报告"></a>各个协议的性能报告</h3><p><img src="/yuque-assets/a361f126463a22b516d9f0b1b056590386f708f1f497b955bce23ae6fc2c92c4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/c72d06884893f6bc23ae285da1a9bf5cab465b3e03c74e759c5094a87c4f3d05.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/e4c8134861bb994b5253c54dad4ece2780aff4918d30e39355dc3471f9cd64fd.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/8fe0f8b339fe1291966ca1bc6147a86dbe23cc6c84a19ea3d296ca56f6ba7108.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/ac0d96358ff3f4847e82f1d648f127afffc74b5607bc453ce19fd752f3a820c3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/cd42ebd55373907ddec19814d7d42600f47331db2b384e5f99a20ac098a176b7.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/64706980b8ef19b0859c957a65d7de3eb8259ea2faf57c201cc03d3dbbc3d60e.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/c97d99b262121063fc7fbd3444830d13e008ce2f9f0c598fd432f18ad48950df.png" srcset="/img/loading.gif" lazyload></p>
+<p>在dubbo序列化+netty的情况下TPS能达到最高。</p>
+<p><img src="/yuque-assets/2ec376f9f987ba21300f65c815f88cecdf94f02cb7566896e009feb717c1cebd.png" srcset="/img/loading.gif" lazyload></p>
+<p>dubbo+netty的响应也是最快的。</p>
+<p><img src="/yuque-assets/5fa4059110b361202d1db28ef8e2f215d8ba275160680b6b771a3fbdf88ee200.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/3e8e25299ea0d39bfcbdcc116765bee744f639ae3d14d5bdd06dca38f9e40017.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/f7efccd8a672c2b6143348436c347401ecf6fc38b712437c56ef9cc2ebe4bd1e.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/dc5def427c51b5fe4664560ceed222c2b3e140351f2ee4c877c7517ca8f79938.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/f8fb8710a736517b407f4cec0a91fcc4e395d99808a08480a2b71ea0ad372f95.png" srcset="/img/loading.gif" lazyload></p>
+<p>50K的情况下，RMI和HTTP表现反超了。</p>
+<p><img src="/yuque-assets/212c0950cef1f9a6560fa4766a3047cb27369c0307095b708f2fb958f9e86d73.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/5f2268e0c9054b66bb8f2c45ed26e4e751593370e8ab30b26ef946313f4e48e1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/ed5b387f2089d739ef9891e8688e6da33ae27a0163c41e84ef06e735b1f51c53.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/dc0fa170c432748cdc0b661f76169ebe682f3208718230c43a23aa02ade3fb21.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/370fd3cdd7b1bdf5a912622ba3956e062d156d0c407b931b4e12cc028226238e.png" srcset="/img/loading.gif" lazyload></p>
+<p>根据这份性能测试报告，我们对协议有了选择。而dubbo更是支持我们多协议的配置，在不同服务上支持不同协议或者同一服务上同时支持多种协议，非常便利。</p>
+<h3 id="多协议的使用"><a href="#多协议的使用" class="headerlink" title="多协议的使用"></a>多协议的使用</h3><p>这部分有需要还是看另一份文档， 这里只贴出部分。</p>
+<p><img src="/yuque-assets/3ee1b7a7081bdd9e64f85598c92cdd992e7f789477339f057c3b70f45c877c51.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/6a9781c180c6404e16f1836ca554fa672d66e4ffb5697309bee56dab63da27aa.png" srcset="/img/loading.gif" lazyload></p>
+<p>协议的配置没有特别的，按照上面的配置就差不多。</p>
+<h3 id="协议扩展（了解）"><a href="#协议扩展（了解）" class="headerlink" title="协议扩展（了解）"></a>协议扩展（了解）</h3><p>类似注册中心的扩展方式差不多。需要扩展接口</p>
+<p><img src="/yuque-assets/970d0f0a947d69e1403352bff04b715f524c00b47e3598b78b2be00b3aeb6a9b.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/cf47b00f94582865348daed2582bee45d625383d9619b3411e974afa2fd7ac12.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/a454f3c9bfec218d7d95b3985d951845e64b605a92414f57f6a5e9ce935880e8.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/89f3ad3d86c7ff85ae6d48122c34e5258900f700d1db932df737739a21ac5b61.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里面其实就两个方法，分别时export暴露，refer引用。然后需要提供的相应的Exporter和Invoker实现：</p>
+<p><img src="/yuque-assets/0a36d8c8a5deece63ef5147143b42942c6d5b51c7a843c915e01e9aa92e00e12.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/07b9d426d41882803471097721bf0a5d303133194d4c72947bba68cb8077407f.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/54fe96c2d825f6d6251bf7ea63472ede4b2a85f72877e04ccf0edfc1522fbcd7.png" srcset="/img/loading.gif" lazyload></p>
+<p>指定协议的实现。</p>
+<p>dubbo源代码里面的实现，可以参考下：</p>
+<p><img src="/yuque-assets/677d090f4d80f88ec9d8af21d7f2b7768f0594adc0a66833880cc91d28a76441.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/0c3a898c282467dca71fd87c02e0108e08660348600027d3161e4d239f534ef4.png" srcset="/img/loading.gif" lazyload></p>
+<p>源码部分就个人有空看看。</p>
+<h2 id="服务相关"><a href="#服务相关" class="headerlink" title="服务相关"></a>服务相关</h2><p>dubbo非常简单，我们从简单的入手，来学习微服务的特性。</p>
+<p>通过学习服务相关，我们可以</p>
+<ul>
+<li>了解dubbo提供了哪些服务级别的特性设置</li>
+<li>重点掌握服务降级、负载均衡、集群容错</li>
+</ul>
+<h3 id="服务相关特性"><a href="#服务相关特性" class="headerlink" title="服务相关特性"></a>服务相关特性</h3><p>特性有非常多下，详细资料另在《dubbo特性详解-服务相关》</p>
+<p><img src="/yuque-assets/2bd6af40d37dee7f95465f4e993b8d9871ef0d0f57c72ef41fb4d8a31ed09db8.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="启动时检查"><a href="#启动时检查" class="headerlink" title="启动时检查"></a>启动时检查</h4><p>启动时检查就是启动时检查依赖的服务是否可用，不可用会抛出异常，阻止Spring初始化完成，以便上线时提早发现问题，默认<code>check="true"</code>，设置false即可关闭检查。</p>
+<p><img src="/yuque-assets/7514e047eb2cff654527a06dab2e04b95584c37e0a8781140b04bbd140e0b9c9.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/438d5bac806cdc30ff1bb0e065962cf4255f9e775c666030890c811d87285349.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="多版本"><a href="#多版本" class="headerlink" title="多版本"></a>多版本</h4><p>当一个接口实现，出现不兼容升级时，需要使用版本号过渡，版本号不同的服务相互间不引用。</p>
+<p>可以按照以下步骤进行版本迁移：</p>
+<ol>
+<li>在压力低的时段，先升级一半提供者为新版本</li>
+<li>再将所有消费者升级为新版本</li>
+<li>然后将剩下的一半提供者升级为新版本</li>
+</ol>
+<p>在实现的时候，最好要先配置版本号，这样升级才方便</p>
+<p><img src="/yuque-assets/3cb6e1c7fd9a74aada6dfcf28ec4ca1638cf00fc77b13dc71a2e10a490a266b6.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/58c65a1d60096d8ef162493e209d6a16c1d137e24b4be78ac6169286757153a3.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="服务分组"><a href="#服务分组" class="headerlink" title="服务分组"></a>服务分组</h4><p>当一个接口有多种实现时，可以用group区分。</p>
+<p><img src="/yuque-assets/548d90599c78ef86100708e39ed2ffccef247aa771bca897547de77c2f948803.png" srcset="/img/loading.gif" lazyload></p>
+<p>2.2.0版本以上支持，总是只能调用一个可用组的实现。</p>
+<h4 id="分组聚合"><a href="#分组聚合" class="headerlink" title="分组聚合"></a>分组聚合</h4><p>按组 合并 返回结果，比如菜单服务，接口一样，但有多种实现，用group区分，而消费者需要从每个group视线中用一次返回结果，合并结果返回，这样就可以实现聚合菜单项，</p>
+<p><img src="/yuque-assets/f861d648578540fd4de866f549af79063fff2c05a3942b6096266c7c711d1f08.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/09a52fc5f271ce76b1be29b6c322f80771adaec0909d51fbf0ca46e8447c22f7.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/f274684092c64505c18f8d16f5700b4fbf7c4ea74db0f240d6e557df0aa433ea.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="本地伪装"><a href="#本地伪装" class="headerlink" title="本地伪装"></a>本地伪装</h4><p>本地伪装通常用于服务降级，比如某鉴权服务，当服务提供方全部挂掉后，客户端不抛出异常，而是通过Mock数据返回授权失败。</p>
+<p><img src="/yuque-assets/1529fe15ad2bc736865ad2423bc17fb47a911b2e9ddd6bf11f1dc8208440b30f.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/761b88ee393e4f7f7a7eecd02a8941c787eac45fc664185def0cdd4e3925c3b9.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>进阶用法</strong></p>
+<p>使用return来返回一个字符串表示的对象，作为Mock的返回值。合法的字符传包括：</p>
+<ul>
+<li>empty：代表空，基本类型的默认值，或者集合类的空值</li>
+<li>null：就是代表null</li>
+<li>true</li>
+<li>false</li>
+<li>JSON：反序列化JSON所得到的对象</li>
+</ul>
+<p>使用throw来返回一个Exception对象作为Mock的返回值。点调用出错时，抛出一个默认的RPCException：</p>
+<p><img src="/yuque-assets/28a87b56f22c09844cf3d4c5acf7a707a3a3bcf2dcdaca8de9025a85a92bd106.png" srcset="/img/loading.gif" lazyload></p>
+<p>也可以指定抛出的异常：</p>
+<p><img src="/yuque-assets/7e52f7320fe6456b6943660fbad0c628c963c004550620f50c4da61abb214459.png" srcset="/img/loading.gif" lazyload></p>
+<p>在2.6.6以上的版本，可以在Spirng XML配置文件中使用<code>fail:</code>和<code>force:</code>。</p>
+<ul>
+<li><code>force:</code>代表强制使用Mock行为，在这种情况下是不会走远程调用。</li>
+<li><code>fail:</code> 与默认行为一致，只有当远程调用发生错误时，才会使用Mock行为。<code>force:</code>和<code>fail:</code>都支持与throw和return组合使用。</li>
+</ul>
+<p><img src="/yuque-assets/bcbbd4198178224ea32fd16dafc3e92ac3f266028a9cd8c7acf4c680081b94ed.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>在方法级别配置Mock</strong></p>
+<p>Mock可以在方法级别上指定，假定<code>com.foo.BarService</code>上有好几个方法。我们可以单独为<code>sayHello()</code>方法指定mock行为。具体配置如下，本例中，只要<code>sayHello()</code>被调用，就会强制返回”fake”：</p>
+<p><img src="/yuque-assets/55a3362a2cd6f8736ce9a7dfe0008182cbf65fbc1a39d0621fc13e1c1c5c5d57.png" srcset="/img/loading.gif" lazyload></p>
+<ol>
+<li>Mock时Stub的一个子集，便于服务提供方在客户端执行容错逻辑，因为经常需要在出现RpcException时进行容错（比如网络失败，超时等），而在出现业务异常（比如用户登录失败）时不需要容错，如果用Stub就可能需要捕获并且依赖RpcException类，并且用Mock就可以不依赖RpcException，因为它的约定就是只有出现RpcException时才执行。</li>
+<li>在Interface旁边放一个Mock实现，它实现BarService接口，并且有一个无参构造函数</li>
+</ol>
+<h4 id="服务降级"><a href="#服务降级" class="headerlink" title="服务降级"></a>服务降级</h4><p>服务降级和本地伪装基本时一回事吗，服务降级就是本地伪装的一种应用。可以用过服务降级功能临时屏蔽某个出错的非关键服务，并定义降级后的返回策略。</p>
+<p>向注册中心写入动态配置覆盖规则，这样会覆盖注册中心上面的信息，然后会通知到所有的消费者：</p>
+<p><img src="/yuque-assets/b6d5c0d1ebc08f30f2478d8ffa0d0b483419f368f117f07b41a97ee45e5bb782.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li><code>mock=force:return+null</code>表示消费方对该服务的方法调用都可以直接返回null值，不发起远程调用。用来屏蔽不重要服务不可用时对调用方的影响。</li>
+<li>可以改为<code>mock=fail:return+null</code> 表示消费方对该服务的方法调用在失败后，再返回null值，不抛异常。用来容忍不重要服务不稳定时对调用方的影响。</li>
+</ul>
+<h4 id="本地存根"><a href="#本地存根" class="headerlink" title="本地存根"></a>本地存根</h4><p>本地代表着调用者端，存根（stub）代表着存了一段代码，本地存根就意味着，客户端本地有部分执行逻辑。</p>
+<p>远程服务后，客户端通常只剩下接口，而实现全都在服务器端，但提供方有些时候想在客户端也执行部分逻辑，比如ThreadLocal 缓存、提前校验参数、调用失败后伪造容错数据等等，此时就需要在API中带上Stub，客户端生成Proxy实例，会把Proxy通过构造对象传给Stub，然后把Stub暴露给用户，Stub决定要不要去调用Proxy。</p>
+<p>图中执行流程就是突如果有Stub就调用Stub，而Stub实际上就是调用代理对象远程调用服务器上的代码，失败的时候就调用Mock。</p>
+<p><img src="/yuque-assets/d7d0213c96bbf59ba0f1ee4bee377a2fa0a81a8b51dc68ab138d364288a1b4e0.png" srcset="/img/loading.gif" lazyload></p>
+<p>在Spring配置文件</p>
+<p><img src="/yuque-assets/40d3e519d1d0cea02f6d6e71fdea6768a0193df310dd019be03aaf57aa618448.png" srcset="/img/loading.gif" lazyload></p>
+<p>指定了stub的实现类就需要提供stub的实现：</p>
+<p><img src="/yuque-assets/bf0c837b82b3967e41ed02003c4196bd302a72631a56fd77e2ce39e379a32275.png" srcset="/img/loading.gif" lazyload></p>
+<p>stub会持有BarService这个代理对象。可见实现需要两个点：</p>
+<ol>
+<li>Stub必须有可传入Proxy的构造函数</li>
+<li>在Interface放一个Stub实现，它实现BarService接口，并有一个传入远程BarService实例的构造函数。</li>
+</ol>
+<h4 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h4><p>同一个服务如果有多个服务提供者的时候，要选择具体由谁来被调用。假如服务A有四个提供者1，2，3，4。那么消费者C去注册中心请求A服务的时候会接收到服务A提供者的列表（list）。然后进行路由（route），再通过负载均衡选择(select)来确定具体的调用方（invoke）。</p>
+<p>在集群负载均衡时，Dubbo提供了多种均衡策略，缺省为random随机调用。</p>
+<p>这个是客户端的负载均衡，是客户端拿到列表之后选择合适的调用方。</p>
+<p>负载均衡可自行扩展，详见文档。</p>
+<p><img src="/yuque-assets/75b60b04bb30ab407c01b2b4c61db614fd8054cf27591340fcf80c7ebb89b055.png" srcset="/img/loading.gif" lazyload></p>
+<p>负载均衡策略</p>
+<ul>
+<li>random：随机，按权重设计随机概率。在一个截面上碰撞的概率高，但调用量越大分布越均匀，而且按概率使用权重后也比较均匀，有利于动态太纵横提供者权重</li>
+<li>RoundRobin：轮询，按公约后的权重设置轮询比率。存在慢的提供者积累请求的问题。比如第二台机器很慢，但不宕机，那么到第二台机器的请求就会一直被卡在那里。</li>
+<li>LeastActive：最少活跃调用数，相同活跃数的随机，活跃数指调用前后计数差。能使慢的提供者收到更少的请求，因为越慢的提供者的调用前后计数差会越大</li>
+<li>ConsistentHash：一致性hash，相同的参数总是发送到同一个提供者。当某一台提供者宕机时，原本发往提供者的请求，基于虚拟节点，平摊到其他提供者，不会引起剧烈的变动。算法可以参见：<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Consistent">http://en.wikipedia.org/wiki/Consistent</a> hashing。默认只对第一个参数Hash，如果要修改，配置<code>&lt;dubbo:parameter key="hash.arguments" value="0,1"&gt;</code> 。缺省使用160份虚拟节点，如果要修改，请配置<code>&lt;dubbo:parameter key="hash.nodes" value="320"&gt;</code></li>
+</ul>
+<p><strong>使用配置</strong></p>
+<p>注意的是，无论是在哪一边配置，起作用的地方都是在服务调用方，即客户端。</p>
+<p><img src="/yuque-assets/d90bd1b68f38abf5b75942af732242d4ada41b470ce05c4e4788efe4d380f748.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>负载均衡扩展</strong></p>
+<p>为了自定义地从多个服务提供者中选择一个进行调用。</p>
+<p><img src="/yuque-assets/fcea6ed1129b0963a80de86c1e77731ba6e6f3a9dc4a5c0e0ed6e933ad62a99e.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<h4 id="集群容错"><a href="#集群容错" class="headerlink" title="集群容错"></a>集群容错</h4><p>和负载均衡类似的场景，有多个提供者的情况下面，选择出一个提供者调用，但是调用出错了，那么选择另外一个提供者再操作，或者不再调用（可能是个新增操作，避免插入重复数据）。</p>
+<p>在集群调用失败时，Dubbo提供多种容错方案，默认为failover重试。</p>
+<p><img src="/yuque-assets/7ea14e2beb576fe400bbbcbe683805e6adbe2640abf9d7af257fc47e7e83b378.png" srcset="/img/loading.gif" lazyload></p>
+<p>各节点关系</p>
+<ul>
+<li>这个Invoker时Provider的一个可调用service的抽象，Invoker封装了Provider地址及Service接口信息</li>
+<li>Directory代表多个Invoker，可以把它看成List&lt;Invoker&gt;，但与List不同的是，它的值是可以动态变化的，比如注册中心推送变更</li>
+<li>Cluster将Directory中的多个Invoker伪装成一个Invoker，对上层透明，伪装过程包含了容错逻辑，调用失败后，重试另一个</li>
+<li>Router负责从多个Invoker中按路由规则选出子集，比如读写分离，应用隔离等</li>
+<li>LoadBalance负责从多个Invoker中选出具体的一个用于本次调用，选的过程包含了负载均衡算法，调用失败后，需要重新选择</li>
+</ul>
+<p><strong>集群容错模式</strong></p>
+<ul>
+<li>Failover Cluster ：失败会自动切换，当出现失败，重试其他服务器。通常用于读操作，但重试会带来更长延迟。可以通过设置重试次数来控制<code>retries="2" </code>，不包含第一次</li>
+</ul>
+<p><img src="/yuque-assets/fc710d171cf1aaf3a50acb709c838d196ce9d97d084abb6a8f1b8c465a89db58.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>Failfast Cluster：快速失败，只发起一次调用，失败立即报错。通常用于非幂等性的写操作，比如新增记录。</li>
+<li>Failsafe Cluster：失败安全，出现异常时，直接忽略。通常用于写入审计日志等操作。</li>
+<li>Failback Cluster：失败自动恢复，后台记录失败请求，定时重发，通常用于消息通知操作。</li>
+<li>Forking Cluster：并行调用多个服务器，只要一个成功即返回。通常用于实时性要求比较高的读操作，但需要浪费更多服务资源。可通过设置<code>forks="2"</code>来设置最大并行数</li>
+<li>Broadcast Cluster：广播调用所有提供者，逐个调用，任意一台报错则报错。通常用于通知所有提供者更新缓存或日志等本地资源信息。</li>
+</ul>
+<p><strong>集群模式配置</strong></p>
+<p><img src="/yuque-assets/5c1ea45227dff0b5980c8e9480a597c88c9686161612194fa6142b0b112540b8.png" srcset="/img/loading.gif" lazyload></p>
+<p>测试的时候就启动多个提供者构成一个集群，然后慢慢杀进程看看变化。</p>
+<hr>
+<p>dubbo特性方面，包括注册中心，多协议，服务相关，都有专门的文档，具体学习以文档为准。</p>
+<h2 id="其他特性"><a href="#其他特性" class="headerlink" title="其他特性"></a>其他特性</h2><p>上面学习了服务相关的特性。</p>
+<p>本次学习的目标：</p>
+<ol>
+<li>了解dubbo线程模型，并发控制、异步、连接、日志、配置加载、拦截等特性</li>
+<li>重点掌握异步、日志、配置加载、调用拦截的配置使用</li>
+</ol>
+<p><img src="/yuque-assets/e10bbfa70c905d369f8ef6908df65e5ab8638c6c4dfc0f185a322f3a097fa9eb.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="线程模型"><a href="#线程模型" class="headerlink" title="线程模型"></a>线程模型</h3><p>线程池有两个，一个是server端的IO线程池，还有实际执行任务的线程池。</p>
+<p>如果事件处理的逻辑能够迅速完成，就不会发起新的IO请求。比如只是在内存中标记一下，那么这种操作直接在IO线程中处理会更快，因为减少了线程池的调度。</p>
+<p>但是如果事件处理逻辑较慢，或者需要发起新的IO操请求，比如说需要查询数据库操作，则必须派发到线程池，否则IO线程阻塞，将导致不能接收其他请求。</p>
+<p>如果用IO线程处理事件，然后又在事件处理过程中发起新的IO请求，比如在连接事件中发起登录请求，会报告“可能引起死锁”异常，但是不会真的死锁。</p>
+<p>这个有点类似Netty的线程模型，IO线程数一般和CPU数相同就够用了，耗时的操作都交由另外的业务线程池中的线程处理，而不会占用IO线程。</p>
+<p>我们通过不同的派发策略和不同的线程池配置的组合来应对不同的场景：</p>
+<p><img src="/yuque-assets/9e231f584f1739ec92558033cb3b4d438d38754d1be276ba4c408a3f00a3d99a.png" srcset="/img/loading.gif" lazyload></p>
+<p>Dispatcher：</p>
+<ul>
+<li>all： 所有消息都派发到线程池，包括请求、响应、连接事件、断开事件、心跳等</li>
+<li>direct：所有消息都不派发到线程池，全部在IO线程上直接执行</li>
+<li>message：只有请求响应消息派发到线程池，其他连接断开事件，心跳的消息，直接在IO线程上执行</li>
+<li>execution：只请求把消息派发到线程池，不包含响应，响应与其他连接断开事件，心跳等信息，直接在IO线程上执行。</li>
+<li>connection：在IO线程上，将连接断开事件放入队列，有序逐个执行，其他都派发到线程池</li>
+</ul>
+<p>ThreadPool</p>
+<ul>
+<li>fixed：固定大小线程池，启动时建立线程，不关闭，一直持有，这个是默认选项</li>
+<li>cached：缓存线程池，空闲一分钟自动删除，需要时重建</li>
+<li>limited：可伸缩线程池，但池中的线程池只会增长不会收缩。目的是为了避免收缩时突然来了大流量引起的性能问题</li>
+<li>eager：优先创建Worker线程池。在任务数量大于corePoolSize但是小于maxinumPoolSize时，优先创建worker来处理任务。当任务数量大于maxinumPoolSize，任务会被放入阻塞队列中。阻塞队列充满时抛出RejectedExecutionException。相较于cached，cached在任务数量超过maxinumPoolSize时直接抛出异常，并不会放到阻塞队列中。</li>
+</ul>
+<p>记住两点，</p>
+<ol>
+<li>线程池有两种，一种IO线程，一种业务处理线程，而配置中指定的是IO线程的数量，默认是CPU核心数。</li>
+<li>可以对不同事件决定是否要派发到业务线程池去执行。IO线程和业务线程都可以执行这些事件。</li>
+</ol>
+<h3 id="并发控制（掌握）"><a href="#并发控制（掌握）" class="headerlink" title="并发控制（掌握）"></a>并发控制（掌握）</h3><p>配置样例</p>
+<ol>
+<li>限制<code>com.foo.BarService</code>的每个方法，服务端并发执行（或者说占用线程池的线程数）</li>
+</ol>
+<p><img src="/yuque-assets/7c240f22cae44cf5a0b0a4353180365fc19e1bbdf9b39762cda8cc6642822de3.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>限制com.foo.BarService的sayHello方法， 服务端并发执行（占用线程池的线程数）不能超10个</li>
+</ol>
+<p><img src="/yuque-assets/9c87b6cc801886acfb984a2e024c6df746cbcdf70031ed829a5f67b5a644e639.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="3">
+<li>限制<code>com.foo.BarService</code>的每个方法，每个客户端并发执行（或占用连接的请求数）</li>
+</ol>
+<p><img src="/yuque-assets/5c667c47a78cadff841c56bd462ff1a1afcfefa78ca0f9c4e932000230a75602.png" srcset="/img/loading.gif" lazyload></p>
+<p>或者是</p>
+<p><img src="/yuque-assets/f6e995733491b2595617ab72f2edb7d5c0f03d9a7e5dc985038492742e7c2212.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="4">
+<li>限制<code>com.foo.BarService</code>的sayHello方法，每个客户端并发执行（或占用连接的请求数）不能超过10个。</li>
+</ol>
+<p><img src="/yuque-assets/4dc79241fa83619f63d9d57f967a8904683fbc042cf77be89155d0b53533d4fe.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="5">
+<li>如果service和reference都配置active，那么reference生效。具体规则请查看文档中的配置覆盖规则。</li>
+</ol>
+<p>这些参数都是对单独的服务器配置的，不管是不是集群。集群中有四台机器，每天都设置为10，那么理论上集群就是40</p>
+<h3 id="连接控制（掌握）"><a href="#连接控制（掌握）" class="headerlink" title="连接控制（掌握）"></a>连接控制（掌握）</h3><h4 id="服务端连接控制"><a href="#服务端连接控制" class="headerlink" title="服务端连接控制"></a>服务端连接控制</h4><p>设置服务器端接受的连接不能超过10个：</p>
+<h4 id=""><a href="#" class="headerlink" title=""></a><img src="/yuque-assets/6a960faed4b6102ff286fc60be7e5f18b041bc7e78d11166c340bf578c3c30e2.png" srcset="/img/loading.gif" lazyload></h4><p>客户端连接控制</p>
+<p>限制客户端服务使用连接不能超过10个：</p>
+<p><img src="/yuque-assets/654deb08c951a135a7a811f14fd93373e0d39b7ef35d27a6ff185d375326c178.png" srcset="/img/loading.gif" lazyload></p>
+<p>如果service和reference都有配置connections，那么reference的生效。</p>
+<ol>
+<li>因为连接在server上，所有配置在Provider</li>
+<li>如果是长连接，比如是Dubbo协议，那么connections表示该服务对每个提供者建立的长连接数。</li>
+</ol>
+<h3 id="日志适配（掌握）"><a href="#日志适配（掌握）" class="headerlink" title="日志适配（掌握）"></a>日志适配（掌握）</h3><p>自2.2.1开始，dubbo开始内置了log4j，slf4j，jcl，jdk这些日志框架的适配，也可以通过以下方式显示配置日志输出策略：</p>
+<ol>
+<li>命令行</li>
+</ol>
+<p><img src="/yuque-assets/0ea903368685bc1e284d311e701d0c8ba50a35f1bbd2f6484875a9055fe1ae05.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>dubbo.properties中指定（实际很少用）</li>
+</ol>
+<p><img src="/yuque-assets/1e434a4b51c6ac31598143d12dbfa13208399e9c2b19cdf87e494fd01afec399.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="3">
+<li>在dubbo.xml中配置</li>
+</ol>
+<p><img src="/yuque-assets/976bbbf1cf211c61bc1e45b53d202403198b5a0a9325ab2ab2bd0a295db22f09.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="访问日志（掌握）"><a href="#访问日志（掌握）" class="headerlink" title="访问日志（掌握）"></a>访问日志（掌握）</h3><p>如果你想记录每一次请求信息，可开启访问日志，类似于apache的访问日志。</p>
+<p>注意：这个日志量比较大， 要注意磁盘空间容量问题</p>
+<p>将访问日志输出到当前应用的log4j日志：</p>
+<p>将访问日志输出到指定文件</p>
+<p><img src="/yuque-assets/8ddc2ac731aba0db8698675af13e0f54de0fbd6dead044a7bdf803efc511e0ee.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="配置加载流程（掌握）"><a href="#配置加载流程（掌握）" class="headerlink" title="配置加载流程（掌握）"></a>配置加载流程（掌握）</h3><p>勉强看看，我没有找到源文档地址。</p>
+<p><img src="/yuque-assets/aff34b876bb0df522e5cf20b3238315f497278caa8e6b219465cce6ea68f9cdc.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/77d5c80a2d702843aba8b9f6cadeed813c44d3ec4f5b231570a5c25033f18252.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/8b3cb3fc3b3b4c3e15f7a6e58b20d531cbc69a5fb98f37f4f5a5e5d46c50e298.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="调用拦截扩展（掌握）"><a href="#调用拦截扩展（掌握）" class="headerlink" title="调用拦截扩展（掌握）"></a>调用拦截扩展（掌握）</h3><p><img src="/yuque-assets/79f388f8abc5308e9744a683ac3f38b5f5a1d68ff987410f61a7c86286f44a37.png" srcset="/img/loading.gif" lazyload></p>
+<p>provide的拦截会在consumer级别之前。</p>
+<p><img src="/yuque-assets/11e75bc9d4e1e4d2609e3ae9ddeaab4b09bc2bd68b70c302f6fe15802049b1d3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/681b1120316a00c4396caf974c54b2cfb69716ecf5b376d15c32ec20f4487aaf.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/84d72981bb915fda9786ea3374e0c7a1e3a5019c2cf68d2eb33affa53ceab352.png" srcset="/img/loading.gif" lazyload><img src="/yuque-assets/ae03d95b285cfb3b49cb6f4ae69f5ff0a201c69beb0ea1639c0f77d889740605.png" srcset="/img/loading.gif" lazyload></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-chain-item">分布式与中间件</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" class="category-chain-item">微服务</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/RPC/" class="print-no-link">#RPC</a>
+      
+        <a href="/tags/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/" class="print-no-link">#服务治理</a>
+      
+        <a href="/tags/Dubbo/" class="print-no-link">#Dubbo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Dubbo</div>
+      <div>https://q792821266.github.io/yuque/32089987/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年4月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/72360647/" title="Dubbo最佳实践">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Dubbo最佳实践</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/70659815/" title="RocketMQ高性能最佳实践">
+                        <span class="hidden-mobile">RocketMQ高性能最佳实践</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

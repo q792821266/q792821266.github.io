@@ -1,0 +1,930 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="为什么要用网关 存在一些典型的问题：  外部客户端无法发现服务。客户端种类多，并没有集成服务注册发现机制 服务地址无法访问。微服务实例众多，从安全性及ip资源的角度考虑，不会直接对公网开放 安全认证复杂。客户端直调服务实例，处于安全角度，每个角度都需要实现权限认证等功能  网关特性网关相当于进入家里的大门，我们用的智能门锁就提供权限校验的功能，其实这是很类似的。 为了解决上面的典型问题，网关必须有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="服务网关Zuul">
+<meta property="og:url" content="https://q792821266.github.io/yuque/96108759/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="为什么要用网关 存在一些典型的问题：  外部客户端无法发现服务。客户端种类多，并没有集成服务注册发现机制 服务地址无法访问。微服务实例众多，从安全性及ip资源的角度考虑，不会直接对公网开放 安全认证复杂。客户端直调服务实例，处于安全角度，每个角度都需要实现权限认证等功能  网关特性网关相当于进入家里的大门，我们用的智能门锁就提供权限校验的功能，其实这是很类似的。 为了解决上面的典型问题，网关必须有">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2e1fa5e84e5e120a1ddfd2596b00fc5be78fae4a1923190bcf5978256e39f100.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5a6c74e31864c6c9c4191998715eae5788fa83b852a64450f39cc31e8b6e6b8a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fe88a4df5c7d509bf98041de173f0ea3fe4d4d39ac1d75ba80b5eea3fa889945.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/977c6d55132a46830a353dfdccd56f601d005188f10c48cf6bf1492d3ad88df6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/18a5ed4cd9caaf68603fb80565e79827962e5837431ea4f203ab94a93d7ccc17.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0927ffa84be2c15b76b3b7837f8d29f9c433671431889faae3ec83e4e15c32e8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9735582fd2731690e8dff77091cb1f1ea07a411b0068a98b144d4d36268e11a5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3eb1a2e1c07073e35ac41bf64299d7aee298fdd8ad0aa3b9025252e9051fe400.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c1849efe5c6eddef8bd7af5672225bffb3d4fcf0463a5f89b59224f5062ccc1a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c07c13b0dfb9c872197bd5352d29b7f439e68efd30188d345580c5d003eb6822.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a7ae9b301e6c9f9f2fb0a72c73cba7799cbcb6ba0e816b3a105590c6e63529d2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c9c81cbc6e5fd5129759b86ac360acd082814514f5e87dc14c252c2b1c6839fc.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7abf3d5113eec502c2f9651a3eca78695e8c7d87d8b55f56e9db51ba31884418.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1f45b6bc5cf658a2d9b1fee1ef5b44a683b235e7e3440d8338413b41a6e34f54.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ea8179cf1941e576ad80c41f68045e9e73ed1ba39e6c5811e45f4f030ce4c69b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ead4e856f8754ac729826a39e94907db7379af5a02c116962072d4d5381fa3a9.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f5698b87edb540d186ca7d0f7bdca7099e51c885d6f9455fcb928eea2c558f94.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/81700cf3518f45825046c3854c254786f558c0ae8a0ba45bfe0badcb7fef830d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c2ad6de2d1d108eb36418ba7fb2fe8eb45d792433acea7a91ff2f7fcb8c859d3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c73dfe447196723f0d6e16add0925557f544607c1fc6c90ee2e67eeab56de25f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6d81e5572b6ca9d6f778fcfbbe4c423d15640a0a5e330debeebb6f3988007f1c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ab229cc05f6529a4650f301a58ae248f289c45554e5ea30b48cd21d6e5f28cbd.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/78924a8363bbcff770f48aa083aa55bf8462d51b6339d7762ee16561ef5f3f6e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6fc0356542d14677a06f1e227d8bd6eb21f7c66e4f0ac6d5a9e7d9209cb890c0.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0a04becfc6b2530a25f0663d9906a7cea7960ec9eed705fe1cca345194646e81.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9db5642c5663f3351804ead6daf39cac3cf56693c539a4980b5e5174d9681bda.png">
+<meta property="article:published_time" content="2025-09-02T10:24:36.085Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.451Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="Spring Cloud">
+<meta property="article:tag" content="Zuul">
+<meta property="article:tag" content="API网关">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/2e1fa5e84e5e120a1ddfd2596b00fc5be78fae4a1923190bcf5978256e39f100.png">
+  
+  
+  
+  <title>服务网关Zuul - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="服务网关Zuul"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-09-02 18:24" pubdate>
+          2025年9月2日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          25 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">服务网关Zuul</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="为什么要用网关"><a href="#为什么要用网关" class="headerlink" title="为什么要用网关"></a>为什么要用网关</h1><p><img src="/yuque-assets/2e1fa5e84e5e120a1ddfd2596b00fc5be78fae4a1923190bcf5978256e39f100.png" srcset="/img/loading.gif" lazyload></p>
+<p>存在一些典型的问题：</p>
+<ol>
+<li>外部客户端无法发现服务。客户端种类多，并没有集成服务注册发现机制</li>
+<li>服务地址无法访问。微服务实例众多，从安全性及ip资源的角度考虑，不会直接对公网开放</li>
+<li>安全认证复杂。客户端直调服务实例，处于安全角度，每个角度都需要实现权限认证等功能</li>
+</ol>
+<h1 id="网关特性"><a href="#网关特性" class="headerlink" title="网关特性"></a>网关特性</h1><p>网关相当于进入家里的大门，我们用的智能门锁就提供权限校验的功能，其实这是很类似的。</p>
+<p>为了解决上面的典型问题，网关必须有一下几个特性</p>
+<p><img src="/yuque-assets/5a6c74e31864c6c9c4191998715eae5788fa83b852a64450f39cc31e8b6e6b8a.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>统一接入：为应用提供统一接入服务，并且网关本身需要具有高性能、高并发，可靠性，负载均衡和容灾切换的特点</li>
+<li>协议适配：基本的，根据前端请求路由到相对应的服务执行，并返回结果。根据不同请求，适配前端系统（http，http2）后端业务系统RPC等长、短连接都支持。</li>
+<li>流量管控：限流、熔断、降级等手段实现容灾切换</li>
+<li>安全防护：提供IP黑名单，Url黑名单、权限校验等手段来实现防刷，恶意攻击等</li>
+</ul>
+<h1 id="服务网关Zuul"><a href="#服务网关Zuul" class="headerlink" title="服务网关Zuul"></a>服务网关Zuul</h1><h2 id="Zuul是什么"><a href="#Zuul是什么" class="headerlink" title="Zuul是什么"></a>Zuul是什么</h2><p>Zuul是Netflix开源的API Gateway服务器，本质是一个web应用。Zuul可以提供动态路由，监控，弹性，安全等边缘服务的框架。是所有服务和Web请求的大门。</p>
+<h2 id="Zuul能做什么"><a href="#Zuul能做什么" class="headerlink" title="Zuul能做什么"></a>Zuul能做什么</h2><ul>
+<li>认证和安全：识别每个需要认证的资源，拒绝不符合要求的请求。</li>
+<li>性能监控：追踪并统计数据，提供精确的运行时状态数据</li>
+<li>动态路由：根据需要将请求动态路由（转发）到后端集群</li>
+<li>静态资源处理：直接负载均衡，预先为每种类型的请求分配容量，当请求超过容量时自动丢弃。</li>
+</ul>
+<h1 id="集成示例"><a href="#集成示例" class="headerlink" title="集成示例"></a>集成示例</h1><p>使用方式一贯的简单</p>
+<ol>
+<li>引入相关依赖</li>
+</ol>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-zuul<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></tbody></table></figure>
+
+<ol start="2">
+<li>开启zuul网关代理</li>
+</ol>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-meta">@EnableZuulProxy</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SpringCloudZuulGatewayApplication</span> {<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> {<br>        SpringApplication.run(SpringCloudZuulGatewayApplication.class, args);<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<h1 id="核心知识"><a href="#核心知识" class="headerlink" title="核心知识"></a>核心知识</h1><ol>
+<li>执行流程</li>
+<li>初始化和filter执行流程</li>
+<li>zuul的路由定位流程</li>
+<li>http请求的执行流程</li>
+<li>zuul拓展应用</li>
+</ol>
+<h2 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h2><p>Zuul的执行从ZuulServlet或者ZuulServletFilter开始，具体处理由三种类型的ZuulFilter实现的。</p>
+<p><img src="/yuque-assets/fe88a4df5c7d509bf98041de173f0ea3fe4d4d39ac1d75ba80b5eea3fa889945.png" srcset="/img/loading.gif" lazyload></p>
+<p>通过三种类型的Filter做准备，分别是pro \ routing \ post ，对应在具体方法执行前置、执行请求、后置。</p>
+<p>来看看具体代码，从<code>zuulServlet</code>开始：</p>
+<p>可以看到继承自HttpServlet</p>
+<p><img src="/yuque-assets/977c6d55132a46830a353dfdccd56f601d005188f10c48cf6bf1492d3ad88df6.png" srcset="/img/loading.gif" lazyload></p>
+<p>service()中可以看到preRoute() , route() ，postRoute() 的结构很清晰</p>
+<p><img src="/yuque-assets/18a5ed4cd9caaf68603fb80565e79827962e5837431ea4f203ab94a93d7ccc17.png" srcset="/img/loading.gif" lazyload></p>
+<p>preRoute() 中执行的是zuulRunner的preRoute()</p>
+<p><img src="/yuque-assets/0927ffa84be2c15b76b3b7837f8d29f9c433671431889faae3ec83e4e15c32e8.png" srcset="/img/loading.gif" lazyload></p>
+<p>一层一层进去:</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">preRoute</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ZuulException {<br>    FilterProcessor.getInstance().preRoute();<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">preRoute</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ZuulException {<br>    <span class="hljs-keyword">try</span> {<br>        <span class="hljs-built_in">this</span>.runFilters(<span class="hljs-string">"pre"</span>);<br>    } <span class="hljs-keyword">catch</span> (ZuulException var2) {<br>        <span class="hljs-type">ZuulException</span> <span class="hljs-variable">e</span> <span class="hljs-operator">=</span> var2;<br>        <span class="hljs-keyword">throw</span> e;<br>    } <span class="hljs-keyword">catch</span> (Throwable var3) {<br>        <span class="hljs-type">Throwable</span> <span class="hljs-variable">e</span> <span class="hljs-operator">=</span> var3;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulException</span>(e, <span class="hljs-number">500</span>, <span class="hljs-string">"UNCAUGHT_EXCEPTION_IN_PRE_FILTER_"</span> + e.getClass().getName());<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>可以看到这里拿到了sType类型的ZuulFilter集合，进去<code>getFiltersBytType()</code>看看具体怎么做的。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">runFilters</span><span class="hljs-params">(String sType)</span> <span class="hljs-keyword">throws</span> Throwable {<br>    <span class="hljs-keyword">if</span> (RequestContext.getCurrentContext().debugRouting()) {<br>        Debug.addRoutingDebug(<span class="hljs-string">"Invoking {"</span> + sType + <span class="hljs-string">"} type filters"</span>);<br>    }<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">bResult</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>;<br>    List&lt;ZuulFilter&gt; list = FilterLoader.getInstance().getFiltersByType(sType);<br>    <span class="hljs-keyword">if</span> (list != <span class="hljs-literal">null</span>) {<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; list.size(); ++i) {<br>            <span class="hljs-type">ZuulFilter</span> <span class="hljs-variable">zuulFilter</span> <span class="hljs-operator">=</span> (ZuulFilter)list.get(i);<br>            <span class="hljs-type">Object</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.processZuulFilter(zuulFilter);<br>            <span class="hljs-keyword">if</span> (result != <span class="hljs-literal">null</span> &amp;&amp; result <span class="hljs-keyword">instanceof</span> Boolean) {<br>                bResult |= (Boolean)result;<br>            }<br>        }<br>    }<br><br>    <span class="hljs-keyword">return</span> bResult;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>如果一开始没有拿到filter（第一次启动的时候），那么就会调用<code>filterRegistry.getAllFilters()</code>获取到已注册的所有filter，并从中根据类型筛选</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> List&lt;ZuulFilter&gt; <span class="hljs-title function_">getFiltersByType</span><span class="hljs-params">(String filterType)</span> {<br>    List&lt;ZuulFilter&gt; list = (List)<span class="hljs-built_in">this</span>.hashFiltersByType.get(filterType);<br>    <span class="hljs-keyword">if</span> (list != <span class="hljs-literal">null</span>) {<br>        <span class="hljs-keyword">return</span> list;<br>    } <span class="hljs-keyword">else</span> {<br>        List&lt;ZuulFilter&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>();<br>        Collection&lt;ZuulFilter&gt; filters = <span class="hljs-built_in">this</span>.filterRegistry.getAllFilters();<br>        Iterator&lt;ZuulFilter&gt; iterator = filters.iterator();<br><br>        <span class="hljs-keyword">while</span>(iterator.hasNext()) {<br>            <span class="hljs-type">ZuulFilter</span> <span class="hljs-variable">filter</span> <span class="hljs-operator">=</span> (ZuulFilter)iterator.next();<br>            <span class="hljs-keyword">if</span> (filter.filterType().equals(filterType)) {<br>                list.add(filter);<br>            }<br>        }<br><br>        Collections.sort(list);<br>        <span class="hljs-built_in">this</span>.hashFiltersByType.putIfAbsent(filterType, list);<br>        <span class="hljs-keyword">return</span> list;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>此处进行Debug发现默认的filter有10个，图中的DebugFilter就是一个pre类型的filter，还有SendResponseFilter(post) , FromBodyWrapperFilter(pre)等</p>
+<p><img src="/yuque-assets/9735582fd2731690e8dff77091cb1f1ea07a411b0068a98b144d4d36268e11a5.png" srcset="/img/loading.gif" lazyload></p>
+<p>其中有一个比较重要的Filter : ServletDetectionFilter ，因为它作用是判断的是拦截请求，来判断是通过spring的distruptServlet路由还是通过zuulFilter去执行。</p>
+<p><img src="/yuque-assets/3eb1a2e1c07073e35ac41bf64299d7aee298fdd8ad0aa3b9025252e9051fe400.png" srcset="/img/loading.gif" lazyload></p>
+<p>PreDecorationFilter，用来帮忙寻找相应路由功能的filter</p>
+<p><img src="/yuque-assets/c1849efe5c6eddef8bd7af5672225bffb3d4fcf0463a5f89b59224f5062ccc1a.png" srcset="/img/loading.gif" lazyload></p>
+<p>回到FilterProcessor::runFilters() ，加载完对应的Filter之后，遍历执行，line19</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">processZuulFilter</span><span class="hljs-params">(ZuulFilter filter)</span> <span class="hljs-keyword">throws</span> ZuulException {<br>        <span class="hljs-type">RequestContext</span> <span class="hljs-variable">ctx</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext();<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">bDebug</span> <span class="hljs-operator">=</span> ctx.debugRouting();<br>        <span class="hljs-type">String</span> <span class="hljs-variable">metricPrefix</span> <span class="hljs-operator">=</span> <span class="hljs-string">"zuul.filter-"</span>;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">execTime</span> <span class="hljs-operator">=</span> <span class="hljs-number">0L</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">filterName</span> <span class="hljs-operator">=</span> <span class="hljs-string">""</span>;<br><br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-type">long</span> <span class="hljs-variable">ltime</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br>            filterName = filter.getClass().getSimpleName();<br>            <span class="hljs-type">RequestContext</span> <span class="hljs-variable">copy</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>            <span class="hljs-type">Object</span> <span class="hljs-variable">o</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>            <span class="hljs-type">Throwable</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>            <span class="hljs-keyword">if</span> (bDebug) {<br>                Debug.addRoutingDebug(<span class="hljs-string">"Filter "</span> + filter.filterType() + <span class="hljs-string">" "</span> + filter.filterOrder() + <span class="hljs-string">" "</span> + filterName);<br>                copy = ctx.copy();<br>            }<br><br>            <span class="hljs-type">ZuulFilterResult</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> filter.runFilter();<br>            <span class="hljs-type">ExecutionStatus</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> result.getStatus();<br>            execTime = System.currentTimeMillis() - ltime;<br>            <span class="hljs-keyword">switch</span> (s) {<br>                <span class="hljs-keyword">case</span> FAILED:<br>                    t = result.getException();<br>                    ctx.addFilterExecutionSummary(filterName, ExecutionStatus.FAILED.name(), execTime);<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> SUCCESS:<br>                    o = result.getResult();<br>                    ctx.addFilterExecutionSummary(filterName, ExecutionStatus.SUCCESS.name(), execTime);<br>                    <span class="hljs-keyword">if</span> (bDebug) {<br>                        Debug.addRoutingDebug(<span class="hljs-string">"Filter {"</span> + filterName + <span class="hljs-string">" TYPE:"</span> + filter.filterType() + <span class="hljs-string">" ORDER:"</span> + filter.filterOrder() + <span class="hljs-string">"} Execution time = "</span> + execTime + <span class="hljs-string">"ms"</span>);<br>                        Debug.compareContextState(filterName, copy);<br>                    }<br>            }<br><br>            <span class="hljs-keyword">if</span> (t != <span class="hljs-literal">null</span>) {<br>                <span class="hljs-keyword">throw</span> t;<br>            } <span class="hljs-keyword">else</span> {<br>                <span class="hljs-built_in">this</span>.usageNotifier.notify(filter, s);<br>                <span class="hljs-keyword">return</span> o;<br>            }<br>        } <span class="hljs-keyword">catch</span> (Throwable var15) {<br>            <span class="hljs-type">Throwable</span> <span class="hljs-variable">e</span> <span class="hljs-operator">=</span> var15;<br>            <span class="hljs-keyword">if</span> (bDebug) {<br>                Debug.addRoutingDebug(<span class="hljs-string">"Running Filter failed "</span> + filterName + <span class="hljs-string">" type:"</span> + filter.filterType() + <span class="hljs-string">" order:"</span> + filter.filterOrder() + <span class="hljs-string">" "</span> + e.getMessage());<br>            }<br><br>            <span class="hljs-built_in">this</span>.usageNotifier.notify(filter, ExecutionStatus.FAILED);<br>            <span class="hljs-keyword">if</span> (e <span class="hljs-keyword">instanceof</span> ZuulException) {<br>                <span class="hljs-keyword">throw</span> (ZuulException)e;<br>            } <span class="hljs-keyword">else</span> {<br>                <span class="hljs-type">ZuulException</span> <span class="hljs-variable">ex</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulException</span>(e, <span class="hljs-string">"Filter threw Exception"</span>, <span class="hljs-number">500</span>, filter.filterType() + <span class="hljs-string">":"</span> + filterName);<br>                ctx.addFilterExecutionSummary(filterName, ExecutionStatus.FAILED.name(), execTime);<br>                <span class="hljs-keyword">throw</span> ex;<br>            }<br>        }<br>    }<br></code></pre></td></tr></tbody></table></figure>
+
+<p>判断Filter是否被禁用，以及判断<code>shouldFilter()</code></p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> ZuulFilterResult <span class="hljs-title function_">runFilter</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">ZuulFilterResult</span> <span class="hljs-variable">zr</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulFilterResult</span>();<br>    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">this</span>.isFilterDisabled()) {<br>        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.shouldFilter()) {<br>            <span class="hljs-type">Tracer</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> TracerFactory.instance().startMicroTracer(<span class="hljs-string">"ZUUL::"</span> + <span class="hljs-built_in">this</span>.getClass().getSimpleName());<br><br>            <span class="hljs-keyword">try</span> {<br>                <span class="hljs-type">Object</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.run();<br>                zr = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulFilterResult</span>(res, ExecutionStatus.SUCCESS);<br>            } <span class="hljs-keyword">catch</span> (Throwable var7) {<br>                <span class="hljs-type">Throwable</span> <span class="hljs-variable">e</span> <span class="hljs-operator">=</span> var7;<br>                t.setName(<span class="hljs-string">"ZUUL::"</span> + <span class="hljs-built_in">this</span>.getClass().getSimpleName() + <span class="hljs-string">" failed"</span>);<br>                zr = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulFilterResult</span>(ExecutionStatus.FAILED);<br>                zr.setException(e);<br>            } <span class="hljs-keyword">finally</span> {<br>                t.stopAndLog();<br>            }<br>        } <span class="hljs-keyword">else</span> {<br>            zr = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulFilterResult</span>(ExecutionStatus.SKIPPED);<br>        }<br>    }<br><br>    <span class="hljs-keyword">return</span> zr;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>每个Filter都自行实现了shouldFilter的逻辑，所以当我们自定义Filter的时候，要注意这个方法。</p>
+<p><img src="/yuque-assets/c07c13b0dfb9c872197bd5352d29b7f439e68efd30188d345580c5d003eb6822.png" srcset="/img/loading.gif" lazyload></p>
+<p>具体逻辑在run() 方法，我们以ServletDetectionFilter为例子，这里判断了请求是不是HttpServletRequest ，如果不是就不会调用spring中的servlet对应的方法，而是使用zuul的</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">run</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">RequestContext</span> <span class="hljs-variable">ctx</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext();<br>    <span class="hljs-type">HttpServletRequest</span> <span class="hljs-variable">request</span> <span class="hljs-operator">=</span> ctx.getRequest();<br>    <span class="hljs-keyword">if</span> (!(request <span class="hljs-keyword">instanceof</span> HttpServletRequestWrapper) &amp;&amp; <span class="hljs-built_in">this</span>.isDispatcherServletRequest(request)) {<br>        ctx.set(<span class="hljs-string">"isDispatcherServletRequest"</span>, <span class="hljs-literal">true</span>);<br>    } <span class="hljs-keyword">else</span> {<br>        ctx.set(<span class="hljs-string">"isDispatcherServletRequest"</span>, <span class="hljs-literal">false</span>);<br>    }<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>}<br><br><span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isDispatcherServletRequest</span><span class="hljs-params">(HttpServletRequest request)</span> {<br>        <span class="hljs-keyword">return</span> request.getAttribute(DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE) != <span class="hljs-literal">null</span>;<br>    }<br></code></pre></td></tr></tbody></table></figure>
+
+<p>我们再看多一个<code>PreDecorationFilter</code></p>
+<p>这里尝试从上下文中获取对应的Key来决定是否需要执行</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">shouldFilter</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">RequestContext</span> <span class="hljs-variable">ctx</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext();<br>    <span class="hljs-keyword">return</span> !ctx.containsKey(<span class="hljs-string">"forward.to"</span>) &amp;&amp; !ctx.containsKey(<span class="hljs-string">"serviceId"</span>);<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>run的逻辑中，会先拿到请求的url，然后去匹配你配置文件中定义的路由规则</p>
+<p><img src="/yuque-assets/a7ae9b301e6c9f9f2fb0a72c73cba7799cbcb6ba0e816b3a105590c6e63529d2.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到，这里基本上是做的一些准备工作，预处理，包括路由匹配，设置基本信息到上下文中供后续使用，具体的代码实现</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">run</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">RequestContext</span> <span class="hljs-variable">ctx</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext();<br>    <span class="hljs-type">String</span> <span class="hljs-variable">requestURI</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.urlPathHelper.getPathWithinApplication(ctx.getRequest());<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.insecurePath(requestURI)) {<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InsecureRequestPathException</span>(requestURI);<br>    } <span class="hljs-keyword">else</span> {<br>        <span class="hljs-type">Route</span> <span class="hljs-variable">route</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.routeLocator.getMatchingRoute(requestURI);<br>        String location;<br>        <span class="hljs-keyword">if</span> (route != <span class="hljs-literal">null</span>) {<br>            location = route.getLocation();<br>            <span class="hljs-keyword">if</span> (location != <span class="hljs-literal">null</span>) {<br>                ctx.put(<span class="hljs-string">"requestURI"</span>, route.getPath());<br>                ctx.put(<span class="hljs-string">"proxy"</span>, route.getId());<br>                <span class="hljs-keyword">if</span> (!route.isCustomSensitiveHeaders()) {<br>                    <span class="hljs-built_in">this</span>.proxyRequestHelper.addIgnoredHeaders((String[])<span class="hljs-built_in">this</span>.properties.getSensitiveHeaders().toArray(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[<span class="hljs-number">0</span>]));<br>                } <span class="hljs-keyword">else</span> {<br>                    <span class="hljs-built_in">this</span>.proxyRequestHelper.addIgnoredHeaders((String[])route.getSensitiveHeaders().toArray(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[<span class="hljs-number">0</span>]));<br>                }<br><br>                <span class="hljs-keyword">if</span> (route.getRetryable() != <span class="hljs-literal">null</span>) {<br>                    ctx.put(<span class="hljs-string">"retryable"</span>, route.getRetryable());<br>                }<br><br>                <span class="hljs-keyword">if</span> (!location.startsWith(<span class="hljs-string">"http:"</span>) &amp;&amp; !location.startsWith(<span class="hljs-string">"https:"</span>)) {<br>                    <span class="hljs-keyword">if</span> (location.startsWith(<span class="hljs-string">"forward:"</span>)) {<br>                        ctx.set(<span class="hljs-string">"forward.to"</span>, StringUtils.cleanPath(location.substring(<span class="hljs-string">"forward:"</span>.length()) + route.getPath()));<br>                        ctx.setRouteHost((URL)<span class="hljs-literal">null</span>);<br>                        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>                    }<br><br>                    ctx.set(<span class="hljs-string">"serviceId"</span>, location);<br>                    ctx.setRouteHost((URL)<span class="hljs-literal">null</span>);<br>                    ctx.addOriginResponseHeader(<span class="hljs-string">"X-Zuul-ServiceId"</span>, location);<br>                } <span class="hljs-keyword">else</span> {<br>                    ctx.setRouteHost(<span class="hljs-built_in">this</span>.getUrl(location));<br>                    ctx.addOriginResponseHeader(<span class="hljs-string">"X-Zuul-Service"</span>, location);<br>                }<br><br>                <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.properties.isAddProxyHeaders()) {<br>                    <span class="hljs-built_in">this</span>.addProxyHeaders(ctx, route);<br>                    <span class="hljs-type">String</span> <span class="hljs-variable">xforwardedfor</span> <span class="hljs-operator">=</span> ctx.getRequest().getHeader(<span class="hljs-string">"X-Forwarded-For"</span>);<br>                    <span class="hljs-type">String</span> <span class="hljs-variable">remoteAddr</span> <span class="hljs-operator">=</span> ctx.getRequest().getRemoteAddr();<br>                    <span class="hljs-keyword">if</span> (xforwardedfor == <span class="hljs-literal">null</span>) {<br>                        xforwardedfor = remoteAddr;<br>                    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!xforwardedfor.contains(remoteAddr)) {<br>                        xforwardedfor = xforwardedfor + <span class="hljs-string">", "</span> + remoteAddr;<br>                    }<br><br>                    ctx.addZuulRequestHeader(<span class="hljs-string">"X-Forwarded-For"</span>, xforwardedfor);<br>                }<br><br>                <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.properties.isAddHostHeader()) {<br>                    ctx.addZuulRequestHeader(<span class="hljs-string">"Host"</span>, <span class="hljs-built_in">this</span>.toHostHeader(ctx.getRequest()));<br>                }<br>            }<br>        } <span class="hljs-keyword">else</span> {<br>            log.warn(<span class="hljs-string">"No route found for uri: "</span> + requestURI);<br>            location = <span class="hljs-built_in">this</span>.getForwardUri(requestURI);<br>            ctx.set(<span class="hljs-string">"forward.to"</span>, location);<br>        }<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>pre的过程基本完成了，接下来看看route类型的filter</p>
+<h3 id="RibbonRoutingFilter"><a href="#RibbonRoutingFilter" class="headerlink" title="RibbonRoutingFilter"></a>RibbonRoutingFilter</h3><p>第一个 RibbonRoutingFilter ，来处理我们使用了serviceId配置的路由规则</p>
+<p><img src="/yuque-assets/c9c81cbc6e5fd5129759b86ac360acd082814514f5e87dc14c252c2b1c6839fc.png" srcset="/img/loading.gif" lazyload></p>
+<p><code>buildCommandContext()</code>中设置好执行Ribbon命令所需要的参数和配置，<code>forward()</code> 负责执行</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">run</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">RequestContext</span> <span class="hljs-variable">context</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext();<br>    <span class="hljs-built_in">this</span>.helper.addIgnoredHeaders(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[<span class="hljs-number">0</span>]);<br><br>    <span class="hljs-keyword">try</span> {<br>        <span class="hljs-type">RibbonCommandContext</span> <span class="hljs-variable">commandContext</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.buildCommandContext(context);<br>        <span class="hljs-type">ClientHttpResponse</span> <span class="hljs-variable">response</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.forward(commandContext);<br>        <span class="hljs-built_in">this</span>.setResponse(response);<br>        <span class="hljs-keyword">return</span> response;<br>    } <span class="hljs-keyword">catch</span> (ZuulException var4) {<br>        <span class="hljs-type">ZuulException</span> <span class="hljs-variable">ex</span> <span class="hljs-operator">=</span> var4;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulRuntimeException</span>(ex);<br>    } <span class="hljs-keyword">catch</span> (Exception var5) {<br>        <span class="hljs-type">Exception</span> <span class="hljs-variable">ex</span> <span class="hljs-operator">=</span> var5;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulRuntimeException</span>(ex);<br>    }<br>}<br><br><span class="hljs-keyword">protected</span> RibbonCommandContext <span class="hljs-title function_">buildCommandContext</span><span class="hljs-params">(RequestContext context)</span> {<br><span class="hljs-type">HttpServletRequest</span> <span class="hljs-variable">request</span> <span class="hljs-operator">=</span> context.getRequest();<br>MultiValueMap&lt;String, String&gt; headers = <span class="hljs-built_in">this</span>.helper.buildZuulRequestHeaders(request);<br>MultiValueMap&lt;String, String&gt; params = <span class="hljs-built_in">this</span>.helper.buildZuulRequestQueryParams(request);<br><span class="hljs-type">String</span> <span class="hljs-variable">verb</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getVerb(request);<br><span class="hljs-type">InputStream</span> <span class="hljs-variable">requestEntity</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getRequestBody(request);<br><span class="hljs-keyword">if</span> (request.getContentLength() &lt; <span class="hljs-number">0</span> &amp;&amp; !verb.equalsIgnoreCase(<span class="hljs-string">"GET"</span>)) {<br>    context.setChunkedRequestBody();<br>}<br><br><span class="hljs-type">String</span> <span class="hljs-variable">serviceId</span> <span class="hljs-operator">=</span> (String)context.get(<span class="hljs-string">"serviceId"</span>);<br><span class="hljs-type">Boolean</span> <span class="hljs-variable">retryable</span> <span class="hljs-operator">=</span> (Boolean)context.get(<span class="hljs-string">"retryable"</span>);<br><span class="hljs-type">Object</span> <span class="hljs-variable">loadBalancerKey</span> <span class="hljs-operator">=</span> context.get(<span class="hljs-string">"loadBalancerKey"</span>);<br><span class="hljs-type">String</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.helper.buildZuulRequestURI(request);<br>uri = uri.replace(<span class="hljs-string">"//"</span>, <span class="hljs-string">"/"</span>);<br><span class="hljs-type">long</span> <span class="hljs-variable">contentLength</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.useServlet31 ? request.getContentLengthLong() : (<span class="hljs-type">long</span>)request.getContentLength();<br><span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RibbonCommandContext</span>(serviceId, verb, uri, retryable, headers, params, requestEntity, <span class="hljs-built_in">this</span>.requestCustomizers, contentLength, loadBalancerKey);<br>}<br><br><span class="hljs-keyword">protected</span> ClientHttpResponse <span class="hljs-title function_">forward</span><span class="hljs-params">(RibbonCommandContext context)</span> <span class="hljs-keyword">throws</span> Exception {<br>    Map&lt;String, Object&gt; info = <span class="hljs-built_in">this</span>.helper.debug(context.getMethod(), context.getUri(), context.getHeaders(), context.getParams(), context.getRequestEntity());<br>    <span class="hljs-type">RibbonCommand</span> <span class="hljs-variable">command</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.ribbonCommandFactory.create(context);<br>    <span class="hljs-keyword">try</span> {<br>        <span class="hljs-type">ClientHttpResponse</span> <span class="hljs-variable">response</span> <span class="hljs-operator">=</span> (ClientHttpResponse)command.execute();<br>        <span class="hljs-built_in">this</span>.helper.appendDebug(info, response.getRawStatusCode(), response.getHeaders());<br>        <span class="hljs-keyword">return</span> response;<br>    } <span class="hljs-keyword">catch</span> (HystrixRuntimeException var5) {<br>        <span class="hljs-type">HystrixRuntimeException</span> <span class="hljs-variable">ex</span> <span class="hljs-operator">=</span> var5;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.handleException(info, ex);<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p><code>this.ribbonCommandFactory.create(context);</code> 这里为我们创建了一个<code>HttpClientRibbonCommand</code></p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> HttpClientRibbonCommand <span class="hljs-title function_">create</span><span class="hljs-params">(<span class="hljs-keyword">final</span> RibbonCommandContext context)</span> {<br>    <span class="hljs-type">FallbackProvider</span> <span class="hljs-variable">zuulFallbackProvider</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getFallbackProvider(context.getServiceId());<br>    <span class="hljs-type">String</span> <span class="hljs-variable">serviceId</span> <span class="hljs-operator">=</span> context.getServiceId();<br>    <span class="hljs-type">RibbonLoadBalancingHttpClient</span> <span class="hljs-variable">client</span> <span class="hljs-operator">=</span> (RibbonLoadBalancingHttpClient)<span class="hljs-built_in">this</span>.clientFactory.getClient(serviceId, RibbonLoadBalancingHttpClient.class);<br>    client.setLoadBalancer(<span class="hljs-built_in">this</span>.clientFactory.getLoadBalancer(serviceId));<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpClientRibbonCommand</span>(serviceId, client, context, <span class="hljs-built_in">this</span>.zuulProperties, zuulFallbackProvider, <span class="hljs-built_in">this</span>.clientFactory.getClientConfig(serviceId));<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>可以看到这个<code>HttpClientRibbonCommand</code>也是实现了<code>HystrixInvokableInfo</code>，意味着这里使用了Hystrix来帮助实现。</p>
+<p><img src="/yuque-assets/7abf3d5113eec502c2f9651a3eca78695e8c7d87d8b55f56e9db51ba31884418.png" srcset="/img/loading.gif" lazyload></p>
+<p>当我们运行到<code>ClientHttpResponse response = (ClientHttpResponse)command.execute();</code>就更会发现其执行的是Hystrix执行流程</p>
+<p><img src="/yuque-assets/1f45b6bc5cf658a2d9b1fee1ef5b44a683b235e7e3440d8338413b41a6e34f54.png" srcset="/img/loading.gif" lazyload></p>
+<p>相信看到这里，可以回头去看看Hystrix了。</p>
+<h3 id="SimpleHostRoutingFilter"><a href="#SimpleHostRoutingFilter" class="headerlink" title="SimpleHostRoutingFilter"></a>SimpleHostRoutingFilter</h3><p>第二个 SimpleHostRoutingFilter</p>
+<p><img src="/yuque-assets/ea8179cf1941e576ad80c41f68045e9e73ed1ba39e6c5811e45f4f030ce4c69b.png" srcset="/img/loading.gif" lazyload></p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">run</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">RequestContext</span> <span class="hljs-variable">context</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext();<br>    <span class="hljs-type">HttpServletRequest</span> <span class="hljs-variable">request</span> <span class="hljs-operator">=</span> context.getRequest();<br>    MultiValueMap&lt;String, String&gt; headers = <span class="hljs-built_in">this</span>.helper.buildZuulRequestHeaders(request);<br>    MultiValueMap&lt;String, String&gt; params = <span class="hljs-built_in">this</span>.helper.buildZuulRequestQueryParams(request);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">verb</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getVerb(request);<br>    <span class="hljs-type">InputStream</span> <span class="hljs-variable">requestEntity</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getRequestBody(request);<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.getContentLength(request) &lt; <span class="hljs-number">0L</span>) {<br>        context.setChunkedRequestBody();<br>    }<br><br>    <span class="hljs-type">String</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.helper.buildZuulRequestURI(request);<br>    <span class="hljs-built_in">this</span>.helper.addIgnoredHeaders(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[<span class="hljs-number">0</span>]);<br><br>    <span class="hljs-keyword">try</span> {<br>        <span class="hljs-type">CloseableHttpResponse</span> <span class="hljs-variable">response</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.forward(<span class="hljs-built_in">this</span>.httpClient, verb, uri, request, headers, params, requestEntity);<br>        <span class="hljs-built_in">this</span>.setResponse(response);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    } <span class="hljs-keyword">catch</span> (Exception var9) {<br>        <span class="hljs-type">Exception</span> <span class="hljs-variable">ex</span> <span class="hljs-operator">=</span> var9;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulRuntimeException</span>(<span class="hljs-built_in">this</span>.handleException(ex));<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> CloseableHttpResponse <span class="hljs-title function_">forward</span><span class="hljs-params">(CloseableHttpClient httpclient, String verb, String uri, HttpServletRequest request, MultiValueMap&lt;String, String&gt; headers, MultiValueMap&lt;String, String&gt; params, InputStream requestEntity)</span> <span class="hljs-keyword">throws</span> Exception {<br>	Map&lt;String, Object&gt; info = <span class="hljs-built_in">this</span>.helper.debug(verb, uri, headers, params, requestEntity);<br>	<span class="hljs-type">URL</span> <span class="hljs-variable">host</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext().getRouteHost();<br>	<span class="hljs-type">HttpHost</span> <span class="hljs-variable">httpHost</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getHttpHost(host);<br>	uri = StringUtils.cleanPath(MULTIPLE_SLASH_PATTERN.matcher(host.getPath() + uri).replaceAll(<span class="hljs-string">"/"</span>));<br>	<span class="hljs-type">long</span> <span class="hljs-variable">contentLength</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getContentLength(request);<br>	<span class="hljs-type">ContentType</span> <span class="hljs-variable">contentType</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>	<span class="hljs-keyword">if</span> (request.getContentType() != <span class="hljs-literal">null</span>) {<br>		contentType = ContentType.parse(request.getContentType());<br>	}<br><br>	<span class="hljs-type">InputStreamEntity</span> <span class="hljs-variable">entity</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamEntity</span>(requestEntity, contentLength, contentType);<br>	<span class="hljs-type">HttpRequest</span> <span class="hljs-variable">httpRequest</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.buildHttpRequest(verb, uri, entity, headers, params, request);<br>	log.debug(httpHost.getHostName() + <span class="hljs-string">" "</span> + httpHost.getPort() + <span class="hljs-string">" "</span> + httpHost.getSchemeName());<br>	<span class="hljs-type">CloseableHttpResponse</span> <span class="hljs-variable">zuulResponse</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.forwardRequest(httpclient, httpHost, httpRequest);<br>	<span class="hljs-built_in">this</span>.helper.appendDebug(info, zuulResponse.getStatusLine().getStatusCode(), <span class="hljs-built_in">this</span>.revertHeaders(zuulResponse.getAllHeaders()));<br>	<span class="hljs-keyword">return</span> zuulResponse;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>post类型的Filter有两个，SendErrorFilter ，在出错的时候会执行。如果提供了errorPath，就会转发到这个地址去处理。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">shouldFilter</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">RequestContext</span> <span class="hljs-variable">ctx</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext();<br>    <span class="hljs-keyword">return</span> ctx.getThrowable() != <span class="hljs-literal">null</span> &amp;&amp; !ctx.getBoolean(<span class="hljs-string">"sendErrorFilter.ran"</span>, <span class="hljs-literal">false</span>);<br>}<br><br><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">run</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">try</span> {<br>        <span class="hljs-type">RequestContext</span> <span class="hljs-variable">ctx</span> <span class="hljs-operator">=</span> RequestContext.getCurrentContext();<br>        <span class="hljs-type">ExceptionHolder</span> <span class="hljs-variable">exception</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.findZuulException(ctx.getThrowable());<br>        <span class="hljs-type">HttpServletRequest</span> <span class="hljs-variable">request</span> <span class="hljs-operator">=</span> ctx.getRequest();<br>        request.setAttribute(<span class="hljs-string">"javax.servlet.error.status_code"</span>, exception.getStatusCode());<br>        log.warn(<span class="hljs-string">"Error during filtering"</span>, exception.getThrowable());<br>        request.setAttribute(<span class="hljs-string">"javax.servlet.error.exception"</span>, exception.getThrowable());<br>        <span class="hljs-keyword">if</span> (StringUtils.hasText(exception.getErrorCause())) {<br>            request.setAttribute(<span class="hljs-string">"javax.servlet.error.message"</span>, exception.getErrorCause());<br>        }<br><br>        <span class="hljs-type">RequestDispatcher</span> <span class="hljs-variable">dispatcher</span> <span class="hljs-operator">=</span> request.getRequestDispatcher(<span class="hljs-built_in">this</span>.errorPath);<br>        <span class="hljs-keyword">if</span> (dispatcher != <span class="hljs-literal">null</span>) {<br>            ctx.set(<span class="hljs-string">"sendErrorFilter.ran"</span>, <span class="hljs-literal">true</span>);<br>            <span class="hljs-keyword">if</span> (!ctx.getResponse().isCommitted()) {<br>                ctx.setResponseStatusCode(exception.getStatusCode());<br>                dispatcher.forward(request, ctx.getResponse());<br>            }<br>        }<br>    } <span class="hljs-keyword">catch</span> (Exception var5) {<br>        <span class="hljs-type">Exception</span> <span class="hljs-variable">ex</span> <span class="hljs-operator">=</span> var5;<br>        ReflectionUtils.rethrowRuntimeException(ex);<br>    }<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>SendResponseFilter ，当响应正常执行时执行。这里的执行更简单，设置响应头和输出响应。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">run</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">try</span> {<br>        <span class="hljs-built_in">this</span>.addResponseHeaders();<br>        <span class="hljs-built_in">this</span>.writeResponse();<br>    } <span class="hljs-keyword">catch</span> (Exception var2) {<br>        <span class="hljs-type">Exception</span> <span class="hljs-variable">ex</span> <span class="hljs-operator">=</span> var2;<br>        ReflectionUtils.rethrowRuntimeException(ex);<br>    }<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>正如上面介绍的执行流程，zuul会初始化多个Filter。</p>
+<p><img src="/yuque-assets/ead4e856f8754ac729826a39e94907db7379af5a02c116962072d4d5381fa3a9.png" srcset="/img/loading.gif" lazyload></p>
+<p>对于springboot的组件集成，我们知道相关配置会定义在对应包的spring.factories文件中</p>
+<p><img src="/yuque-assets/f5698b87edb540d186ca7d0f7bdca7099e51c885d6f9455fcb928eea2c558f94.png" srcset="/img/loading.gif" lazyload></p>
+<p>以<code>ZuulProxyAutoConfiguration</code>为例子，这里面会帮我们创建bean， 比如<code>DiscoveryClientRouteLocator</code></p>
+<p><img src="/yuque-assets/81700cf3518f45825046c3854c254786f558c0ae8a0ba45bfe0badcb7fef830d.png" srcset="/img/loading.gif" lazyload></p>
+<p>这个Filter会不会有印象？</p>
+<p><img src="/yuque-assets/c2ad6de2d1d108eb36418ba7fb2fe8eb45d792433acea7a91ff2f7fcb8c859d3.png" srcset="/img/loading.gif" lazyload></p>
+<p>是的，filter的创建在这里完成了</p>
+<p><img src="/yuque-assets/c73dfe447196723f0d6e16add0925557f544607c1fc6c90ee2e67eeab56de25f.png" srcset="/img/loading.gif" lazyload>让我们看看<code>ZuulProxyAutoConfiguration</code> 的父类 <code>ZuulServerAutoConfiguration</code></p>
+<p>这里面创建了很多更基础与通用的Filter</p>
+<p><img src="/yuque-assets/6d81e5572b6ca9d6f778fcfbbe4c423d15640a0a5e330debeebb6f3988007f1c.png" srcset="/img/loading.gif" lazyload></p>
+<p>也就是说zuul初始化过程中已经把10个Filter创建好并且加载进入到系统中</p>
+<p>还有一点也要知道的是，<code>zuulServlet</code>的初始化也会在此</p>
+<p><img src="/yuque-assets/ab229cc05f6529a4650f301a58ae248f289c45554e5ea30b48cd21d6e5f28cbd.png" srcset="/img/loading.gif" lazyload></p>
+<p>在zuulServletFilter方法中，我们可以看到这里创建了一个filterRegistration。</p>
+<p><img src="/yuque-assets/78924a8363bbcff770f48aa083aa55bf8462d51b6339d7762ee16561ef5f3f6e.png" srcset="/img/loading.gif" lazyload></p>
+<p>结合我们在执行流程中从Registry中拿filter的操作，我们可能会问，如何将Filter保存到Registry中的？</p>
+<p>实际上这步是在内部类ZuulFilterConfiguration中完成了初始化以及加载。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration(</span><br><span class="hljs-meta">    proxyBeanMethods = false</span><br><span class="hljs-meta">)</span><br><span class="hljs-keyword">protected</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ZuulFilterConfiguration</span> {<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> Map&lt;String, ZuulFilter&gt; filters;<br><br>    <span class="hljs-keyword">protected</span> <span class="hljs-title function_">ZuulFilterConfiguration</span><span class="hljs-params">()</span> {<br>    }<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> ZuulFilterInitializer <span class="hljs-title function_">zuulFilterInitializer</span><span class="hljs-params">(CounterFactory counterFactory, TracerFactory tracerFactory)</span> {<br>        <span class="hljs-type">FilterLoader</span> <span class="hljs-variable">filterLoader</span> <span class="hljs-operator">=</span> FilterLoader.getInstance();<br>        <span class="hljs-type">FilterRegistry</span> <span class="hljs-variable">filterRegistry</span> <span class="hljs-operator">=</span> FilterRegistry.instance();<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ZuulFilterInitializer</span>(<span class="hljs-built_in">this</span>.filters, counterFactory, tracerFactory, filterLoader, filterRegistry);<br>    }<br>}<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ZuulFilterInitializer</span><span class="hljs-params">(Map&lt;String, ZuulFilter&gt; filters, CounterFactory counterFactory, TracerFactory tracerFactory, FilterLoader filterLoader, FilterRegistry filterRegistry)</span> {<br>        <span class="hljs-built_in">this</span>.filters = filters;<br>        <span class="hljs-built_in">this</span>.counterFactory = counterFactory;<br>        <span class="hljs-built_in">this</span>.tracerFactory = tracerFactory;<br>        <span class="hljs-built_in">this</span>.filterLoader = filterLoader;<br>        <span class="hljs-built_in">this</span>.filterRegistry = filterRegistry;<br>    }<br></code></pre></td></tr></tbody></table></figure>
+
+<p>这里就是初始化的代码部分，和开始的图片流程对应。</p>
+<h2 id="Filter执行流程"><a href="#Filter执行流程" class="headerlink" title="Filter执行流程"></a>Filter执行流程</h2><p>在上面代码分析的时候我们已经看到了部分代码实现，这里以图的方式总结一下。可以看到zuul的代码逻辑是比较清晰，代码也比较工整易于理解。</p>
+<p><img src="/yuque-assets/6fc0356542d14677a06f1e227d8bd6eb21f7c66e4f0ac6d5a9e7d9209cb890c0.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="路由定位流程"><a href="#路由定位流程" class="headerlink" title="路由定位流程"></a>路由定位流程</h2><p><img src="/yuque-assets/0a04becfc6b2530a25f0663d9906a7cea7960ec9eed705fe1cca345194646e81.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="请求执行流程"><a href="#请求执行流程" class="headerlink" title="请求执行流程"></a>请求执行流程</h2><p>普通请求通过simpleHostRoutingFilter处理。 如果是使用serverId的微服务请求，就会执行RibbonRoutingFilter</p>
+<p><img src="/yuque-assets/9db5642c5663f3351804ead6daf39cac3cf56693c539a4980b5e5174d9681bda.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="拓展使用"><a href="#拓展使用" class="headerlink" title="拓展使用"></a>拓展使用</h2><p>上面我们介绍的是关于zuul对于请求的定位与发送。网关还可以用于权限的校验，流量监控等工作</p>
+<p>我们在项目中使用token来进行模拟，在user-demo中使用JWTToken来对用户进行验证</p>
+<hr>
+<p>可以看出来，Netflix这套微服务解决方案组件相互影响，互相支持，形成生态。而springCloud在此基础上，也开发出了更优秀的组件，并且持续更新。而增加了额外的组件之后，我们就会考虑在别的方面做减法，比如每个服务中心的配置是否能够简化，服务之间的配置又可以如何优化等，都应该成为我们关心的问题。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-chain-item">分布式与中间件</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" class="category-chain-item">微服务</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Spring-Cloud/" class="print-no-link">#Spring Cloud</a>
+      
+        <a href="/tags/Zuul/" class="print-no-link">#Zuul</a>
+      
+        <a href="/tags/API%E7%BD%91%E5%85%B3/" class="print-no-link">#API网关</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>服务网关Zuul</div>
+      <div>https://q792821266.github.io/yuque/96108759/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年9月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/09/02/%E5%80%BC%E4%BC%A0%E9%80%92/" title="值传递">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">值传递</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/200588690/" title="声明式接口调用Fegin">
+                        <span class="hidden-mobile">声明式接口调用Fegin</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

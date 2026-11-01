@@ -1,0 +1,1015 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="分布式事务指在分布式系统中，多个服务和数据库之间需要保持数据一致性的事务操作。由于分布式系统的复杂性，实现一致性具有挑战性。以下是几种主流的分布式事务解决方案。  简介方案没有孰优孰劣，只有适用场景的不同。理解CAP（Consistency, Availability, Partition tolerance）的原理对分布式事务的设计会有一定的帮助。 两阶段提交（2PC，Two-Phase Com">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式事务">
+<meta property="og:url" content="https://q792821266.github.io/yuque/232515563/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="分布式事务指在分布式系统中，多个服务和数据库之间需要保持数据一致性的事务操作。由于分布式系统的复杂性，实现一致性具有挑战性。以下是几种主流的分布式事务解决方案。  简介方案没有孰优孰劣，只有适用场景的不同。理解CAP（Consistency, Availability, Partition tolerance）的原理对分布式事务的设计会有一定的帮助。 两阶段提交（2PC，Two-Phase Com">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-15T02:57:11.221Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.461Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="分布式事务">
+<meta property="article:tag" content="2PC">
+<meta property="article:tag" content="TCC">
+<meta property="article:tag" content="Saga">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>分布式事务 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="分布式事务"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-15 10:57" pubdate>
+          2025年8月15日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">分布式事务</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>分布式事务指在分布式系统中，多个服务和数据库之间需要保持数据一致性的事务操作。由于分布式系统的复杂性，实现一致性具有挑战性。以下是几种主流的分布式事务解决方案。</p>
+<hr>
+<h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>方案没有孰优孰劣，只有适用场景的不同。理解CAP（Consistency, Availability, Partition tolerance）的原理对分布式事务的设计会有一定的帮助。</p>
+<h5 id="两阶段提交（2PC，Two-Phase-Commit）"><a href="#两阶段提交（2PC，Two-Phase-Commit）" class="headerlink" title="两阶段提交（2PC，Two-Phase Commit）"></a>两阶段提交（2PC，Two-Phase Commit）</h5><p>2PC的设计原则就是强一致性</p>
+<p><strong>原理</strong>：</p>
+<ul>
+<li>第一阶段，准备：协调者向所有参与者发送准备请求，参与者执行事务但不提交，返回是否可以提交</li>
+<li>第二阶段，提交：如果所有参与者都返回”<strong>可以提交</strong>“，协调者发送提交请求，参与者提交；否则发送回滚请求</li>
+</ul>
+<p><strong>优点</strong>:</p>
+<ul>
+<li>实现简单，强一致</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>同步阻塞，性能差</li>
+<li>协调者单点故障风险高</li>
+<li>不适合高并发场景</li>
+</ul>
+<h5 id="三阶段提交（3PC，-Three-Phase-Commit）"><a href="#三阶段提交（3PC，-Three-Phase-Commit）" class="headerlink" title="三阶段提交（3PC， Three-Phase Commit）"></a>三阶段提交（3PC， Three-Phase Commit）</h5><p>3PC通过引入超时与预提交，弱化了一致性以提升可用性，增加容错。这是一种性能和一致的平衡。</p>
+<p>原理：</p>
+<p>在2PC基础上增加一个”预提交“阶段，降低阻塞和协调者宕机的风险。在每个阶段，参与者都可以通过<strong>超时机制</strong>自行决定回滚事务。协调者宕机，参与者不会无限等待，而是更具预设的超时机制自动回滚，避免资源长时间锁定</p>
+<ul>
+<li>Can Commit：询问是否可以提交</li>
+<li>Pre Commit：预提交，锁定资源但不真正提交</li>
+<li>Do Commit：正式提交或回滚</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>对协调者容错性更高</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>实现复杂，仍然存在性能瓶颈</li>
+</ul>
+<h5 id="本地事务-消息队列（异步确保最终一致性）"><a href="#本地事务-消息队列（异步确保最终一致性）" class="headerlink" title="本地事务+消息队列（异步确保最终一致性）"></a>本地事务+消息队列（异步确保最终一致性）</h5><p>原理：</p>
+<ul>
+<li>服务A完成本地事务后，发送消息到消息队列</li>
+<li>服务B从队列中消费消息，执行自己的事务</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>高性能，解耦</li>
+<li>最终一致性</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>实现复杂，需要处理消息幂等性、重复消费的问题</li>
+</ul>
+<h5 id="TCC（Try-Confirm-Cancel）模式"><a href="#TCC（Try-Confirm-Cancel）模式" class="headerlink" title="TCC（Try-Confirm-Cancel）模式"></a>TCC（Try-Confirm-Cancel）模式</h5><p>原理：</p>
+<ul>
+<li>Try：预留资源</li>
+<li>Confirm：确认并执行操作</li>
+<li>Cancel：取消并释放资源</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>灵活控制事务流程</li>
+<li>支持业务定制</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>每个服务都需要实现三种操作，开发成本高</li>
+</ul>
+<p>实现：</p>
+<ul>
+<li>使用TCC框架，如ByteTCC 、Hmily</li>
+<li>每个服务需要实现三种接口，配合事务协调器</li>
+</ul>
+<h5 id="Saga模式"><a href="#Saga模式" class="headerlink" title="Saga模式"></a>Saga模式</h5><p>原理：</p>
+<p>将长事务拆分为多个本地事务，每个本地事务都由对应的补偿操作（回滚）</p>
+<p>优点：</p>
+<ul>
+<li>非阻塞，适合长事务 微服务架构</li>
+<li>支持最终一致性</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要设计补偿逻辑，业务侵入性强</li>
+</ul>
+<p>实现：</p>
+<ul>
+<li>使用Saga框架，如Apache ServiceComb Saga 、Seata</li>
+<li>结合Spring Cloud微服务架构</li>
+</ul>
+<h5 id="分布式数据库自带事务机制"><a href="#分布式数据库自带事务机制" class="headerlink" title="分布式数据库自带事务机制"></a>分布式数据库自带事务机制</h5><p>如Google Spanner 、TiDB、 CockroachDB等数据库支持分布式事务</p>
+<p>优点：</p>
+<ul>
+<li>开发简单，数据库层面保证一致性</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>以来特定数据库，迁移成本高</li>
+</ul>
+<hr>
+<h4 id="如何选择"><a href="#如何选择" class="headerlink" title="如何选择"></a>如何选择</h4><ul>
+<li>强一致性：考虑2PC 或 TCC</li>
+<li>高性能、可接受最终一致性：考虑消息队列或Saga</li>
+<li>业务复杂度高：Saga</li>
+<li>如果使用分布式数据库：可直接使用数据库事务</li>
+</ul>
+<h4 id="一些思考"><a href="#一些思考" class="headerlink" title="一些思考"></a>一些思考</h4><ol>
+<li>3PC 引入了超时机制，为什么2PC不引入呢？<br>确实2PC可以引入超时机制，但是这会导致一致性风险。</li>
+</ol>
+<ul>
+<li>如果参与者在超时后回滚，而协调者其实已经决定提交但是消息未送达，这会导致部分提交，部分回滚，破坏一致性。</li>
+<li>2PC的设计假设协调者是”最终裁决者“，参与者不能自行决定事务结果，否则违背了协议的核心原则<strong>强一致性</strong></li>
+<li><strong>2PC</strong>：倾向于 <strong>Consistency + Partition Tolerance</strong>，牺牲 <strong>Availability</strong></li>
+<li><strong>3PC</strong>：尝试在 <strong>Consistency 和 Availability</strong> 之间做平衡，但在网络分区下可能牺牲一致性</li>
+</ul>
+<ol start="2">
+<li><p>3PC阶段中Can Commit的意义是什么</p>
+</li>
+<li><p>提前探测参与者状态</p>
+</li>
+</ol>
+<ul>
+<li>协调者先询问参与者是否可以提交，而不是直接要求准备提交</li>
+<li>参与者此时没有锁定资源，只是做出判断。这样是<strong>非侵入的</strong>，不会影响参与者的状态。也可以提高成功率，如果有参与者拒绝，可以提前放弃，避免后续的锁定</li>
+</ul>
+<ol start="2">
+<li>为后续做准备</li>
+<li>增强容错</li>
+</ol>
+<ul>
+<li>即使协调者在这个阶段宕机，参与者此时并没有做任何操作，不会造成资源锁定，使整个协议更具有<strong>可恢复性</strong></li>
+</ul>
+<hr>
+<ol start="3">
+<li>因为引入了新的阶段，或者说从2阶段变成了3阶段，阶段之间的切换变多，就可能在此期间出现一致性问题，比如Can commit资源可用，但是Pre Commit就不可用了</li>
+</ol>
+<p>确实会出现这种不一致问题，但是</p>
+<p>3PC的设计意图是：降低阻塞和提高容错性，而非完全避免资源不一致。</p>
+<hr>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><h4 id="我们来扩展一个-Spring-Boot-微服务架构下的分布式事务实现示例，分别使用："><a href="#我们来扩展一个-Spring-Boot-微服务架构下的分布式事务实现示例，分别使用：" class="headerlink" title="我们来扩展一个 Spring Boot 微服务架构下的分布式事务实现示例，分别使用："></a>我们来扩展一个 <strong>Spring Boot 微服务架构下的分布式事务实现示例</strong>，分别使用：</h4><ul>
+<li><strong>2PC</strong>：基于 XA 数据源（如 Atomikos）</li>
+<li><strong>3PC</strong>：模拟实现（因缺乏成熟框架）</li>
+<li><strong>TCC</strong>：使用 Hmily 框架</li>
+</ul>
+<hr>
+<h4 id="✅-一、2PC-示例（Spring-Boot-Atomikos）"><a href="#✅-一、2PC-示例（Spring-Boot-Atomikos）" class="headerlink" title="✅ 一、2PC 示例（Spring Boot + Atomikos）"></a>✅ 一、2PC 示例（Spring Boot + Atomikos）</h4><h5 id="📦-依赖配置（pom-xml）"><a href="#📦-依赖配置（pom-xml）" class="headerlink" title="📦 依赖配置（pom.xml）"></a>📦 依赖配置（<code>pom.xml</code>）</h5><figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.atomikos<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>transactions-jta<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.0.8<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></tbody></table></figure>
+
+<h5 id="🛠️-配置两个-XA-数据源（application-yml）"><a href="#🛠️-配置两个-XA-数据源（application-yml）" class="headerlink" title="🛠️ 配置两个 XA 数据源（application.yml）"></a>🛠️ 配置两个 XA 数据源（<code>application.yml</code>）</h5><figure class="highlight yaml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">jta:</span><br>    <span class="hljs-attr">atomikos:</span><br>      <span class="hljs-attr">datasource:</span><br>        <span class="hljs-attr">ds1:</span><br>          <span class="hljs-attr">unique-resource-name:</span> <span class="hljs-string">ds1</span><br>          <span class="hljs-attr">xa-data-source-classname:</span> <span class="hljs-string">com.mysql.cj.jdbc.MysqlXADataSource</span><br>          <span class="hljs-attr">xa-properties:</span><br>            <span class="hljs-attr">user:</span> <span class="hljs-string">root</span><br>            <span class="hljs-attr">password:</span> <span class="hljs-string">root</span><br>            <span class="hljs-attr">url:</span> <span class="hljs-string">jdbc:mysql://localhost:3306/db1</span><br>        <span class="hljs-attr">ds2:</span><br>          <span class="hljs-attr">unique-resource-name:</span> <span class="hljs-string">ds2</span><br>          <span class="hljs-attr">xa-data-source-classname:</span> <span class="hljs-string">com.mysql.cj.jdbc.MysqlXADataSource</span><br>          <span class="hljs-attr">xa-properties:</span><br>            <span class="hljs-attr">user:</span> <span class="hljs-string">root</span><br>            <span class="hljs-attr">password:</span> <span class="hljs-string">root</span><br>            <span class="hljs-attr">url:</span> <span class="hljs-string">jdbc:mysql://localhost:3306/db2</span><br></code></pre></td></tr></tbody></table></figure>
+
+<h5 id="🧩-示例业务逻辑"><a href="#🧩-示例业务逻辑" class="headerlink" title="🧩 示例业务逻辑"></a>🧩 示例业务逻辑</h5><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TransferService</span> {<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> AccountRepository1 repo1;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> AccountRepository2 repo2;<br><br>    <span class="hljs-meta">@Transactional</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">transfer</span><span class="hljs-params">(Long fromId, Long toId, BigDecimal amount)</span> {<br>        repo1.debit(fromId, amount);<br>        repo2.credit(toId, amount);<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h4 id="✅-二、3PC-示例（Spring-Boot-模拟）"><a href="#✅-二、3PC-示例（Spring-Boot-模拟）" class="headerlink" title="✅ 二、3PC 示例（Spring Boot 模拟）"></a>✅ 二、3PC 示例（Spring Boot 模拟）</h4><p>由于没有成熟的 3PC 框架，我们模拟一个协调器服务和两个参与者服务：</p>
+<h5 id="🧩-参与者接口"><a href="#🧩-参与者接口" class="headerlink" title="🧩 参与者接口"></a>🧩 参与者接口</h5><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Participant3PC</span> {<br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">canCommit</span><span class="hljs-params">()</span>;<br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">preCommit</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">doCommit</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">rollback</span><span class="hljs-params">()</span>;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<h5 id="🧩-协调器服务"><a href="#🧩-协调器服务" class="headerlink" title="🧩 协调器服务"></a>🧩 协调器服务</h5><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping("/coordinator")</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CoordinatorController</span> {<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> ParticipantServiceA serviceA;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> ParticipantServiceB serviceB;<br><br>    <span class="hljs-meta">@PostMapping("/execute")</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">executeTransaction</span><span class="hljs-params">()</span> {<br>        <span class="hljs-keyword">if</span> (!serviceA.canCommit() || !serviceB.canCommit()) {<br>            serviceA.rollback();<br>            serviceB.rollback();<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">"Rollback"</span>;<br>        }<br><br>        <span class="hljs-keyword">if</span> (!serviceA.preCommit() || !serviceB.preCommit()) {<br>            serviceA.rollback();<br>            serviceB.rollback();<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">"Rollback"</span>;<br>        }<br><br>        serviceA.doCommit();<br>        serviceB.doCommit();<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">"Committed"</span>;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h4 id="✅-三、TCC-示例（Spring-Boot-Hmily）"><a href="#✅-三、TCC-示例（Spring-Boot-Hmily）" class="headerlink" title="✅ 三、TCC 示例（Spring Boot + Hmily）"></a>✅ 三、TCC 示例（Spring Boot + Hmily）</h4><h5 id="📦-依赖配置（pom-xml）-1"><a href="#📦-依赖配置（pom-xml）-1" class="headerlink" title="📦 依赖配置（pom.xml）"></a>📦 依赖配置（<code>pom.xml</code>）</h5><figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.dromara<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hmily-spring-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.6.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></tbody></table></figure>
+
+<h5 id="🧩-TCC-接口定义"><a href="#🧩-TCC-接口定义" class="headerlink" title="🧩 TCC 接口定义"></a>🧩 TCC 接口定义</h5><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@HmilyTCC(confirmMethod = "confirm", cancelMethod = "cancel")</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">AccountService</span> {<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">tryReserve</span><span class="hljs-params">(Long accountId, BigDecimal amount)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">confirm</span><span class="hljs-params">(Long accountId, BigDecimal amount)</span>;<br><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">cancel</span><span class="hljs-params">(Long accountId, BigDecimal amount)</span>;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<h5 id="🧩-实现类"><a href="#🧩-实现类" class="headerlink" title="🧩 实现类"></a>🧩 实现类</h5><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AccountServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">AccountService</span> {<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">tryReserve</span><span class="hljs-params">(Long accountId, BigDecimal amount)</span> {<br>        <span class="hljs-comment">// 预留资金</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    }<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">confirm</span><span class="hljs-params">(Long accountId, BigDecimal amount)</span> {<br>        <span class="hljs-comment">// 扣款</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    }<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">cancel</span><span class="hljs-params">(Long accountId, BigDecimal amount)</span> {<br>        <span class="hljs-comment">// 释放预留</span><br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3><hr>
+<h4 id="✅-四、Saga-示例（Spring-Boot-Seata-sage模式）"><a href="#✅-四、Saga-示例（Spring-Boot-Seata-sage模式）" class="headerlink" title="✅ 四、Saga 示例（Spring Boot + Seata sage模式）"></a>✅ 四、Saga 示例（Spring Boot + Seata sage模式）</h4><p>以下是一个完整的 <strong>Spring Boot + Seata Saga 模式</strong> 的分布式事务实现示例，适用于订单创建与库存扣减的业务场景。该示例基于 PostgreSQL 和 MyBatis，使用 JSON 状态机定义 Saga 流程。</p>
+<h5 id="✅-项目结构概览"><a href="#✅-项目结构概览" class="headerlink" title="✅ 项目结构概览"></a>✅ 项目结构概览</h5><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs plain">src/<br>├── main/<br>│   ├── java/com/example/<br>│   │   ├── saga/                 # Saga 状态机定义<br>│   │   │   └── OrderSaga.java<br>│   │   ├── service/              # 服务层<br>│   │   │   ├── OrderService.java<br>│   │   │   └── InventoryService.java<br>│   │   ├── mapper/               # MyBatis Mapper<br>│   │   │   ├── OrderMapper.java<br>│   │   │   └── InventoryMapper.java<br>│   │   ├── model/                # 实体类<br>│   │   │   ├── Order.java<br>│   │   │   └── Inventory.java<br>│   │   └── Application.java      # 启动类<br>│   └── resources/<br>│       ├── statemachine/order_saga.json  # Saga 状态机配置<br>│       ├── mapper/              # MyBatis XML<br>│       ├── application.yml      # Spring Boot 配置<br>│       └── seata.conf           # Seata 配置（可选）<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h5 id="✅-关键配置"><a href="#✅-关键配置" class="headerlink" title="✅ 关键配置"></a>✅ 关键配置</h5><p>📦 <code>pom.xml</code> 依赖</p>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>io.seata<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>seata-spring-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.5.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.mybatis.spring.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mybatis-spring-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.postgresql<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>postgresql<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>42.6.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></tbody></table></figure>
+
+<h6 id="⚙️-application-yml"><a href="#⚙️-application-yml" class="headerlink" title="⚙️ application.yml"></a>⚙️ <code>application.yml</code></h6><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs plain">spring:<br>  application:<br>    name: order-service<br>  datasource:<br>    url: jdbc:postgresql://localhost:5432/order_db<br>    username: postgres<br>    password: 123456<br>    driver-class-name: org.postgresql.Driver<br><br>seata:<br>  enabled: true<br>  application-id: order-service<br>  tx-service-group: my-tx-group<br>  service:<br>    vgroup-mapping:<br>      my-tx-group: default<br>    grouplist:<br>      default: 127.0.0.1:8091<br>  registry:<br>    type: nacos<br>    nacos:<br>      server-addr: localhost:8848<br>  config:<br>    type: nacos<br>    nacos:<br>      server-addr: localhost:8848<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h5 id="✅-Saga-状态机定义（order-saga-json）"><a href="#✅-Saga-状态机定义（order-saga-json）" class="headerlink" title="✅ Saga 状态机定义（order_saga.json）"></a>✅ Saga 状态机定义（<code>order_saga.json</code>）</h5><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs plain">{<br>  "Name": "createOrderSaga",<br>  "StartState": "CreateOrder",<br>  "States": {<br>    "CreateOrder": {<br>      "ServiceName": "orderService",<br>      "ServiceMethod": "createOrder",<br>      "CompensateState": "CompensateCreateOrder",<br>      "Next": "DeductInventory"<br>    },<br>    "DeductInventory": {<br>      "ServiceName": "inventoryService",<br>      "ServiceMethod": "deductInventory",<br>      "CompensateState": "CompensateDeductInventory",<br>      "IsEnd": true<br>    },<br>    "CompensateCreateOrder": {<br>      "ServiceName": "orderService",<br>      "ServiceMethod": "compensateCreateOrder",<br>      "IsEnd": true<br>    },<br>    "CompensateDeductInventory": {<br>      "ServiceName": "inventoryService",<br>      "ServiceMethod": "compensateDeductInventory",<br>      "IsEnd": true<br>    }<br>  }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h5 id="✅-服务层实现"><a href="#✅-服务层实现" class="headerlink" title="✅ 服务层实现"></a>✅ 服务层实现</h5><h6 id="📌-OrderService-java"><a href="#📌-OrderService-java" class="headerlink" title="📌 OrderService.java"></a>📌 <code>OrderService.java</code></h6><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs plain">@Service<br>public class OrderService {<br><br>    @Autowired<br>    private OrderMapper orderMapper;<br><br>    @SagaStart(timeoutSeconds = 60)<br>    public void createOrder(Order order) {<br>        orderMapper.createOrder(order);<br>        System.out.println("订单创建成功：" + order.getId());<br>    }<br><br>    public void compensateCreateOrder(Order order) {<br>        orderMapper.deleteOrder(order.getId());<br>        System.out.println("补偿：订单已删除：" + order.getId());<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<h6 id="📌-InventoryService-java"><a href="#📌-InventoryService-java" class="headerlink" title="📌 InventoryService.java"></a>📌 <code>InventoryService.java</code></h6><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs plain">@Service<br>public class InventoryService {<br><br>    @Autowired<br>    private InventoryMapper inventoryMapper;<br><br>    public void deductInventory(Long productId, Integer count) {<br>        inventoryMapper.deductInventory(productId, count);<br>        System.out.println("库存扣减成功：" + productId + ", 数量：" + count);<br>    }<br><br>    public void compensateDeductInventory(Long productId, Integer count) {<br>        inventoryMapper.addInventory(productId, count);<br>        System.out.println("补偿：库存已恢复：" + productId + ", 数量：" + count);<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h5 id="✅-Mapper-接口"><a href="#✅-Mapper-接口" class="headerlink" title="✅ Mapper 接口"></a>✅ Mapper 接口</h5><h6 id="📌-OrderMapper-java"><a href="#📌-OrderMapper-java" class="headerlink" title="📌 OrderMapper.java"></a>📌 <code>OrderMapper.java</code></h6><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs plain">@Mapper<br>public interface OrderMapper {<br>    @Insert("INSERT INTO orders(product_id, count, status) VALUES(#{productId}, #{count}, 'CREATED')")<br>    @Options(useGeneratedKeys = true, keyProperty = "id")<br>    void createOrder(Order order);<br><br>    @Delete("DELETE FROM orders WHERE id = #{id}")<br>    void deleteOrder(Long id);<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<h6 id="📌-InventoryMapper-java"><a href="#📌-InventoryMapper-java" class="headerlink" title="📌 InventoryMapper.java"></a>📌 <code>InventoryMapper.java</code></h6><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plain">@Mapper<br>public interface InventoryMapper {<br>    @Update("UPDATE inventory SET total = total - #{count} WHERE product_id = #{productId}")<br>    void deductInventory(@Param("productId") Long productId, @Param("count") Integer count);<br><br>    @Update("UPDATE inventory SET total = total + #{count} WHERE product_id = #{productId}")<br>    void addInventory(@Param("productId") Long productId, @Param("count") Integer count);<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h5 id="✅-控制器触发-Saga-流程"><a href="#✅-控制器触发-Saga-流程" class="headerlink" title="✅ 控制器触发 Saga 流程"></a>✅ 控制器触发 Saga 流程</h5><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs plain">@RestController<br>@RequestMapping("/order")<br>public class OrderController {<br><br>    @Autowired<br>    private StateMachineEngine stateMachineEngine;<br><br>    @PostMapping("/create")<br>    public String createOrder(@RequestBody Order order) {<br>        Map&amp;lt;String, Object&amp;gt; params = new HashMap&amp;lt;&amp;gt;();<br>        params.put("order", order);<br>        StateMachineInstance instance = stateMachineEngine.startWithBusinessKey(<br>            "createOrderSaga", null, params, order.getId().toString());<br>        return instance.getStateMachineInstanceStatus().toString();<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<h3 id="✅-总结建议"><a href="#✅-总结建议" class="headerlink" title="✅ 总结建议"></a>✅ 总结建议</h3><table>
+<thead>
+<tr>
+<th>协议</th>
+<th>Spring Boot 实现方式</th>
+<th>推荐场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2PC</td>
+<td>Atomikos + XA 数据源</td>
+<td>强一致性，事务短</td>
+</tr>
+<tr>
+<td>3PC</td>
+<td>自定义协调器模拟</td>
+<td>理论研究或容错测试</td>
+</tr>
+<tr>
+<td>TCC</td>
+<td>Hmily 框架</td>
+<td>高性能业务，资源预留明确</td>
+</tr>
+</tbody></table>
+<h4 id="分布式事务方案对比表"><a href="#分布式事务方案对比表" class="headerlink" title="分布式事务方案对比表"></a>分布式事务方案对比表</h4><table>
+<thead>
+<tr>
+<th><strong>协议</strong></th>
+<th><strong>核心机制</strong></th>
+<th><strong>一致性类型</strong></th>
+<th><strong>优点</strong></th>
+<th><strong>缺点</strong></th>
+<th><strong>Spring Boot 实现方式</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>2PC</strong></td>
+<td>两阶段：Prepare → Commit/Rollback</td>
+<td>强一致性</td>
+<td>简单直观，事务原子性强</td>
+<td>阻塞严重，协调者单点故障</td>
+<td>使用 XA 数据源（如 Atomikos）</td>
+</tr>
+<tr>
+<td><strong>3PC</strong></td>
+<td>三阶段：CanCommit → PreCommit → Commit/Rollback</td>
+<td>弱一致性</td>
+<td>非阻塞，容错性更好</td>
+<td>实现复杂，工业界少用</td>
+<td>自定义协调器模拟流程</td>
+</tr>
+<tr>
+<td><strong>TCC</strong></td>
+<td>Try → Confirm → Cancel，业务级资源预留</td>
+<td>强一致性</td>
+<td>灵活，适合资源控制场景</td>
+<td>业务侵入性强，开发成本高</td>
+<td>使用 Hmily 框架，注解式 TCC</td>
+</tr>
+<tr>
+<td><strong>Saga</strong></td>
+<td>本地事务 + 补偿机制，状态机驱动</td>
+<td>最终一致性</td>
+<td>非阻塞，适合长事务</td>
+<td>补偿逻辑复杂，一致性弱化</td>
+<td>使用 Seata Saga 状态机定义</td>
+</tr>
+</tbody></table>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-chain-item">分布式与中间件</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/%E4%BA%8B%E5%8A%A1%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/" class="category-chain-item">事务与一致性</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="print-no-link">#分布式事务</a>
+      
+        <a href="/tags/2PC/" class="print-no-link">#2PC</a>
+      
+        <a href="/tags/TCC/" class="print-no-link">#TCC</a>
+      
+        <a href="/tags/Saga/" class="print-no-link">#Saga</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>分布式事务</div>
+      <div>https://q792821266.github.io/yuque/232515563/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/233060052/" title="限流">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">限流</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/231048501/" title="身份验证与鉴权">
+                        <span class="hidden-mobile">身份验证与鉴权</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

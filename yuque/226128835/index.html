@@ -1,0 +1,1277 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="区别HTTP调用：  协议：基于HTTP协议，通常用于Web服务 通用：跨平台、跨语言，任何支持HTTP的客户端都可以于服务端通信 数据格式：使用JSON或XML进行数据传输，较臃肿 灵活性：HTTP调用不需要客户端和服务端使用相同的技术栈，只需要遵循RESTful规范  RPC调用  协议：基于TCP&#x2F;IP协议，通常用于高性能服务调用 效率：RPC调用更高效，数据传输格式可以自定义，通常使用二进">
+<meta property="og:type" content="article">
+<meta property="og:title" content="传输协议（HTTP&#x2F;TCP&#x2F;TLS...）">
+<meta property="og:url" content="https://q792821266.github.io/yuque/226128835/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="区别HTTP调用：  协议：基于HTTP协议，通常用于Web服务 通用：跨平台、跨语言，任何支持HTTP的客户端都可以于服务端通信 数据格式：使用JSON或XML进行数据传输，较臃肿 灵活性：HTTP调用不需要客户端和服务端使用相同的技术栈，只需要遵循RESTful规范  RPC调用  协议：基于TCP&#x2F;IP协议，通常用于高性能服务调用 效率：RPC调用更高效，数据传输格式可以自定义，通常使用二进">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-01T08:12:04.506Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.476Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="HTTP">
+<meta property="article:tag" content="TCP">
+<meta property="article:tag" content="TLS">
+<meta property="article:tag" content="RPC">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>传输协议（HTTP/TCP/TLS...） - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="传输协议（HTTP/TCP/TLS...）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-07-01 16:12" pubdate>
+          2025年7月1日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          35 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">传输协议（HTTP/TCP/TLS...）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h1><p>HTTP调用：</p>
+<ol>
+<li>协议：基于HTTP协议，通常用于Web服务</li>
+<li>通用：跨平台、跨语言，任何支持HTTP的客户端都可以于服务端通信</li>
+<li>数据格式：使用JSON或XML进行数据传输，较臃肿</li>
+<li>灵活性：HTTP调用不需要客户端和服务端使用相同的技术栈，只需要遵循RESTful规范</li>
+</ol>
+<p>RPC调用</p>
+<ol>
+<li>协议：基于TCP/IP协议，通常用于高性能服务调用</li>
+<li>效率：RPC调用更高效，数据传输格式可以自定义，通常使用二进制格式（如Protobuf）减少数据开销</li>
+<li>透明：RPC强调像调用本地服务一样调用远程服务，调用过程对用户透明</li>
+<li>技术栈：要求客户端和服务端使用相同的RPC框架（如gRPC 、Dubbo），需要一致</li>
+</ol>
+<p>如何选择？</p>
+<p>如果对性能要求高，且可使用统一的技术栈，RPC是更好的选择。</p>
+<p>如果需要跨平台、跨语言的调用 HTTP更合适。</p>
+<h1 id="RPC常见的实现"><a href="#RPC常见的实现" class="headerlink" title="RPC常见的实现"></a>RPC常见的实现</h1><ul>
+<li>gRPC<br>Google开发，支持多种编程语言，使用Http/2协议和Protobuf数据格式。高效、跨语言、支持双向流和连接复用</li>
+<li>Thrift<br>最初Facebook开发，现为Apache开源项目，支持25中编程语言。轻量、跨语言、支持多种序列化格式</li>
+<li>Dubbo<br>由阿里巴巴开发，主要用于Java，提供高性能的NIO通讯和多协议集成。提供服务动态寻址于路由、软负载均衡和容错</li>
+<li>Spring Cloud<br>基于SpringBoot，提供微服务架构的解决方案，支持Java。集成配置管理、服务发现、断路器、智能路由等工具</li>
+<li>Motan<br>微博开发， 支持Java， 提供高可用与负载均衡 。使用Netty NIO进行远程通讯，支持服务注册和订阅</li>
+<li>Tars<br>腾讯开发，支持C++， 提供服务发布、管理命令和心跳上报等功能。适用于高性能服务调用和微服务架构</li>
+</ul>
+<p>以下是我在向microsoft copilot的问答学习的一些总结</p>
+<h3 id="TCP-IP-传输控制协议-互联网协议"><a href="#TCP-IP-传输控制协议-互联网协议" class="headerlink" title="TCP/IP 传输控制协议/互联网协议"></a>TCP/IP 传输控制协议/互联网协议</h3><p>TCP/IP是互联网通信的基础协议，它定义了输入如何从一台计算机传输到另一台计算机</p>
+<ul>
+<li>TCP（Transmission Contro Protocol）：负责将数据分割成小包，保证数据可靠传输（有序，不丢失）</li>
+<li>IP （Internet Protocol）：负责数据包的寻址和路由，即如何找到目标</li>
+</ul>
+<p>📦 举个例子：TCP/IP 就像是快递系统，TCP 是打包和保证送达的过程，IP 是地址和路线规划</p>
+<h3 id="TLS-传输层安全协议"><a href="#TLS-传输层安全协议" class="headerlink" title="TLS 传输层安全协议"></a>TLS 传输层安全协议</h3><p>TLS（Transport Layer Security）是一个加密协议，用于在两个通信端建立安全连接</p>
+<p>TLS 工作在 TCP 之上，确保数据在传输过程中不会被窃听或篡改</p>
+<p>TLS 提供：</p>
+<ul>
+<li>加密，防止窃听</li>
+<li>完整性校验，防止篡改</li>
+<li>身份验证，通常使用证书</li>
+</ul>
+<p>🔐 类比：TLS 就像是在快递包裹外加了一层保险箱，只有收件人能打开</p>
+<h3 id="HTTPS-安全的超文本传输协议"><a href="#HTTPS-安全的超文本传输协议" class="headerlink" title="HTTPS 安全的超文本传输协议"></a>HTTPS 安全的超文本传输协议</h3><p>HTTPS是HTTP的安全版本，它在HTTP和TCP之间加入了TLS。所以 HTTPS = HTTP + TLS + TCP/IP</p>
+<p>如果网站使用了HTTPS，就表示通信内容是加密的，安全性更高</p>
+<p>🌐 举例：访问 <code>https://www.example.com</code> 时，浏览器会先通过 TLS 建立安全连接，然后再用 HTTP 协议传输网页内容</p>
+<h2 id="TLS-加密"><a href="#TLS-加密" class="headerlink" title="TLS 加密"></a>TLS 加密</h2><p>通常我们说的加密放生在传输层之上， 不一定就在传输层。</p>
+<p>TLS协议的加密过程主要包括以下几个方面：</p>
+<ol>
+<li>握手阶段（TLS Handshake）</li>
+</ol>
+<ul>
+<li>客户端（比如浏览器）和服务器首先协商使用哪种加密算法</li>
+<li>服务器会发送自己的数字证书（通常是由CA签发），用于身份验证</li>
+<li>双方通过密钥交换算法（RSA 、ECDHE）协商出一个对称加密密钥</li>
+</ul>
+<ol start="2">
+<li>数据传输阶段</li>
+</ol>
+<ul>
+<li>密钥协商完成后，后续的数据传输就使用这个密钥进行对称加密</li>
+<li>即使数据被中间人截获，也无法解密内容</li>
+</ul>
+<ol start="3">
+<li>完整性校验</li>
+</ol>
+<ul>
+<li>TLS 还会对每个数据包进行完整性校验（如HMAC），防止数据被篡改</li>
+</ul>
+<h3 id="TLS-加密过程简要说明："><a href="#TLS-加密过程简要说明：" class="headerlink" title="TLS 加密过程简要说明："></a>TLS 加密过程简要说明：</h3><ol>
+<li><strong>客户端发起连接请求（Client Hello）</strong>：</li>
+</ol>
+<ul>
+<li>客户端向服务端发送支持的 TLS 版本、加密算法列表、随机数（Client Random）等信息。</li>
+</ul>
+<ol start="2">
+<li><strong>服务端响应（Server Hello）并发送证书</strong>：</li>
+</ol>
+<ul>
+<li>服务端选择加密算法，返回自己的随机数（Server Random）。</li>
+<li>服务端发送自己的数字证书（通常是 X.509 格式），其中包含服务端的公钥和由可信 CA 签发的签名。</li>
+</ul>
+<ol start="3">
+<li><strong>客户端验证服务端证书</strong>：</li>
+</ol>
+<ul>
+<li>客户端使用本地的 CA 根证书链验证服务端证书的合法性。</li>
+<li>验证通过后，客户端确认服务端身份。</li>
+</ul>
+<ol start="4">
+<li><strong>密钥交换（根据不同的密钥交换算法有所不同）</strong>：</li>
+</ol>
+<ul>
+<li><p>如果使用的是 <strong>RSA 密钥交换</strong>（现在较少使用）：</p>
+</li>
+<li><p>客户端生成一个预主密钥（Pre-Master Secret），用服务端证书中的公钥加密后发送给服务端。</p>
+</li>
+<li><p>服务端用自己的私钥解密得到预主密钥。</p>
+</li>
+<li><p>如果使用的是 <strong>ECDHE（椭圆曲线 Diffie-Hellman）</strong>：</p>
+</li>
+<li><p>双方通过 Diffie-Hellman 协议协商出一个共享密钥，服务端的证书用于验证身份，而不是直接参与加密。</p>
+</li>
+</ul>
+<ol start="5">
+<li><strong>生成对称密钥</strong>：</li>
+</ol>
+<ul>
+<li>客户端和服务端使用 Client Random、Server Random 和 Pre-Master Secret 共同生成一个对称密钥（Session Key）。</li>
+</ul>
+<ol start="6">
+<li><strong>使用对称密钥进行加密通信</strong>：</li>
+</ol>
+<ul>
+<li>后续的数据传输使用对称加密算法（如 AES），因为对称加密效率更高。</li>
+</ul>
+<h3 id="加密类型"><a href="#加密类型" class="headerlink" title="加密类型"></a>加密类型</h3><p>TLS 中用到了两种加密方式：</p>
+<table>
+<thead>
+<tr>
+<th><strong>加密类型</strong></th>
+<th><strong>用途</strong></th>
+<th><strong>特点</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>非对称加密</strong></td>
+<td>握手阶段，用于密钥交换和身份验证</td>
+<td>安全但计算开销大</td>
+</tr>
+<tr>
+<td><strong>对称加密</strong></td>
+<td>数据传输阶段</td>
+<td>快速高效，适合大量数据</td>
+</tr>
+</tbody></table>
+<p>当你访问HTTPS网站时，TLS就在背后默默完成了加密工作。</p>
+<p>我们常说的“加密通信”、”SSL加密” （SSL 是 TLS 的前身） 基本上都是指TLS协议中实现的加密机制。</p>
+<h2 id="SSL-和-TLS的区别"><a href="#SSL-和-TLS的区别" class="headerlink" title="SSL 和 TLS的区别"></a>SSL 和 TLS的区别</h2><ul>
+<li>SSL（Secure Sockets Layer） 是最早的加密通信协议，由Netscape 在1990年代开发</li>
+<li>TLS（Transport Layer Security） 是SSL的继任者，是更安全、更现代的版本</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>协议版本</strong></th>
+<th><strong>状态</strong></th>
+<th><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SSL 1.0</td>
+<td>从未发布</td>
+<td>存在严重漏洞</td>
+</tr>
+<tr>
+<td>SSL 2.0</td>
+<td>已废弃</td>
+<td>存在安全问题</td>
+</tr>
+<tr>
+<td>SSL 3.0</td>
+<td>已废弃</td>
+<td>被发现有严重漏洞（如 POODLE 攻击）</td>
+</tr>
+<tr>
+<td>TLS 1.0/1.1</td>
+<td>已废弃</td>
+<td>安全性不足</td>
+</tr>
+<tr>
+<td><strong>TLS 1.2</strong></td>
+<td>主流使用</td>
+<td>安全性强，广泛支持</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>SSL加密和TLS加密是一个同一个东西，只是“SSL”这个词更广为人知</p>
+<h2 id="加密算法"><a href="#加密算法" class="headerlink" title="加密算法"></a>加密算法</h2><table>
+<thead>
+<tr>
+<th><strong>算法</strong></th>
+<th><strong>类型</strong></th>
+<th><strong>用途</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>AES（Advanced Encryption Standard）</strong></td>
+<td>✅ 对称加密</td>
+<td>用于加密大量数据，速度快</td>
+</tr>
+<tr>
+<td><strong>RSA（Rivest–Shamir–Adleman）</strong></td>
+<td>❗ 非对称加密</td>
+<td>用于密钥交换、数字签名</td>
+</tr>
+<tr>
+<td><strong>ECDHE（Elliptic Curve Diffie-Hellman Ephemeral）</strong></td>
+<td>❗ 密钥交换协议（基于非对称加密）</td>
+<td>用于协商对称密钥</td>
+</tr>
+</tbody></table>
+<p>对称加密：加密与解密使用同一个密钥，如AES</p>
+<p>非对称加密： 使用一对密钥（公钥与私钥），如RSA 、ECC</p>
+<p>ECDHE是一中密钥交换协议，使用<strong>椭圆曲线密码学</strong>（ECC）实现临时密钥交换</p>
+<h3 id="ECC-和-ECDHE"><a href="#ECC-和-ECDHE" class="headerlink" title="ECC 和 ECDHE"></a>ECC 和 ECDHE</h3><p>ECC（Elliptic Curve Cryptography） 是一种非对称加密算法的数学基础</p>
+<p>ECDHE（Elliptic Curve Diffie-Hellman Ephemeral）是基于ECC的一种密钥交换协议</p>
+<p>ECDHE是ECDH的“临时密钥”版本（Ephemeral），每次连接都生成新的密钥对，支持前向保密（Perfect Forward Secrecy）</p>
+<p>前向保密就是你没有版本通过截获的一个密钥对把之前的信息破获，因为每次都是新的临时密钥对，只和当前有关。</p>
+<table>
+<thead>
+<tr>
+<th><strong>名称</strong></th>
+<th><strong>类型</strong></th>
+<th><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ECC</td>
+<td>算法基础</td>
+<td>椭圆曲线密码学，是一类非对称加密算法的数学基础</td>
+</tr>
+<tr>
+<td>ECDH</td>
+<td>密钥交换协议</td>
+<td>基于 ECC 的 Diffie-Hellman 协议</td>
+</tr>
+<tr>
+<td>ECDHE</td>
+<td>临时密钥交换协议</td>
+<td>ECDH 的增强版，支持前向保密（Ephemeral）</td>
+</tr>
+</tbody></table>
+<p>TLS是现代加密通信的核心，使用RSA\ECDHE等非对称算法协商密钥，再用AES 等堆成算法加密数据</p>
+<h3 id="为什么需要ECDHE"><a href="#为什么需要ECDHE" class="headerlink" title="为什么需要ECDHE"></a>为什么需要ECDHE</h3><p>我们知道ECDHE是一种密钥交换协议，主要作用是，在通信双方之间安全地协商出一个对称加密密钥，供后续数据加密使用。</p>
+<p>现在TLS协议（尤其是TLS1.2 和1.3）的设计理念：</p>
+<ol>
+<li>非对称加密（如RSA 或 ECDHE）</li>
+</ol>
+<ul>
+<li>用于密钥交换（协商出对称密钥）</li>
+<li>用于身份验证（如服务器证书）</li>
+</ul>
+<ol start="2">
+<li>对称加密（如AES）</li>
+</ol>
+<ul>
+<li>用于实际的数据传输加密</li>
+<li>加密速度快，适合大数据量通信</li>
+</ul>
+<h4 id="为什么选择ECDHE而不是传统的RSA密钥交换"><a href="#为什么选择ECDHE而不是传统的RSA密钥交换" class="headerlink" title="为什么选择ECDHE而不是传统的RSA密钥交换"></a>为什么选择ECDHE而不是传统的RSA密钥交换</h4><ul>
+<li>ECDHE 支持前向保密（Perfect Forward Secrecy ,PFS）每次连接都是用临时密钥对，即使服务器私钥泄漏，历史通信内容也无法被解密。而RSA不支持。</li>
+</ul>
+<h4 id="如何实现前向保密"><a href="#如何实现前向保密" class="headerlink" title="如何实现前向保密"></a>如何实现前向保密</h4><p>关键在于它使用了临时密钥对（Ephemeral Key Pair），每次连接都重新生成</p>
+<ol>
+<li>客户端和服务端协商使用ECDHE算法</li>
+<li>双方各自生成一对临时的ECC密钥对（公钥+私钥）</li>
+</ol>
+<ul>
+<li>密钥对只用于当前会话，会话结束后立即丢弃</li>
+<li>服务器的长期私钥（用于身份验证）不会参与密钥交换过程</li>
+</ul>
+<ol start="3">
+<li>双方交换临时公钥，并使用ECDH算法计算出相同的共享密钥（对称密钥）</li>
+</ol>
+<ul>
+<li>客户端使用 自己的私钥+ 服务端的临时公钥</li>
+<li>服务端使用 自己的私钥+客户端的临时公钥</li>
+</ul>
+<ol start="4">
+<li>使用这个共享密钥进行对称加密通信（如AES）</li>
+</ol>
+<h2 id="加密可以发生在哪些层"><a href="#加密可以发生在哪些层" class="headerlink" title="加密可以发生在哪些层"></a>加密可以发生在哪些层</h2><table>
+<thead>
+<tr>
+<th><strong>层级</strong></th>
+<th><strong>示例协议/技术</strong></th>
+<th><strong>加密方式</strong></th>
+<th><strong>特点</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>应用层</strong></td>
+<td>HTTPS、S/MIME、JWT、PGP、gRPC、SOAP WS-Security</td>
+<td><strong>应用层加密</strong></td>
+<td>加密粒度细，可定制，跨协议，但开发复杂</td>
+</tr>
+<tr>
+<td><strong>传输层</strong></td>
+<td>TLS（用于 HTTPS、FTPS、SMTP over TLS 等）</td>
+<td><strong>传输层加密</strong></td>
+<td>通用、安全性强，适用于大多数 TCP 应用</td>
+</tr>
+<tr>
+<td><strong>网络层</strong></td>
+<td>IPSec</td>
+<td><strong>网络层加密</strong></td>
+<td>加密整个 IP 包，适合 VPN、企业内网</td>
+</tr>
+<tr>
+<td><strong>链路层</strong></td>
+<td>WPA2/WPA3（Wi-Fi）、MACsec</td>
+<td><strong>链路层加密</strong></td>
+<td>局域网/物理链路安全，防止窃听</td>
+</tr>
+</tbody></table>
+<ol>
+<li>应用层加密</li>
+</ol>
+<ul>
+<li>可以在发送JSON 、XML 、Protobuf数据之前，使用AES/RSA对内容加密</li>
+<li>适用于消息队列、数据库字段加密、REST API的敏感字段加密</li>
+<li>即使传输层被攻击，数据本身仍然是加密的</li>
+</ul>
+<ol start="2">
+<li>传输层加密（TLS）</li>
+</ol>
+<ul>
+<li>最常见的方式，如HTTPS 、SMTP over TLS 、gRPC</li>
+<li>加密的是整个TCP通道，应用层无需关心加密细节</li>
+<li>缺点就是 一旦TLS被破解，所有数据都会暴露</li>
+</ul>
+<ol start="3">
+<li>网络层加密</li>
+</ol>
+<ul>
+<li>加密整个IP包，适合VPN、企业级安全通信</li>
+<li>对应用完全透明，但配置复杂，跨网络设备兼容性差</li>
+</ul>
+<ol start="4">
+<li>链路层加密</li>
+</ol>
+<ul>
+<li>比如WIFI的WPA3加密，防止无线信号被监听</li>
+<li>只保护物理链路，数据离开链路后就不再安全</li>
+</ul>
+<p><strong>不同层的加密可以互补，提升整体安全性。</strong></p>
+<hr>
+<hr>
+<h2 id="OPEN-API的加密方式"><a href="#OPEN-API的加密方式" class="headerlink" title="OPEN API的加密方式"></a>OPEN API的加密方式</h2><p>实际开发中，Open API的加密策略会根据业务场景、安全需求、监管要求和部署环境的不同而有所差异。</p>
+<h3 id="一般做法"><a href="#一般做法" class="headerlink" title="一般做法"></a>一般做法</h3><ol>
+<li>传输层加密（最常见），使用HTTPS（TLS）</li>
+</ol>
+<ul>
+<li>默认首选，大多数Open API都要通过HTTPS访问</li>
+<li>优点：简单、通用、安全，客户端和服务端都无需关心加密细节</li>
+<li>适用场景：绝大多数Web API 、RESTful API、GraphQL、gRPC等</li>
+</ul>
+<ol start="2">
+<li>应用层加密（增强安全)</li>
+</ol>
+<ul>
+<li><p>对数据本身加密</p>
+</li>
+<li><p>请求体中的敏感字段，身份证号、银行卡号使用AES加密</p>
+</li>
+<li><p>使用RSA公钥加密对称密钥（混合密钥）</p>
+</li>
+<li><p>适用场景：</p>
+</li>
+<li><p>对安全要求极高的接口，金融、医疗</p>
+</li>
+<li><p>客户端和服务端之间存在中间代理或日志系统，避免明文暴露</p>
+</li>
+</ul>
+<ol start="3">
+<li>签名机制（防篡改 + 身份验证）</li>
+</ol>
+<ul>
+<li><p>常见做法</p>
+</li>
+<li><p>使用HMAC（如HMAC-SHA256）对请求参数进行签名</p>
+</li>
+<li><p>使用JWT （JSON Web Token）携带用户身份和权限信息</p>
+</li>
+<li><p>作用</p>
+</li>
+<li><p>防止请求被篡改</p>
+</li>
+<li><p>验证请求来源是否合法</p>
+</li>
+</ul>
+<ol start="4">
+<li>Token / API key / OAuth2</li>
+</ol>
+<ul>
+<li>用于身份验证和权限控制</li>
+<li>不属于加密本身，但通常与加密机制配合使用</li>
+</ul>
+<p><strong>加密是“防偷窥”，签名是“防篡改”</strong></p>
+<hr>
+<h3 id="网站信任证书"><a href="#网站信任证书" class="headerlink" title="网站信任证书"></a>网站信任证书</h3><p>HTTPS中所需要的网站信任证书，其实是指网站使用的 <strong>SSL/TLS</strong> 证书，它是实现HTTPS安全通信的核心组成部分。</p>
+<p>网站信任证书是由受信任的证书颁发机构（CA）签发的数字证书，用于</p>
+<ol>
+<li>证明网站身份，你访问的网站是真的，而不是假冒的钓鱼网站</li>
+<li>建立加密连接，通过TLS协议</li>
+</ol>
+<h4 id="证书包含什么信息"><a href="#证书包含什么信息" class="headerlink" title="证书包含什么信息"></a>证书包含什么信息</h4><p>一个标准的TLS证书通常包含</p>
+<ul>
+<li>网站的域名</li>
+<li>公钥，用于加密通信</li>
+<li>证书颁发机构</li>
+<li>有效期，包括起始时间和过期时间</li>
+<li>签名算法 SHA-256 RSA</li>
+<li>证书序列号和指纹</li>
+</ul>
+<h4 id="为什么叫”信任“证书"><a href="#为什么叫”信任“证书" class="headerlink" title="为什么叫”信任“证书"></a>为什么叫”信任“证书</h4><p>浏览器或者操作系统会内置一批”受信任的CA根证书“，当你访问一个网站时：</p>
+<ol>
+<li>浏览器会检查该网站的证书是否由受信任的CA签发</li>
+<li>如果是，认为网站时可靠的</li>
+<li>如果不是，比如自签名证书，浏览器会弹出警告</li>
+</ol>
+<h4 id="证书在-TLS-的作用"><a href="#证书在-TLS-的作用" class="headerlink" title="证书在 TLS 的作用"></a>证书在 TLS 的作用</h4><p>当你访问一个使用HTTPS的网站时，TLS协议会经历一个”握手“过程，证书的作用体现在这个阶段</p>
+<ol>
+<li>身份认证</li>
+</ol>
+<ul>
+<li>服务器向客户端发送自己的数字证书（通常时X.509格式）</li>
+<li>客户端验证这个证书是否受信任的CA签发，是否过期，是否匹配域名</li>
+<li>验证通过，客户端就“信任”这个服务器</li>
+</ul>
+<ol start="2">
+<li>密钥协商</li>
+</ol>
+<ul>
+<li>证书中包含服务器的公钥</li>
+<li>客户端使用这个公钥协商出一个对称加密密钥（通过RSA或ECDHE等算法）</li>
+<li>后续的数据传输就使用这个对称密钥进行加密</li>
+</ul>
+<p>证书 != 加密，但它时加密的前提，通过证书完成身份验证与公钥传递两个功能后构建起信任关系与连接通道，再使用由证书参与的密钥协商生成的对称加密密钥加密数据传输。</p>
+<h2 id="TLS-会话重用"><a href="#TLS-会话重用" class="headerlink" title="TLS 会话重用"></a>TLS 会话重用</h2><p>TLS 会话重用（TLS Session Resumption）是一种优化机制，用于在客户端与服务端之间建立TLS连接时跳过完整握手过程，从而提高性能、减少延迟</p>
+<h3 id="为什么需要-TLS-会话重用"><a href="#为什么需要-TLS-会话重用" class="headerlink" title="为什么需要 TLS 会话重用"></a>为什么需要 TLS 会话重用</h3><p>TLS 握手过程涉及</p>
+<ul>
+<li>非对称加密</li>
+<li>证书验证</li>
+<li>密钥协商</li>
+</ul>
+<p>这些操作计算量大，尤其在高并发场景下会影响性能。会话重用可以避免重复握手，提升效率与性能。</p>
+<h3 id="TLS-会话重用的两种方式"><a href="#TLS-会话重用的两种方式" class="headerlink" title="TLS 会话重用的两种方式"></a>TLS 会话重用的两种方式</h3><ol>
+<li>Session ID (TLS 1.2支持)</li>
+</ol>
+<ul>
+<li>第一次握手时，服务器生成一个Session ID ， 发送给客户端</li>
+<li>客户端保存这个ID</li>
+<li>下次连接时，客户端发送这个Session ID，服务器查找是否由对应的会话信息</li>
+<li>如果找到，双方跳过完整握手，直接使用之前的对称密钥</li>
+</ul>
+<p>📌 缺点：服务器需要维护大量会话状态，扩展性差。</p>
+<ol start="2">
+<li>Session Ticket (TLS 1.2/1.3支持)</li>
+</ol>
+<ul>
+<li>第一次握手后，服务器生成一个加密的Session Ticket（包含密钥等信息），发送给客户端</li>
+<li>客户端保存这个Ticket</li>
+<li>下次连接时，客户端发送Ticket，服务器解密后恢复会话</li>
+</ul>
+<p>📌 优点：服务器无状态，适合分布式架构。</p>
+<h3 id="TLS-1-3-的改进"><a href="#TLS-1-3-的改进" class="headerlink" title="TLS 1.3 的改进"></a>TLS 1.3 的改进</h3><ul>
+<li>默认启动基于Session Ticket会话重用机制</li>
+<li>握手过程更简化，性能更高</li>
+<li>支持 0-RTT （Zero Round Trip Time）连接：客户端可以在握手前发送数据（有安全风向，需谨慎使用）</li>
+</ul>
+<h3 id="在-Java-Spring-Boot-中如何使用？"><a href="#在-Java-Spring-Boot-中如何使用？" class="headerlink" title="在 Java / Spring Boot 中如何使用？"></a>在 Java / Spring Boot 中如何使用？</h3><ul>
+<li><p><strong>客户端（如 RestTemplate、WebClient）</strong>：JDK 默认支持 TLS 会话重用，无需额外配置。</p>
+</li>
+<li><p><strong>服务端（如 Tomcat、Netty）</strong>：</p>
+</li>
+<li><p>如果启用 HTTPS，底层容器会自动支持 Session ID 或 Ticket。</p>
+</li>
+<li><p>使用 TLS 1.3 时，性能优化更明显。</p>
+</li>
+</ul>
+<h2 id="TCP和TLS"><a href="#TCP和TLS" class="headerlink" title="TCP和TLS"></a>TCP和TLS</h2><h3 id="TCP握手"><a href="#TCP握手" class="headerlink" title="TCP握手"></a>TCP握手</h3><p>目的：传输层，建立一个可靠的<strong>连接</strong>通道</p>
+<p>过程：</p>
+<ol>
+<li>客户端发送SYN：请求建立连接</li>
+<li>服务端回应SYN-ACK：同意连接并确认客户端的请求</li>
+<li>客户端发送ACK：确认服务器的回应，连接建立完成</li>
+</ol>
+<h3 id="TLS握手"><a href="#TLS握手" class="headerlink" title="TLS握手"></a>TLS握手</h3><p>目的：在已建立的TCP连接上，协商加密算法、交换密钥、验证身份，从而建立一个安全的通信通道</p>
+<table>
+<thead>
+<tr>
+<th><strong>项目</strong></th>
+<th><strong>TCP握手</strong></th>
+<th><strong>TLS握手</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>层级</td>
+<td>传输层</td>
+<td>应用层（基于传输层）</td>
+</tr>
+<tr>
+<td>目的</td>
+<td>建立连接</td>
+<td>建立安全连接</td>
+</tr>
+<tr>
+<td>是否加密</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>是否验证身份</td>
+<td>否</td>
+<td>是（通常验证服务器）</td>
+</tr>
+<tr>
+<td>是否协商加密算法</td>
+<td>否</td>
+<td>是</td>
+</tr>
+</tbody></table>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" class="category-chain-item">网络通信</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/HTTP/" class="print-no-link">#HTTP</a>
+      
+        <a href="/tags/TCP/" class="print-no-link">#TCP</a>
+      
+        <a href="/tags/TLS/" class="print-no-link">#TLS</a>
+      
+        <a href="/tags/RPC/" class="print-no-link">#RPC</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>传输协议（HTTP/TCP/TLS...）</div>
+      <div>https://q792821266.github.io/yuque/226128835/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年7月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/227563333/" title="过滤器和拦截器">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">过滤器和拦截器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/156508172/" title="K8S">
+                        <span class="hidden-mobile">K8S</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

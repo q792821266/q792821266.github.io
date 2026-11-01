@@ -1,0 +1,831 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在理解AQS 之前有必要先理解一下锁的部分概念：  重入锁 、不可重入锁：线程拿到锁之后，是否可以自由（多次）进入同一把锁同步的其他代码； 独占锁、共享锁：获得这种锁的线程是否可修改资源，可以暂时简单地将独占理解为写，共享理解读。   AQS 全称为AbstractQueuedSynchronizer ，是JDK 提供的一个同步工具类，官方将 AQS描述为提供了一个基于FIFO（First in">
+<meta property="og:type" content="article">
+<meta property="og:title" content="J.U.C并发之AQS">
+<meta property="og:url" content="https://q792821266.github.io/yuque/13614129/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="在理解AQS 之前有必要先理解一下锁的部分概念：  重入锁 、不可重入锁：线程拿到锁之后，是否可以自由（多次）进入同一把锁同步的其他代码； 独占锁、共享锁：获得这种锁的线程是否可修改资源，可以暂时简单地将独占理解为写，共享理解读。   AQS 全称为AbstractQueuedSynchronizer ，是JDK 提供的一个同步工具类，官方将 AQS描述为提供了一个基于FIFO（First in">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/143e1447a32fbf3fba9aafacd30482b87bf2548fde7657fca2646bbb3bfe83cc.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c0bd8cf53f5e2fdaa281186571bc621d3ccb3403c62efd3a26af9123717d4ecf.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6bebc864cf58dc6718c56183ccb46df1c2db379f9b042128cb3e5f9ce8da801e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d61f804aa9057f077140809c1457da636a3d95959352b5f64979a3593a5d9736.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/45132a581c54125c615a780dbc33a1484e882f3169b8a3622dbde5ed963b299a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6e7bf06cb53f57d480d0801d4d307394a7b0c5262217928da453c4e3eb601417.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3da033990445e73c72c63e5f895b905a6d81a8455c9c0f051fad1f87d785c522.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/cd8748de13170d7bcf9ee9d8f55f202d8c28a34b12d0ffd01a91226513057bcc.png">
+<meta property="article:published_time" content="2022-01-28T09:37:37.000Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.474Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JUC">
+<meta property="article:tag" content="AQS">
+<meta property="article:tag" content="锁">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/143e1447a32fbf3fba9aafacd30482b87bf2548fde7657fca2646bbb3bfe83cc.png">
+  
+  
+  
+  <title>J.U.C并发之AQS - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="J.U.C并发之AQS"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-01-28 17:37" pubdate>
+          2022年1月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          14 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">J.U.C并发之AQS</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在理解AQS 之前有必要先理解一下锁的部分概念：</p>
+<ul>
+<li><strong>重入锁 、不可重入锁</strong>：线程拿到锁之后，是否可以自由（多次）进入同一把锁同步的其他代码；</li>
+<li><strong>独占锁、共享锁</strong>：获得这种锁的线程是否可修改资源，可以暂时简单地将独占理解为写，共享理解读。</li>
+</ul>
+<hr>
+<p>AQS 全称为<strong>AbstractQueuedSynchronizer</strong> ，是JDK 提供的一个同步工具类，官方将 AQS描述为提供了一个基于FIFO（First in First out）实现了阻塞锁和同步器框架。</p>
+<p>以下截图为JDK 1.8中的类注释，另外本文也是基于JDK 1.8 进行探讨。</p>
+<p><img src="/yuque-assets/143e1447a32fbf3fba9aafacd30482b87bf2548fde7657fca2646bbb3bfe83cc.png" srcset="/img/loading.gif" lazyload></p>
+<p>概念上来说AQS 是比较抽象的东西，我自己会将其概括理解为</p>
+<hr>
+<p>一种对锁操作的封装：把线程封装为节点对象，FIFO 队列作为锁池的承载对象，根据一定的规则来进行线程与锁的调度。</p>
+<p>下面将由重入锁为入口来帮助理解一下AQS 。</p>
+<p>重入锁：</p>
+<hr>
+<p>重入的概念已经简单的介绍了，那么要做到线程可重入 我们可能需要三个东西，一个用于记录锁的持有者（owner），一个用于记录重入次数的计数值（count），一个保存线程的等待队列（waiter）；有了这三样东西那么简单的逻辑我们就可以理出来：</p>
+<p>获取锁过程： 有线程进入抢锁，</p>
+<p>先判断count是否为0，如果为0</p>
+<p>就使用CAS操作将count进行+1操作，然后修改owner的值，抢占锁成功；</p>
+<p>如果count不为0，判断owner是否为当前线程</p>
+<p>如果owner为当前线程，进行重入，</p>
+<p>即将count进行+1操作</p>
+<p>否则抢锁失败，进入等待队列。</p>
+<p>事实上java 也是这么做的，附上JDK中ReentrantLock的代码：</p>
+<p><img src="/yuque-assets/c0bd8cf53f5e2fdaa281186571bc621d3ccb3403c62efd3a26af9123717d4ecf.png" srcset="/img/loading.gif" lazyload></p>
+<p>解锁过程：先判断线程的是否为当前线程，如果不是当前线程 抛出异常解锁失败；否则对count进行-1操作，当count == 0 时 将owner设置为null，返回成功；否则返回失败，如果count不为0就意味着未完全解锁，这样别的线程是也拿不到锁的。</p>
+<p>代码截图：</p>
+<p><img src="/yuque-assets/6bebc864cf58dc6718c56183ccb46df1c2db379f9b042128cb3e5f9ce8da801e.png" srcset="/img/loading.gif" lazyload></p>
+<p>这是对于一个非公平锁的重入锁的实现，如果是公平锁我们只需要多判断一步 抢锁线程是否为等待队列中的线程就可以了，hasQueuedPredecessors()就实现了这么一个功能。</p>
+<p><img src="/yuque-assets/d61f804aa9057f077140809c1457da636a3d95959352b5f64979a3593a5d9736.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<p>接着我们来看看重独享锁和共享锁是怎么依靠AQS来实现。</p>
+<p>我们先根据现有的一些认识，包括独享锁和共享锁的定义，刚刚重入锁的原理，推导出大概的思路并不困难：</p>
+<ul>
+<li>使用三个变量分别记录 共享重入次数(readCount)，独享重入次数(writeCount)已经独享锁的持有者(owner)</li>
+<li>存放抢锁失败的线程的等待队列(waiters)</li>
+</ul>
+<p>有了这三样东西考虑一下逻辑，为了方便理解下面将共享线程理解为获取读操作的线程，将独享线程理解为获取写操作的线程。</p>
+<p>当有线程试图获取锁时时，根据不同的线程类型做不同的逻辑操作：如果是写线程进入，那么就去判断readCount是否为0，若不为0，说明已经有线程占有了，当前线程直接进入等待队列，若为0就判断writeCount是否为0，若为0就CAS修改值，并且把owner修改为自己（当前线程），若writeCount不为0 就去判断owner是否为当前线程，若为当前线程就去做重入操作，如果不是自己就乖乖进入等待队列；如果是读线程就去判断writeCount是否为0，如果不为0的话 <em>这里要注意一下</em>，这时候会去判断owner是否为当前线程，如果为当前线程就进行<strong>锁降级</strong>,如果owner不是当前线程那就进入队列等待 ，如果writeCount为0 那么就去对readCount进行CAS操作修改值，（读线程不需要记录owner）。</p>
+<p>这里稍微解释一下为什么读操作去判断写的变量，而写操作去判断读的变量：因为读写是互斥的，拥有读锁的时候不能获取写锁，拥有写锁的时候是可以通过降级获得读锁的。</p>
+<p>解锁过程相对来说和单纯的重入锁没有特别的地方，记住由于重入的特性，只有当count变为0的时候，我们才会去修改owner的值，这里也是要使用CAS 进行修改的。等待队列中做了判断如果首部线程为读线程会试着唤醒队列后一位的读线程，但不会唤醒写线程，这点是必须保证的。</p>
+<p>那么这里提一个问题，对于获取独占锁的时候我们会先判断readCount是否为0 然后再去判断writeCount是否为0对吧，那么在这个过程中如果有线程获取到了共享锁的话，那么就出问题了吧，这里的操作是有可能被分割了。 那么JDK中是怎么解决这个问题的呢？</p>
+<p>JDK中很巧妙地使用了一个int值得高低为来表示线程是读还是写，低位标记独占锁，高位标记共享锁。</p>
+<p>截图是中ReentrantReadWriteLock的部分代码注释</p>
+<p><img src="/yuque-assets/45132a581c54125c615a780dbc33a1484e882f3169b8a3622dbde5ed963b299a.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<p>好的，现在我们了解完了ReentrantReadWriteLock和ReentrantLock之后，回到AQS。</p>
+<p>相信在翻看源码的时候，你一定会看到这两个类中有很多共同点：都有等待队列，重入计数变量，加解锁操作函数。类似这样重复东西我们自然要把代码给拿出来复用。</p>
+<p>翻看一下不难发现在这两个类中分别都有如下的抽象内部类，没错 这就是JDK 所实现的代码复用，这么久了终于出现了我们的正主–AbstractQueueSynchronizer。</p>
+<p>ReentrantReadWriteLock：</p>
+<p><img src="/yuque-assets/6e7bf06cb53f57d480d0801d4d307394a7b0c5262217928da453c4e3eb601417.png" srcset="/img/loading.gif" lazyload></p>
+<p>ReentrantLock：</p>
+<p><img src="/yuque-assets/3da033990445e73c72c63e5f895b905a6d81a8455c9c0f051fad1f87d785c522.png" srcset="/img/loading.gif" lazyload></p>
+<p>让我们看看这个Sync里面都有什么，截图略… 正是一些获取锁与释放锁的方法呢，希望读到这里AQS的模样能够在你脑海浮现得更清晰一些。</p>
+<p><strong>让我们再来看看AQS的结构</strong></p>
+<hr>
+<p>AQS 的主要组成部分如下所示：</p>
+<p><img src="/yuque-assets/cd8748de13170d7bcf9ee9d8f55f202d8c28a34b12d0ffd01a91226513057bcc.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<p>总结一下：</p>
+<p>AQS是JDK提供的一个抽象类，提供了对资源的占用释放，线程挂起、唤醒的基本逻辑；并且预留了前缀为try*的方法让用户自定义实现逻辑；通过继承AQS得到特定的同步器支撑起各种业务场景以实现不同(诸如ReentrantLock/CountDownLatch/ReentrantReadWriteLock)的锁实现。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="category-chain-item">并发编程</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Java/" class="print-no-link">#Java</a>
+      
+        <a href="/tags/JUC/" class="print-no-link">#JUC</a>
+      
+        <a href="/tags/AQS/" class="print-no-link">#AQS</a>
+      
+        <a href="/tags/%E9%94%81/" class="print-no-link">#锁</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>J.U.C并发之AQS</div>
+      <div>https://q792821266.github.io/yuque/13614129/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年1月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/54414153/" title="J.U.C下的List Set Queue">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">J.U.C下的List Set Queue</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/63207191/" title="锁相关：Synchronized从使用到原理">
+                        <span class="hidden-mobile">锁相关：Synchronized从使用到原理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,873 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在springboot项目的pom文件中，我们经常会引入starter。 那么starter到底是什么，为什么用了starter之后就不需要引入相应jar了？ 作用启动器（starter）包含许多依赖项；这些依赖项是使项目快速启动和运行所需要的依赖项。 例如：通过spring-boot-starter-data-redis，可以快捷地使用Spring对Redis进行数据访问。避免了引入redis包">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Starter快速集成">
+<meta property="og:url" content="https://q792821266.github.io/yuque/235564522/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="在springboot项目的pom文件中，我们经常会引入starter。 那么starter到底是什么，为什么用了starter之后就不需要引入相应jar了？ 作用启动器（starter）包含许多依赖项；这些依赖项是使项目快速启动和运行所需要的依赖项。 例如：通过spring-boot-starter-data-redis，可以快捷地使用Spring对Redis进行数据访问。避免了引入redis包">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4dda3ef38ba17a8817859d6883b9faa0f3d9a4f8f4e823c131dd54e675f2682e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7308fd617aad03c25fa21f2a5b4059b25dd3ab7fb0bc727da80e756b7e743276.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/44d19d3c608e8f7a8ed9d417c327dbaec820c8f86ca8541478e644ed7e39e7eb.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a6fcd469f2ebf8c055764036919d795212dcad0c93e91fea2201119b67938ae2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/01dc06822ec22169d6a61fbd2d8e4bb9499dced0e6cd8a1e005094799c9ff170.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fb3f8112daf422619020f7a0f0332dd5f0e3d0e0c491cecd1f9b7d019979f9a4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6e4b17c2d848d0d13b20ea2c43111d409660aa3fe4b94476a83d3670e69bc00f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/64fbd1f285efcbd879b38b12925d3a6ac58f1dd5c49de9ca7bf4f39d31270ae5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/cb8fcba78a6b2bc6c117e5b6c211261ef7d9aaa06efbffe1bfbcda9743f3faf5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/facba19acc2ba9bcbb476629f014934669c0f47fd63f32e52b6ccf74f428e005.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f2aab87ef35bfaec320367d6abf9e4e4056484c5d80aeb2ca77e1c12187cffa4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2e6edb90e810ed0f5e90d164922c4e672baf12969b5a0f377419dd07245ee77b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fb81d0e49780fb24c564ace1da40cb6c4c8d32c352b446171f14d1fa15cfb8e3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2357b2bb474477d7c6b4c6fc5e18206ae59a0ae1b67699dfe979148590b01bc4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/98f1db9f625c2f9d2996c4c137006db4df34aa5f87f766e9eaa6fec22e78ba5b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1ca15aa7025e91739e0551f3c57a06f5625477caaff1bf020657566aedfc070f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e1cf6a5eb3d06e8b0378beb09f164cc1fd69422f711950c22335bba0bfca20d6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/400f4e925c18b09ac771915ad8ddf01b10e3140f330c314c3bfa4de9f0c9b3e0.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/de2df03ccde7b86730594cf92d4d8264040cccd368c65c7bc748eda3aed2e121.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/11da22c0a85837a383c86ad9cd16a2efbfbb39c45d203142a99bc7811d6633e8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2906adf1118cf2cd9ed99448ad1578850f497152c79d2992557d745e60d39050.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b7d765a60be3cdd7a3d9d6f0686db979a5e9d9bb2bfdfe94a42f03fff9e816b3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/648e881bd627574e26875e2fc90e3c2f1de2a71f411a129625992cce4be2bff9.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c3a2c3aa6c0c049a020cbc1019f2b15bd745b24a7e81d1715ff6f9f7e60982a8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c6d8bf8233116d70745cc6350e82f286033456c57de851d3b0ba75d3c6c9a741.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/eadca2094c04da3608cb1c7650b132c1d4d4b53fb3fc8248c7f91169ad4d1c31.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a2227f7a287b37a2347fb0aa5b262672b86c6f05958df349361adf02e257588f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e4610e17252d2b96b0f9ccfa8885b801989da53a327b7d8a2ce7719bcbdab47b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8e270aaebc8da6e8a7ca96e6972d6b8abefb0f486780f743e0fa3161f31df6ea.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1aab46a2002730ef8fa7d1c0e2d528966e9680846934bff6cad3d7787d0a76dd.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c9f9490cb88ee12c360c7f346df57129a9b9f3e935279274c0f06f2d13a386f1.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8b1bceeecd2e47eb382f29fe6bfee1ef3b99c1477395e85eeb45e61a73a8ae1b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5696ee215caea4434cf3406e2ba8717a2e8e2973592706a9c525e8237442d197.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7fe18edd679d01c7624e0779443340a9c1a254282f548067eba8bab956a70b57.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b6e9e87d49c1d2d8559f1fd1926c1b227ee1d00133e590f170b91687db521f4d.png">
+<meta property="article:published_time" content="2025-09-05T09:15:42.860Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.449Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="Spring Boot">
+<meta property="article:tag" content="Starter">
+<meta property="article:tag" content="依赖管理">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/4dda3ef38ba17a8817859d6883b9faa0f3d9a4f8f4e823c131dd54e675f2682e.png">
+  
+  
+  
+  <title>Spring Starter快速集成 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Spring Starter快速集成"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-09-05 17:15" pubdate>
+          2025年9月5日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          17 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Spring Starter快速集成</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在springboot项目的pom文件中，我们经常会引入starter。 那么starter到底是什么，为什么用了starter之后就不需要引入相应jar了？</p>
+<h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>启动器（starter）包含许多依赖项；这些依赖项是使项目快速启动和运行所需要的依赖项。</p>
+<p>例如：通过spring-boot-starter-data-redis，可以快捷地使用Spring对Redis进行数据访问。避免了引入redis包，然后还需要引入相关依赖，然后再去写一个关于redis的xml配置文件。</p>
+<h3 id="命名规范"><a href="#命名规范" class="headerlink" title="命名规范"></a>命名规范</h3><p>对于starter，官方为我们定义了相关的约定。比如说命名规范。</p>
+<p>官方开发的starter遵循类似的命名模式：spring-boot-starter-*；第三方starter命名应当遵循 thirdpartyproject-spring-boot-starter</p>
+<h3 id="常用的starter"><a href="#常用的starter" class="headerlink" title="常用的starter"></a>常用的starter</h3><ul>
+<li>spring-boot-starter-jdbc</li>
+<li>spring-boot-starter-data-redis</li>
+<li>spring-boot-starter-web</li>
+<li>spring-boot-starter-actuator</li>
+</ul>
+<p>这些都是常用的starter</p>
+<h3 id="Web开发实例"><a href="#Web开发实例" class="headerlink" title="Web开发实例"></a>Web开发实例</h3><p>现在就通过搭建一个web程序来做实例，看看starter-web给我们带来的便利性。</p>
+<ul>
+<li>只要引入spring-boot-starter-web实现快速引入和启动，无需再进行繁杂的xml配置即可快速搭建一个web工程</li>
+<li>默认基于Tomcat容器运行，可通过修改pom.xml指定运行容器，如果不想用tomcat的话，可以先排除掉tomcat的依赖后在引入其他的容器依赖，比如图中使用的jetty，这样服务就会运行在jetty容器中。</li>
+</ul>
+<p><img src="/yuque-assets/4dda3ef38ba17a8817859d6883b9faa0f3d9a4f8f4e823c131dd54e675f2682e.png" srcset="/img/loading.gif" lazyload></p>
+<p>接下来我们在代码层面看看spring-boot-starter-web里面有些什么东西。</p>
+<p>打开项目的配置文件</p>
+<p><img src="/yuque-assets/7308fd617aad03c25fa21f2a5b4059b25dd3ab7fb0bc727da80e756b7e743276.png" srcset="/img/loading.gif" lazyload></p>
+<p>点开可以看到里面包含spring-boot-starter、json的starter、tomcat的starter，意味着在web starter里面为我们整合了json、tomcat、Hibernate、springWeb、springWebMVC等。引入了starter之后，我们就不需要再像以往那样引入其他零零散散的依赖了。</p>
+<p><img src="/yuque-assets/44d19d3c608e8f7a8ed9d417c327dbaec820c8f86ca8541478e644ed7e39e7eb.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/a6fcd469f2ebf8c055764036919d795212dcad0c93e91fea2201119b67938ae2.png" srcset="/img/loading.gif" lazyload></p>
+<p>接着，我们来看看spring-boot-starter里面有些什么东西</p>
+<p><img src="/yuque-assets/01dc06822ec22169d6a61fbd2d8e4bb9499dced0e6cd8a1e005094799c9ff170.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/fb3f8112daf422619020f7a0f0332dd5f0e3d0e0c491cecd1f9b7d019979f9a4.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里面就有些更基本的例如日志、注解等大量的依赖。可以看到里面有个比较熟悉的<code>spring-boot-autoconfigure</code>，这意味着引入的是一个springboot的自动装配。那我们就去看看这里面是什么：</p>
+<p><img src="/yuque-assets/6e4b17c2d848d0d13b20ea2c43111d409660aa3fe4b94476a83d3670e69bc00f.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/64fbd1f285efcbd879b38b12925d3a6ac58f1dd5c49de9ca7bf4f39d31270ae5.png" srcset="/img/loading.gif" lazyload></p>
+<p>在源码包里面有大量的包。本次我们就以web包作为例子来说明</p>
+<p><img src="/yuque-assets/cb8fcba78a6b2bc6c117e5b6c211261ef7d9aaa06efbffe1bfbcda9743f3faf5.png" srcset="/img/loading.gif" lazyload></p>
+<p>在web.servlet包中为我们定义大量的自动装配类。就比如说这个<code>WebMvcAutoConfiguration</code></p>
+<p>实际上这个类大量使用了<code>@ConditionalOn*</code>，使得在满足condition的情况下就会加载WebMvcAutoConfiguration中的各种Bean。</p>
+<p><img src="/yuque-assets/facba19acc2ba9bcbb476629f014934669c0f47fd63f32e52b6ccf74f428e005.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们往下找找，去找一些比较熟悉的Bean来看看，就比如说这个当没有View对象的时候就会去给我们装载对象。</p>
+<p><img src="/yuque-assets/f2aab87ef35bfaec320367d6abf9e4e4056484c5d80aeb2ca77e1c12187cffa4.png" srcset="/img/loading.gif" lazyload></p>
+<p>看到这个WebMvcAutoConfiguration类实现的自动装配，这时候我们就要开始思考，我们知道springboot在启动的时候会扫描入口类包及子包下面的类，但是你会发现，我们引入的第三方包并不在这个启动类的包下面，那么第三方包是怎么被扫描到的？首先肯定不会是因为<code>@Configuration</code>这个注解，因为不在入口包下面，照样不会被扫描到。那么第三方jar包是如何被加载到的呢？</p>
+<p>先思考以下，然后这里我们打个断点跟着代码走一走：</p>
+<p><img src="/yuque-assets/2e6edb90e810ed0f5e90d164922c4e672baf12969b5a0f377419dd07245ee77b.png" srcset="/img/loading.gif" lazyload>跟着断点：</p>
+<p><img src="/yuque-assets/fb81d0e49780fb24c564ace1da40cb6c4c8d32c352b446171f14d1fa15cfb8e3.png" srcset="/img/loading.gif" lazyload></p>
+<p>一步一步：<br><img src="/yuque-assets/2357b2bb474477d7c6b4c6fc5e18206ae59a0ae1b67699dfe979148590b01bc4.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里把一些资源加载到Enumration类型的对象urls中了 ，<code>classLoader.getResources(FACTORIES_RESOURCE_LOCATION)</code>。那我们就去看看这个资源是什么东西。</p>
+<p><img src="/yuque-assets/98f1db9f625c2f9d2996c4c137006db4df34aa5f87f766e9eaa6fec22e78ba5b.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到加载了META-INF/spring.factories ，这个东西里面包含了什么呢？我们直接去autoconfiguration的jar里面找：</p>
+<p><img src="/yuque-assets/1ca15aa7025e91739e0551f3c57a06f5625477caaff1bf020657566aedfc070f.png" srcset="/img/loading.gif" lazyload></p>
+<p>里面放了大量的类的信息，这么说springboot从这个文件中读取并加载了大量的配置启动类的信息，通过这种方式把<code>spring.factories</code>文件下写入的配置类全部加载到spring容器中。</p>
+<p>继续走代码：</p>
+<p><img src="/yuque-assets/e1cf6a5eb3d06e8b0378beb09f164cc1fd69422f711950c22335bba0bfca20d6.png" srcset="/img/loading.gif" lazyload></p>
+<p>走到这个UrlResource的时候可以看到url 是当前JAR包的下面的<strong>META-INF/spring.factories</strong>，那么就读取到了这个文件的内容</p>
+<p><img src="/yuque-assets/400f4e925c18b09ac771915ad8ddf01b10e3140f330c314c3bfa4de9f0c9b3e0.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/de2df03ccde7b86730594cf92d4d8264040cccd368c65c7bc748eda3aed2e121.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/11da22c0a85837a383c86ad9cd16a2efbfbb39c45d203142a99bc7811d6633e8.png" srcset="/img/loading.gif" lazyload></p>
+<p>拿到里面的属性，然后遍历加载，完成加载后放入在result中。</p>
+<p>放了进去之后，回过头我们看到spring.factories下面有个文件叫<code>spring-configuration-metadata.json</code></p>
+<p><img src="/yuque-assets/2906adf1118cf2cd9ed99448ad1578850f497152c79d2992557d745e60d39050.png" srcset="/img/loading.gif" lazyload></p>
+<p>在这里可以看到一些比较熟悉的东西：</p>
+<p><img src="/yuque-assets/b7d765a60be3cdd7a3d9d6f0686db979a5e9d9bb2bfdfe94a42f03fff9e816b3.png" srcset="/img/loading.gif" lazyload></p>
+<p>这个东西就有点像是我们会在properties、yml文件写的东西</p>
+<p>比如说这个spring.activemq，当我们在yml里面配置它的时候它会像这样弹出来，就是因为上面这个json文件的存在，不需要我们一个一个写，会有代码补全，会有属性提示。</p>
+<p><img src="/yuque-assets/648e881bd627574e26875e2fc90e3c2f1de2a71f411a129625992cce4be2bff9.png" srcset="/img/loading.gif" lazyload></p>
+<p>也可以通过ctrl+左键点击定位到所在的properties</p>
+<p><img src="/yuque-assets/c3a2c3aa6c0c049a020cbc1019f2b15bd745b24a7e81d1715ff6f9f7e60982a8.png" srcset="/img/loading.gif" lazyload></p>
+<p>通过上面的介绍，我们已经对starter已有了初步了解。下面如何来自己写一个starter呢？</p>
+<p><img src="/yuque-assets/c6d8bf8233116d70745cc6350e82f286033456c57de851d3b0ba75d3c6c9a741.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里有问题，我们在编写自己的starter的时候不应该引入不要引入 <code>spring-boot-starter</code> 或 <code>spring-boot-starter-web</code>，因为 Starter 应该是轻量的、无侵入的。</p>
+<p>如果你希望 Starter 支持某些功能（如 Redis、Kafka），可以在 Starter 中引入相关依赖，但建议使用 <code>@ConditionalOnClass</code> 控制是否启用。</p>
+<p>所以自定义的starter的pom应该像这样：</p>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">project</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">"http://maven.apache.org/POM/4.0.0"</span></span><br><span class="hljs-tag">  <span class="hljs-attr">xmlns:xsi</span>=<span class="hljs-string">"http://www.w3.org/2001/XMLSchema-instance"</span></span><br><span class="hljs-tag">  <span class="hljs-attr">xsi:schemaLocation</span>=<span class="hljs-string">"http://maven.apache.org/POM/4.0.0 </span></span><br><span class="hljs-string"><span class="hljs-tag">  http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">modelVersion</span>&gt;</span>4.0.0<span class="hljs-tag">&lt;/<span class="hljs-name">modelVersion</span>&gt;</span><br><br>  <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.example<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>my-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.0.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">packaging</span>&gt;</span>jar<span class="hljs-tag">&lt;/<span class="hljs-name">packaging</span>&gt;</span><br><br>  <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>my-starter<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">description</span>&gt;</span>Custom Spring Boot Starter<span class="hljs-tag">&lt;/<span class="hljs-name">description</span>&gt;</span><br><br>  <span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">java.version</span>&gt;</span>17<span class="hljs-tag">&lt;/<span class="hljs-name">java.version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">spring.boot.version</span>&gt;</span>3.1.2<span class="hljs-tag">&lt;/<span class="hljs-name">spring.boot.version</span>&gt;</span> <span class="hljs-comment">&lt;!-- 根据你使用的版本调整 --&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span><br><br>  <span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- Spring Boot 自动配置依赖 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-autoconfigure<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 可选：用于配置属性绑定 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-configuration-processor<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">optional</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">optional</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 可选：如果你使用了 Lombok --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.projectlombok<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>lombok<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">optional</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">optional</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br><br>  <span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>      <span class="hljs-comment">&lt;!-- 编译插件 --&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>          <span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>${java.version}<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br>          <span class="hljs-tag">&lt;<span class="hljs-name">target</span>&gt;</span>${java.version}<span class="hljs-tag">&lt;/<span class="hljs-name">target</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br>      <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br><br>      <span class="hljs-comment">&lt;!-- 可选：打包为可发布的 jar --&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>maven-jar-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>          <span class="hljs-tag">&lt;<span class="hljs-name">archive</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">manifest</span>&gt;</span><br>              <span class="hljs-tag">&lt;<span class="hljs-name">addDefaultImplementationEntries</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">addDefaultImplementationEntries</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">manifest</span>&gt;</span><br>          <span class="hljs-tag">&lt;/<span class="hljs-name">archive</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br>      <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">project</span>&gt;</span><br></code></pre></td></tr></tbody></table></figure>
+
+<p>第二点中的第三方jar就是我们编写的，而<code>spring-configuration-metadata.json</code> 文件就是由第三步生成的。</p>
+<blockquote>
+<p>在SpringBoot 2.7+中META-INFO/spring.factories已经被spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 取代。<a href="/yuque/234112295/">Spring Boot 2.x-Spring Boot 3.x</a></p>
+</blockquote>
+<h2 id="实际操作"><a href="#实际操作" class="headerlink" title="实际操作"></a>实际操作</h2><ol>
+<li>定义一个bean对象girl，然后打成jar包<br><img src="/yuque-assets/eadca2094c04da3608cb1c7650b132c1d4d4b53fb3fc8248c7f91169ad4d1c31.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/a2227f7a287b37a2347fb0aa5b262672b86c6f05958df349361adf02e257588f.png" srcset="/img/loading.gif" lazyload></li>
+<li>写一个girl-spring-boot-starter项目，引入girl.jar。由于我们希望girl的属性不是硬编码的方式实现，而是读取配置，所以我们准备一个GirlProperties.<br><img src="/yuque-assets/e4610e17252d2b96b0f9ccfa8885b801989da53a327b7d8a2ce7719bcbdab47b.png" srcset="/img/loading.gif" lazyload><br>然后准备用于自动装配的类，<code>@Configuration</code>表示这是个配置类，<code>@EnableConfigurationProperties(GirlProperties.class)</code>表示将这个GirlProperties类属性传入。把配置的内容构建成一个真正的bean，使用<code>@Bean</code>来让交付spring管理<br><img src="/yuque-assets/8e270aaebc8da6e8a7ca96e6972d6b8abefb0f486780f743e0fa3161f31df6ea.png" srcset="/img/loading.gif" lazyload><br>无论是一个girl还是几个自定义的bean，都是一个做法。<br><img src="/yuque-assets/1aab46a2002730ef8fa7d1c0e2d528966e9680846934bff6cad3d7787d0a76dd.png" srcset="/img/loading.gif" lazyload><br>创建META-INFO/spring.factories文件，将创建的GirlAutoConfiguration全类名限定写入。<br><img src="/yuque-assets/c9f9490cb88ee12c360c7f346df57129a9b9f3e935279274c0f06f2d13a386f1.png" srcset="/img/loading.gif" lazyload><br>打包完成后，这个starter就是一个可使用的jar，可以被引入使用了。</li>
+<li>引入并使用自定义的starter<br><img src="/yuque-assets/8b1bceeecd2e47eb382f29fe6bfee1ef3b99c1477395e85eeb45e61a73a8ae1b.png" srcset="/img/loading.gif" lazyload><br>在配置文件里写上girl的属性，这样girl的对象就会被创建并且实例化。<br><img src="/yuque-assets/5696ee215caea4434cf3406e2ba8717a2e8e2973592706a9c525e8237442d197.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/7fe18edd679d01c7624e0779443340a9c1a254282f548067eba8bab956a70b57.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/b6e9e87d49c1d2d8559f1fd1926c1b227ee1d00133e590f170b91687db521f4d.png" srcset="/img/loading.gif" lazyload></li>
+</ol>
+<p>完成。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/Spring/" class="category-chain-item">Spring</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Spring-Boot/" class="print-no-link">#Spring Boot</a>
+      
+        <a href="/tags/Starter/" class="print-no-link">#Starter</a>
+      
+        <a href="/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/" class="print-no-link">#依赖管理</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Spring Starter快速集成</div>
+      <div>https://q792821266.github.io/yuque/235564522/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年9月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/240428732/" title="数据库中的log">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数据库中的log</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/09/02/%E5%80%BC%E4%BC%A0%E9%80%92/" title="值传递">
+                        <span class="hidden-mobile">值传递</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

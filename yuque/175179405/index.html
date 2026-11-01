@@ -1,0 +1,827 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="如何利用Spark解决特征处理问题？上节课，我们知道了推荐系统要使用的常用特征有哪些。但这些原始的特征是无法直接提供给推荐模型使用的，因为推荐模型本质上是一个函数，输入输出都是数字或数值型的向量。那么问题来了，像动作、喜剧、爱情、科幻这些电影风格，是怎么转换成数值供推荐模型使用的呢？用户的行为历史又是怎么转换成数值特征的呢？ 而且，类似的特征处理过程在数据量变大之后还会变得更加复杂，因为工业界的数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="05 | 特征处理">
+<meta property="og:url" content="https://q792821266.github.io/yuque/175179405/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="如何利用Spark解决特征处理问题？上节课，我们知道了推荐系统要使用的常用特征有哪些。但这些原始的特征是无法直接提供给推荐模型使用的，因为推荐模型本质上是一个函数，输入输出都是数字或数值型的向量。那么问题来了，像动作、喜剧、爱情、科幻这些电影风格，是怎么转换成数值供推荐模型使用的呢？用户的行为历史又是怎么转换成数值特征的呢？ 而且，类似的特征处理过程在数据量变大之后还会变得更加复杂，因为工业界的数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b34650b00420c3b4a02b1054fe85ad98b84a8379bdc372b45810e5ece458a474.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b8abe1a1692354f7bbc6e0d896ccf6a1a871ff4c195f420eb828de51e9ac80ce.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ac2fb06c7291faaef7375456a47287d130fbc3ae6fd8af935c28cae4548574fa.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6a4b30dfc37038bd6d7c478bd935e0e5ea5878b4f32ff80d8df3b5449111c7ae.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6af4d491267f235bc031a91249904d10876934d44de1e401ebb82d63f64e51b5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c095132fd4cac7b7c155d79683ad6ade8b982a5ccc33487a986ca4ed7cdbba3e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2e5bab1282f977587c6f0428440c9f5f2cc489c8470524c5cf2fe53f5c596073.png">
+<meta property="article:published_time" content="2024-06-28T06:04:37.785Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.454Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="推荐系统">
+<meta property="article:tag" content="特征工程">
+<meta property="article:tag" content="Spark">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/b34650b00420c3b4a02b1054fe85ad98b84a8379bdc372b45810e5ece458a474.png">
+  
+  
+  
+  <title>05 | 特征处理 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="05 | 特征处理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-28 14:04" pubdate>
+          2024年6月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">05 | 特征处理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="如何利用Spark解决特征处理问题？"><a href="#如何利用Spark解决特征处理问题？" class="headerlink" title="如何利用Spark解决特征处理问题？"></a>如何利用Spark解决特征处理问题？</h1><p>上节课，我们知道了推荐系统要使用的常用特征有哪些。但这些原始的特征是无法直接提供给推荐模型使用的，因为推荐模型本质上是一个函数，输入输出都是数字或数值型的向量。那么问题来了，像动作、喜剧、爱情、科幻这些电影风格，是怎么转换成数值供推荐模型使用的呢？用户的行为历史又是怎么转换成数值特征的呢？</p>
+<p>而且，类似的特征处理过程在数据量变大之后还会变得更加复杂，因为工业界的数据集往往都是 TB 甚至 PB 规模的，这在单机上肯定是没法处理的。那业界又是怎样进行海量数据的特征处理呢？这节课，我就带你一起来解决这几个问题。</p>
+<h2 id="业界主流的大数据处理利器：Spark"><a href="#业界主流的大数据处理利器：Spark" class="headerlink" title="业界主流的大数据处理利器：Spark"></a>业界主流的大数据处理利器：Spark</h2><p>既然要处理海量数据，那选择哪个数据处理平台就是我们首先要解决的问题。如果我们随机采访几位推荐系统领域的程序员，问他们在公司用什么平台处理大数据，我想最少有一半以上会回答是 Spark。作为业界主流的大数据处理利器，Spark 的地位毋庸置疑。所以，今天我先带你了解一下 Spark 的特点，再一起来看怎么用 Spark 处理推荐系统的特征。</p>
+<p>Spark 是一个分布式计算平台。所谓分布式，指的是计算节点之间不共享内存，需要通过网络通信的方式交换数据。Spark 最典型的应用方式就是建立在大量廉价的计算节点上，这些节点可以是廉价主机，也可以是虚拟的 Docker Container（Docker 容器）。</p>
+<p>理解了 Spark 的基本概念，我们来看看它的架构。从下面 Spark 的架构图中我们可以看到，Spark 程序由 Manager Node（管理节点）进行调度组织，由 Worker Node（工作节点）进行具体的计算任务执行，最终将结果返回给 Drive Program（驱动程序）。在物理的 Worker Node 上，数据还会分为不同的 partition（数据分片），可以说 partition 是 Spark 的基础数据单元。</p>
+<p><img src="/yuque-assets/b34650b00420c3b4a02b1054fe85ad98b84a8379bdc372b45810e5ece458a474.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>图1 Spark架构图</strong></p>
+<p>Spark 计算集群能够比传统的单机高性能服务器具备更强大的计算能力，就是由这些成百上千，甚至达到万以上规模的工作节点并行工作带来的。</p>
+<p>那在执行一个具体任务的时候，<strong>Spark 是怎么协同这么多的工作节点，通过并行计算得出最终的结果呢？</strong>这里我们用一个任务来解释一下 Spark 的工作过程。</p>
+<p>这个任务并不复杂，我们需要先从本地硬盘读取文件 textFile，再从分布式文件系统 HDFS 读取文件 hadoopFile，然后分别对它们进行处理，再把两个文件按照 ID 都 join 起来得到最终的结果。</p>
+<p>这里你没必要执着于任务的细节，只要清楚任务的大致流程就好。在 Spark 平台上处理这个任务的时候，会将这个任务拆解成一个子任务 DAG（Directed Acyclic Graph，有向无环图），再根据 DAG 决定程序各步骤执行的方法。从图 2 中我们可以看到，这个 Spark 程序分别从 textFile 和 hadoopFile 读取文件，再经过一系列 map、filter 等操作后进行 join，最终得到了处理结果。</p>
+<p><img src="/yuque-assets/b8abe1a1692354f7bbc6e0d896ccf6a1a871ff4c195f420eb828de51e9ac80ce.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>图2 某Spark程序的任务有向无环图</strong></p>
+<p>其中，最关键的过程是我们要理解哪些是可以纯并行处理的部分，哪些是必须 shuffle（混洗）和 reduce 的部分。</p>
+<p>这里的 shuffle 指的是所有 partition 的数据必须进行洗牌后才能得到下一步的数据，最典型的操作就是图 2 中的 groupByKey 操作和 join 操作。以 join 操作为例，我们必须对 textFile 数据和 hadoopFile 数据做全量的匹配才可以得到 join 后的 dataframe（Spark 保存数据的结构）。而 groupByKey 操作则需要对数据中所有相同的 key 进行合并，也需要全局的 shuffle 才能完成。</p>
+<p>与之相比，map、filter 等操作仅需要逐条地进行数据处理和转换，不需要进行数据间的操作，因此各 partition 之间可以完全并行处理。</p>
+<p>此外，在得到最终的计算结果之前，程序需要进行 reduce 的操作，从各 partition 上汇总统计结果，随着 partition 的数量逐渐减小，reduce 操作的并行程度逐渐降低，直到将最终的计算结果汇总到 master 节点（主节点）上。可以说，shuffle 和 reduce 操作的触发决定了纯并行处理阶段的边界。</p>
+<p><img src="/yuque-assets/ac2fb06c7291faaef7375456a47287d130fbc3ae6fd8af935c28cae4548574fa.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>图3 被shuffle操作分割的DAG stages</strong></p>
+<p>最后，我还想强调的是，shuffle 操作需要在不同计算节点之间进行数据交换，非常消耗计算、通信及存储资源，因此 shuffle 操作是 spark 程序应该尽量避免的。</p>
+<p>说了这么多，这里我们再用一句话总结 Spark 的计算过程：<strong>Stage 内部数据高效并行计算，Stage 边界处进行消耗资源的 shuffle 操作或者最终的 reduce 操作</strong>。</p>
+<p>清楚了 Spark 的原理，相信你已经摩拳擦掌期待将 Spark 应用在推荐系统的特征处理上了。下面，我们就进入实战阶段，用 Spark 处理我们的 Sparrow Recsys 项目的数据集。在开始学习之前，我希望你能带着 2 个问题，边学边思考： 经典的特征处理方法有什么？Spark 是如何实现这些特征处理方法的？</p>
+<h2 id="如何利用-One-hot-编码处理类别型特征"><a href="#如何利用-One-hot-编码处理类别型特征" class="headerlink" title="如何利用 One-hot 编码处理类别型特征"></a>如何利用 One-hot 编码处理类别型特征</h2><p>广义上来讲，所有的特征都可以分为两大类。第一类是<strong>类别、ID 型特征（以下简称类别型特征）</strong>。拿电影推荐来说，电影的风格、ID、标签、导演演员等信息，用户看过的电影 ID、用户的性别、地理位置信息、当前的季节、时间（上午，下午，晚上）、天气等等，这些无法用数字表示的信息全都可以被看作是类别、ID 类特征。第二类是<strong>数值型特征</strong>，能用数字直接表示的特征就是数值型特征，典型的包括用户的年龄、收入、电影的播放时长、点击量、点击率等。</p>
+<p>我们进行特征处理的目的，是把所有的特征全部转换成一个数值型的特征向量，对于数值型特征，这个过程非常简单，直接把这个数值放到特征向量上相应的维度上就可以了。但是对于类别、ID 类特征，我们应该怎么处理它们呢？</p>
+<p>这里我们就要用到 One-hot 编码（也被称为独热编码），它是将类别、ID 型特征转换成数值向量的一种最典型的编码方式。它通过把所有其他维度置为 0，单独将当前类别或者 ID 对应的维度置为 1 的方式生成特征向量。这怎么理解呢？我们举例来说，假设某样本有三个特征，分别是星期、性别和城市，我们用 [Weekday=Tuesday, Gender=Male, City=London] 来表示，用 One-hot 编码对其进行数值化的结果。</p>
+<p><img src="/yuque-assets/6a4b30dfc37038bd6d7c478bd935e0e5ea5878b4f32ff80d8df3b5449111c7ae.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>图4 One-hot编码特征向量</strong></p>
+<p>从图 4 中我们可以看到，Weekday 这个特征域有 7 个维度，Tuesday 对应第 2 个维度，所以我把对应维度置为 1。而 Gender 分为 Male 和 Female，所以对应的 One-hot 编码就有两个维度，City 特征域同理。</p>
+<p>除了这些类别型特征外，ID 型特征也经常使用 One-hot 编码。比如，在我们的 SparrowRecsys 中，用户 U 观看过电影 M，这个行为是一个非常重要的用户特征，那我们应该如何向量化这个行为呢？其实也是使用 One-hot 编码。假设，我们的电影库中一共有 1000 部电影，电影 M 的 ID 是 310（编号从 0 开始），那这个行为就可以用一个 1000 维的向量来表示，让第 310 维的元素为 1，其他元素都为 0。</p>
+<p>下面，我们就看看 SparrowRecsys 是如何利用 Spark 完成这一过程的。这里，我们使用 Spark 的机器学习库 MLlib 来完成 One-hot 特征的处理。</p>
+<p>其中，最主要的步骤是，我们先创建一个负责 One-hot 编码的转换器，OneHotEncoderEstimator，然后通过它的 fit 函数完成指定特征的预处理，并利用 transform 函数将原始特征转换成 One-hot 特征。实现思路大体上就是这样，具体的步骤你可以参考我下面给出的源码：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plain">def oneHotEncoderExample(samples:DataFrame): Unit ={  //samples样本集中的每一条数据代表一部电影的信息，其中movieId为电影id  val samplesWithIdNumber = samples.withColumn("movieIdNumber", col("movieId").cast(sql.types.IntegerType))<br><br>  //利用Spark的机器学习库Spark MLlib创建One-hot编码器  val oneHotEncoder = new OneHotEncoderEstimator()    .setInputCols(Array("movieIdNumber"))    .setOutputCols(Array("movieIdVector"))    .setDropLast(false)<br><br>  //训练One-hot编码器，并完成从id特征到One-hot向量的转换  val oneHotEncoderSamples =      oneHotEncoder.fit(samplesWithIdNumber).transform(samplesWithIdNumber)  //打印最终样本的数据结构  oneHotEncoderSamples.printSchema()  //打印10条样本查看结果  oneHotEncoderSamples.show(10)<br>_（参考 com.wzhe.sparrowrecsys.offline.spark.featureeng.FeatureEngineering__中的oneHotEncoderExample函数）_<br></code></pre></td></tr></tbody></table></figure>
+
+<p>复制代码</p>
+<p>One-hot 编码也可以自然衍生成 Multi-hot 编码（多热编码）。比如，对于历史行为序列类、标签特征等数据来说，用户往往会与多个物品产生交互行为，或者一个物品被打上多个标签，这时最常用的特征向量生成方式就是把其转换成 Multi-hot 编码。在 SparrowRecsys 中，因为每个电影都是有多个 Genre（风格）类别的，所以我们就可以用 Multi-hot 编码完成标签到向量的转换。你可以自己尝试着用 Spark 实现该过程，也可以参考 SparrowRecsys 项目中 multiHotEncoderExample 的实现，我就不多说啦。</p>
+<h2 id="数值型特征的处理-归一化和分桶"><a href="#数值型特征的处理-归一化和分桶" class="headerlink" title="数值型特征的处理 - 归一化和分桶"></a>数值型特征的处理 - 归一化和分桶</h2><p>下面，我们再好好聊一聊数值型特征的处理。你可能会问了，数值型特征本身不就是数字吗？直接放入特征向量不就好了，为什么还要处理呢？</p>
+<p>实际上，我们主要讨论两方面问题，一是特征的尺度，二是特征的分布。</p>
+<p>特征的尺度问题不难理解，比如在电影推荐中有两个特征，一个是电影的评价次数 fr，一个是电影的平均评分 fs。评价次数其实是一个数值无上限的特征，在 SparrowRecsys 所用 MovieLens 数据集上，fr 的范围一般在[0,10000]之间。对于电影的平均评分来说，因为我们采用了 5 分为满分的评分，所以特征 fs 的取值范围在[0,5]之间。</p>
+<p>由于 fr 和 fs 两个特征的尺度差距太大，如果我们把特征的原始数值直接输入推荐模型，就会导致这两个特征对于模型的影响程度有显著的区别。如果模型中未做特殊处理的话，fr 这个特征由于波动范围高出 fs 几个量级，可能会完全掩盖 fs 作用，这当然是我们不愿意看到的。为此我们希望把两个特征的尺度拉平到一个区域内，通常是[0,1]范围，这就是所谓<strong>归一化</strong>。</p>
+<p>归一化虽然能够解决特征取值范围不统一的问题，但无法改变特征值的分布。比如图 5 就显示了 Sparrow Recsys 中编号在前 1000 的电影平均评分分布。你可以很明显地看到，由于人们打分有“中庸偏上”的倾向，因此评分大量集中在 3.5 的附近，而且越靠近 3.5 的密度越大。这对于模型学习来说也不是一个好的现象，因为特征的区分度并不高。</p>
+<p><img src="/yuque-assets/6af4d491267f235bc031a91249904d10876934d44de1e401ebb82d63f64e51b5.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>图5 电影的平均评分分布</strong></p>
+<p>这该怎么办呢？我们经常会用分桶的方式来解决特征值分布极不均匀的问题。所谓“分桶（Bucketing）”，就是将样本按照某特征的值从高到低排序，然后按照桶的数量找到分位数，将样本分到各自的桶中，再用桶 ID 作为特征值。</p>
+<p>在 Spark MLlib 中，分别提供了两个转换器 MinMaxScaler 和 QuantileDiscretizer，来进行归一化和分桶的特征处理。它们的使用方法和之前介绍的 OneHotEncoderEstimator 一样，都是先用 fit 函数进行数据预处理，再用 transform 函数完成特征转换。下面的代码就是 SparrowRecSys 利用这两个转换器完成特征归一化和分桶的过程。</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs plain">def ratingFeatures(samples:DataFrame): Unit ={  samples.printSchema()  samples.show(10)<br><br>  //利用打分表ratings计算电影的平均分、被打分次数等数值型特征  val movieFeatures = samples.groupBy(col("movieId"))    .agg(count(lit(1)).as("ratingCount"),      avg(col("rating")).as("avgRating"),      variance(col("rating")).as("ratingVar"))      .withColumn("avgRatingVec", double2vec(col("avgRating")))<br><br>  movieFeatures.show(10)<br><br>  //分桶处理，创建QuantileDiscretizer进行分桶，将打分次数这一特征分到100个桶中  val ratingCountDiscretizer = new QuantileDiscretizer()    .setInputCol("ratingCount")    .setOutputCol("ratingCountBucket")    .setNumBuckets(100)<br><br>  //归一化处理，创建MinMaxScaler进行归一化，将平均得分进行归一化  val ratingScaler = new MinMaxScaler()    .setInputCol("avgRatingVec")    .setOutputCol("scaleAvgRating")<br><br>  //创建一个pipeline，依次执行两个特征处理过程  val pipelineStage: Array[PipelineStage] = Array(ratingCountDiscretizer, ratingScaler)  val featurePipeline = new Pipeline().setStages(pipelineStage)<br><br>  val movieProcessedFeatures = featurePipeline.fit(movieFeatures).transform(movieFeatures)  //打印最终结果  movieProcessedFeatures.show(<br>_（参考 com.wzhe.sparrowrecsys.offline.spark.featureeng.FeatureEngineering中的ratingFeatures函数）_<br></code></pre></td></tr></tbody></table></figure>
+
+<p>当然，对于数值型特征的处理方法还远不止于此，在经典的 YouTube 深度推荐模型中，我们就可以看到一些很有意思的处理方法。比如，在处理观看时间间隔（time since last watch）和视频曝光量（#previous impressions）这两个特征的时，YouTube 模型对它们进行归一化后，又将它们各自处理成了三个特征（图 6 中红框内的部分），分别是原特征值 x，特征值的平方x^2，以及特征值的开方，这又是为什么呢？</p>
+<p><img src="/yuque-assets/c095132fd4cac7b7c155d79683ad6ade8b982a5ccc33487a986ca4ed7cdbba3e.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>图6 YouTube推荐模型（来源：Deep Neural Networks for YouTube Recommendations）</strong></p>
+<p>其实，无论是平方还是开方操作，改变的还是这个特征值的分布，这些操作与分桶操作一样，都是希望通过改变特征的分布，让模型能够更好地学习到特征内包含的有价值信息。但由于我们没法通过人工的经验判断哪种特征处理方式更好，所以索性把它们都输入模型，让模型来做选择。</p>
+<p>这里其实自然而然地引出了我们进行特征处理的一个原则，就是<strong>特征处理并没有标准答案</strong>，不存在一种特征处理方式是一定好于另一种的。在实践中，我们需要多进行一些尝试，找到那个最能够提升模型效果的一种或一组处理方式。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>这节课我们介绍了推荐系统中特征处理的主要方式，并利用 Spark 实践了类别型特征和数值型特征的主要处理方法，最后我们还总结出了特征处理的原则，“特征处理没有标准答案，需要根据模型效果实践出真知”。</p>
+<p>针对特征处理的方法，深度学习和传统机器学习的区别并不大，TensorFlow、PyTorch 等深度学习平台也提供了类似的特征处理函数。在今后的推荐模型章节我们会进一步用到这些方法。</p>
+<p>最后，我把这节课的主要知识点总结成了一张表格，你可以利用它巩固今天的重点知识。</p>
+<p><img src="/yuque-assets/2e5bab1282f977587c6f0428440c9f5f2cc489c8470524c5cf2fe53f5c596073.png" srcset="/img/loading.gif" lazyload></p>
+<p>这节课是我们的第一堂实战课，对于还未进入到工业界的同学，相信通过这节课的实践，也能够一窥业界的大数据处理方法，增强自己的工程经验，让我们一起由此迈入工业级推荐系统的大门吧！</p>
+<h2 id="课后思考"><a href="#课后思考" class="headerlink" title="课后思考"></a>课后思考</h2><ol>
+<li>请你查阅一下 Spark MLlib 的编程手册，找出 Normalizer、StandardScaler、RobustScaler、MinMaxScaler 这个几个特征处理方法有什么不同。</li>
+<li>你能试着运行一下 SparrowRecSys 中的 FeatureEngineering 类，从输出的结果中找出，到底哪一列是我们处理好的 One-hot 特征和 Multi-hot 特征吗？以及这两个特征是用 Spark 中的什么数据结构来表示的呢？</li>
+</ol>
+<p>这就是我们这节课的全部内容了，你掌握得怎么样？欢迎你把这节课转发出去。下节课我们将讲解一种更高阶的特征处理方法，它同时也是深度学习知识体系中一个非常重要的部分，我们到时候见！</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" class="category-chain-item">人工智能</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
+      
+        <a href="/tags/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/" class="print-no-link">#特征工程</a>
+      
+        <a href="/tags/Spark/" class="print-no-link">#Spark</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>05 | 特征处理</div>
+      <div>https://q792821266.github.io/yuque/175179405/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/07/10/redis/" title="redis简介">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">redis简介</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/174831209/" title="02 | Sparrow RecSys">
+                        <span class="hidden-mobile">02 | Sparrow RecSys</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

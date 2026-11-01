@@ -1,0 +1,944 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="很好，这一步我们彻底收敛范围，只谈 RAG 的工程实现，不谈 Agent、不谈成本、不谈 prompt。我会按**“你已经能写代码、能部署服务”的前提，给你一个工程师可直接落地的 RAG 设计说明书**。  一、先给一个工程级结论（避免迷路） RAG 的本质不是模型问题，而是“数据结构 + 检索设计问题”。 在工程上，你只需要把 RAG 拆成 4 个确定的部件：  12341️⃣ 数据切分（Chu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG实现">
+<meta property="og:url" content="https://q792821266.github.io/yuque/263608534/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="很好，这一步我们彻底收敛范围，只谈 RAG 的工程实现，不谈 Agent、不谈成本、不谈 prompt。我会按**“你已经能写代码、能部署服务”的前提，给你一个工程师可直接落地的 RAG 设计说明书**。  一、先给一个工程级结论（避免迷路） RAG 的本质不是模型问题，而是“数据结构 + 检索设计问题”。 在工程上，你只需要把 RAG 拆成 4 个确定的部件：  12341️⃣ 数据切分（Chu">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-03-30T09:34:31.118Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.456Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="向量检索">
+<meta property="article:tag" content="知识库">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>RAG实现 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="RAG实现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-03-30 17:34" pubdate>
+          2026年3月30日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">RAG实现</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>很好，这一步我们<strong>彻底收敛范围，只谈 RAG 的工程实现，不谈 Agent、不谈成本、不谈 prompt</strong>。<br>我会按**“你已经能写代码、能部署服务”<strong>的前提，给你一个</strong>工程师可直接落地的 RAG 设计说明书**。</p>
+<hr>
+<h1 id="一、先给一个工程级结论（避免迷路）"><a href="#一、先给一个工程级结论（避免迷路）" class="headerlink" title="一、先给一个工程级结论（避免迷路）"></a>一、先给一个工程级结论（避免迷路）</h1><blockquote>
+<p><strong>RAG 的本质不是模型问题，而是“数据结构 + 检索设计问题”。</strong></p>
+<p>在工程上，你只需要把 RAG 拆成 <strong>4 个确定的部件</strong>：</p>
+</blockquote>
+<figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs latex">1️⃣ 数据切分（Chunking）<br>2️⃣ 向量化（Embedding）<br>3️⃣ 向量存储（Vector Store）<br>4️⃣ 检索 + 组装（Retrieval）<br></code></pre></td></tr></tbody></table></figure>
+
+<p><strong>其中只有第 2 步和模型有关，其余都是纯工程。</strong></p>
+<hr>
+<h1 id="二、RAG-的最小可用架构（强烈推荐从这个开始）"><a href="#二、RAG-的最小可用架构（强烈推荐从这个开始）" class="headerlink" title="二、RAG 的最小可用架构（强烈推荐从这个开始）"></a>二、RAG 的最小可用架构（强烈推荐从这个开始）</h1><p>针对你的场景（个人知识库 / 技术内容 / Hexo / 本地 Agent），<strong>推荐下面这个结构</strong>：</p>
+<figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs latex">rag/<br>├── ingest/          <span class="hljs-params">#</span> 文档 → 向量（一次或增量）<br>├── store/           <span class="hljs-params">#</span> 向量数据库<br>├── retrieve/        <span class="hljs-params">#</span> 向量检索<br>└── schema/          <span class="hljs-params">#</span> 元数据结构<br></code></pre></td></tr></tbody></table></figure>
+
+<p>你会发现：<strong>RAG 完全可以作为你 Agent 的“一个 Skill”存在</strong>。</p>
+<hr>
+<h1 id="三、第一步：文档切分（比你想象的重要）"><a href="#三、第一步：文档切分（比你想象的重要）" class="headerlink" title="三、第一步：文档切分（比你想象的重要）"></a>三、第一步：文档切分（比你想象的重要）</h1><h3 id="✅-正确认知"><a href="#✅-正确认知" class="headerlink" title="✅ 正确认知"></a>✅ 正确认知</h3><blockquote>
+<p><strong>RAG 质量 = 50% 取决于切分方式，</strong>**<br>**<strong>不是模型大小，也不是向量数据库。</strong></p>
+</blockquote>
+<h3 id="❌-常见错误"><a href="#❌-常见错误" class="headerlink" title="❌ 常见错误"></a>❌ 常见错误</h3><ul>
+<li>整篇文章一个向量</li>
+<li>随机按 token 切</li>
+<li>不保留上下文信息</li>
+</ul>
+<hr>
+<h2 id="✅-推荐切分策略（适合技术笔记-博客）"><a href="#✅-推荐切分策略（适合技术笔记-博客）" class="headerlink" title="✅ 推荐切分策略（适合技术笔记 / 博客）"></a>✅ 推荐切分策略（适合技术笔记 / 博客）</h2><h3 id="✅-基本原则"><a href="#✅-基本原则" class="headerlink" title="✅ 基本原则"></a>✅ 基本原则</h3><figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">一个 chunk = 一个“可独立理解的最小知识单元”<br></code></pre></td></tr></tbody></table></figure>
+
+<h3 id="✅-实战配置（你可以直接用）"><a href="#✅-实战配置（你可以直接用）" class="headerlink" title="✅ 实战配置（你可以直接用）"></a>✅ 实战配置（你可以直接用）</h3><figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs latex">chunk<span class="hljs-built_in">_</span>size: 300 ~ 500 tokens<br>overlap: 50 ~ 100 tokens<br></code></pre></td></tr></tbody></table></figure>
+
+<h3 id="✅-结构感知切分（非常重要）"><a href="#✅-结构感知切分（非常重要）" class="headerlink" title="✅ 结构感知切分（非常重要）"></a>✅ 结构感知切分（非常重要）</h3><p>优先按：</p>
+<ol>
+<li>Markdown 标题（## / ###）</li>
+<li>代码块</li>
+<li>段落</li>
+</ol>
+<p>而不是盲目 token 切。</p>
+<p><strong>示例结构：</strong></p>
+<figure class="highlight json"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">{</span><br>  <span class="hljs-attr">"chunk_id"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"java-gc-03"</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">"content"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"..."</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">"metadata"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><br>    <span class="hljs-attr">"source"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"java-gc.md"</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">"section"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"CMS vs G1"</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">"type"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"explanation"</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">"date"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"2025-10-03"</span><br>  <span class="hljs-punctuation">}</span><br><span class="hljs-punctuation">}</span><br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h1 id="四、第二步：Embedding（向量化）"><a href="#四、第二步：Embedding（向量化）" class="headerlink" title="四、第二步：Embedding（向量化）"></a>四、第二步：Embedding（向量化）</h1><p>这里说一句非常工程化的话：</p>
+<blockquote>
+<p><strong>Embedding 模型不需要“聪明”，只需要“稳定”。</strong></p>
+</blockquote>
+<h3 id="✅-Embedding-模型的职责"><a href="#✅-Embedding-模型的职责" class="headerlink" title="✅ Embedding 模型的职责"></a>✅ Embedding 模型的职责</h3><ul>
+<li>把语义相近的文本 → 映射到向量空间中接近的位置</li>
+<li>不负责推理、不负责生成</li>
+</ul>
+<hr>
+<h2 id="✅-工程建议（不选具体厂商）"><a href="#✅-工程建议（不选具体厂商）" class="headerlink" title="✅ 工程建议（不选具体厂商）"></a>✅ 工程建议（不选具体厂商）</h2><h3 id="✅-维度建议"><a href="#✅-维度建议" class="headerlink" title="✅ 维度建议"></a>✅ 维度建议</h3><figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">384 / 512 / 768 维<br></code></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>768 通用性最佳，384‑512 更省空间</p>
+</blockquote>
+<h3 id="✅-嵌入策略"><a href="#✅-嵌入策略" class="headerlink" title="✅ 嵌入策略"></a>✅ 嵌入策略</h3><ul>
+<li><strong>离线向量化</strong></li>
+<li>不要在 query 时才 embed 全文</li>
+<li>文档变了才重建</li>
+</ul>
+<hr>
+<h2 id="✅-一个非常重要的点（90-新手忽略）"><a href="#✅-一个非常重要的点（90-新手忽略）" class="headerlink" title="✅ 一个非常重要的点（90% 新手忽略）"></a>✅ 一个非常重要的点（90% 新手忽略）</h2><blockquote>
+<p><strong>Embedding 和 LLM 可以完全不是同一个模型系统。</strong></p>
+</blockquote>
+<ul>
+<li><p>你可以：</p>
+</li>
+<li><p>本地 embedding</p>
+</li>
+<li><p>云模型生成回答</p>
+</li>
+<li><p>两者完全解耦</p>
+</li>
+</ul>
+<hr>
+<h1 id="五、第三步：向量数据库（重点）"><a href="#五、第三步：向量数据库（重点）" class="headerlink" title="五、第三步：向量数据库（重点）"></a>五、第三步：向量数据库（重点）</h1><p>你问的是：<strong>“向量数据库具体怎么实现？”</strong></p>
+<p>我们分三层来讲。</p>
+<hr>
+<h2 id="✅-层-1：你「真的」需要向量数据库吗？"><a href="#✅-层-1：你「真的」需要向量数据库吗？" class="headerlink" title="✅ 层 1：你「真的」需要向量数据库吗？"></a>✅ 层 1：你「真的」需要向量数据库吗？</h2><blockquote>
+<p><strong>如果你的知识库 &lt; 5 万 chunk，</strong>**<br>**<strong>你甚至不需要真正的“数据库产品”。</strong></p>
+</blockquote>
+<h3 id="✅-简单实现（很多人不知道）"><a href="#✅-简单实现（很多人不知道）" class="headerlink" title="✅ 简单实现（很多人不知道）"></a>✅ 简单实现（很多人不知道）</h3><figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">Python + FAISS + 本地文件<br></code></pre></td></tr></tbody></table></figure>
+
+<p>这已经能支撑：</p>
+<ul>
+<li>几万条笔记</li>
+<li>单机毫秒级检索</li>
+<li>0 运维成本</li>
+</ul>
+<hr>
+<h2 id="✅-层-2：向量数据库的本质结构"><a href="#✅-层-2：向量数据库的本质结构" class="headerlink" title="✅ 层 2：向量数据库的本质结构"></a>✅ 层 2：向量数据库的本质结构</h2><p>不论你用哪种产品，<strong>底层逻辑是一样的</strong>：</p>
+<figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs latex">VectorIndex:<br>- vectors: float[N][D]<br>- ids: string[N]<br>- metadata: dict[N]<br></code></pre></td></tr></tbody></table></figure>
+
+<p>查询流程：</p>
+<figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs latex">query<span class="hljs-built_in">_</span>vector<br>→ ANN 搜索<br>→ Top-K 相似向量<br>→ 拿 metadata 找原文<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h2 id="✅-层-3：本地实现示例（强烈推荐）"><a href="#✅-层-3：本地实现示例（强烈推荐）" class="headerlink" title="✅ 层 3：本地实现示例（强烈推荐）"></a>✅ 层 3：本地实现示例（强烈推荐）</h2><p>下面是一个<strong>极简、工程友好</strong>的实现思路（伪代码层级）：</p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 1. 建索引</span><br>index = FaissIndex(dim=<span class="hljs-number">768</span>)<br>index.add(vectors, ids)<br><br><span class="hljs-comment"># 2. 存储元数据</span><br>metadata_store[<span class="hljs-built_in">id</span>] = {...}<br><br><span class="hljs-comment"># 3. 查询</span><br>query_vec = embed(query)<br>top_ids = index.search(query_vec, k=<span class="hljs-number">5</span>)<br>results = [metadata_store[<span class="hljs-built_in">id</span>] <span class="hljs-keyword">for</span> <span class="hljs-built_in">id</span> <span class="hljs-keyword">in</span> top_ids]<br></code></pre></td></tr></tbody></table></figure>
+
+<p>你会发现：<br><strong>所谓“向量数据库”，本质就是 “ANN + KV store”。</strong></p>
+<hr>
+<h2 id="✅-向量检索参数（很重要）"><a href="#✅-向量检索参数（很重要）" class="headerlink" title="✅ 向量检索参数（很重要）"></a>✅ 向量检索参数（很重要）</h2><figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs latex">Top-K = 4 ~ 8   （不要太大）<br>Similarity threshold ≈ 0.75 ~ 0.85<br></code></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>Top-K 过大会：</p>
+<ul>
+<li>拉低回答质量</li>
+<li>增加 prompt token</li>
+<li>让模型胡乱“综合”</li>
+</ul>
+</blockquote>
+<hr>
+<h1 id="六、第四步：Retrieval（理解-RAG-的核心）"><a href="#六、第四步：Retrieval（理解-RAG-的核心）" class="headerlink" title="六、第四步：Retrieval（理解 RAG 的核心）"></a>六、第四步：Retrieval（理解 RAG 的核心）</h1><p>这是 RAG <strong>真正“是否聪明”的地方</strong>。</p>
+<h3 id="❌-错误做法（最常见）"><a href="#❌-错误做法（最常见）" class="headerlink" title="❌ 错误做法（最常见）"></a>❌ 错误做法（最常见）</h3><figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">检索到的 chunk → 全部丢给 LLM<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h2 id="✅-正确-Retrieval-分层策略"><a href="#✅-正确-Retrieval-分层策略" class="headerlink" title="✅ 正确 Retrieval 分层策略"></a>✅ 正确 Retrieval 分层策略</h2><h3 id="✅-Step-1：向量检索（语义）"><a href="#✅-Step-1：向量检索（语义）" class="headerlink" title="✅ Step 1：向量检索（语义）"></a>✅ Step 1：向量检索（语义）</h3><figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">Query → Top-K candidates<br></code></pre></td></tr></tbody></table></figure>
+
+<h3 id="✅-Step-2：规则-元数据过滤"><a href="#✅-Step-2：规则-元数据过滤" class="headerlink" title="✅ Step 2：规则 / 元数据过滤"></a>✅ Step 2：规则 / 元数据过滤</h3><p>例如：</p>
+<ul>
+<li>同一篇文章优先</li>
+<li>同一 tag 优先</li>
+<li>最近时间优先</li>
+</ul>
+<hr>
+<h3 id="✅-Step-3：压缩-重排序（非常省-token）"><a href="#✅-Step-3：压缩-重排序（非常省-token）" class="headerlink" title="✅ Step 3：压缩 / 重排序（非常省 token）"></a>✅ Step 3：压缩 / 重排序（非常省 token）</h3><figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">Top-K → 选 Top-3<br></code></pre></td></tr></tbody></table></figure>
+
+<p>甚至可以：</p>
+<ul>
+<li>再用一个小模型</li>
+<li>或简单打分规则</li>
+</ul>
+<hr>
+<h3 id="✅-Step-4：再交给-LLM"><a href="#✅-Step-4：再交给-LLM" class="headerlink" title="✅ Step 4：再交给 LLM"></a>✅ Step 4：再交给 LLM</h3><p>并且：</p>
+<blockquote>
+<p><strong>RAG 内容必须是“引用材料”，不是“背景材料”。</strong></p>
+</blockquote>
+<hr>
+<h1 id="七、把-RAG-接到你的-Agent（但仍然只关注-RAG）"><a href="#七、把-RAG-接到你的-Agent（但仍然只关注-RAG）" class="headerlink" title="七、把 RAG 接到你的 Agent（但仍然只关注 RAG）"></a>七、把 RAG 接到你的 Agent（但仍然只关注 RAG）</h1><p>在你的系统里，RAG 应该出现为：</p>
+<figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs latex">Skill: retrieve<span class="hljs-built_in">_</span>context<br>Input: user query<br>Output: list of relevant chunks<br></code></pre></td></tr></tbody></table></figure>
+
+<p>Agent 只是：</p>
+<ul>
+<li>知道「何时需要检索」</li>
+<li>不关心向量实现</li>
+</ul>
+<hr>
+<h1 id="八、视频-音频怎么进-RAG？（不展开，但给你正确路径）"><a href="#八、视频-音频怎么进-RAG？（不展开，但给你正确路径）" class="headerlink" title="八、视频 / 音频怎么进 RAG？（不展开，但给你正确路径）"></a>八、视频 / 音频怎么进 RAG？（不展开，但给你正确路径）</h1><p><strong>记住一句话：</strong></p>
+<blockquote>
+<p><strong>RAG 只认“文本”。</strong></p>
+</blockquote>
+<p>所以：</p>
+<figure class="highlight latex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs latex">视频 / 音频<br>→ ASR / OCR<br>→ 文本<br>→ chunk<br>→ embedding<br>→ 向量库<br></code></pre></td></tr></tbody></table></figure>
+
+<p><strong>RAG 从来不直接理解音视频。</strong></p>
+<hr>
+<h1 id="九、给你一个“不会翻车”的落地顺序（非常关键）"><a href="#九、给你一个“不会翻车”的落地顺序（非常关键）" class="headerlink" title="九、给你一个“不会翻车”的落地顺序（非常关键）"></a>九、给你一个“不会翻车”的落地顺序（非常关键）</h1><p>如果你今天开始做：</p>
+<h3 id="✅-Day-1–2"><a href="#✅-Day-1–2" class="headerlink" title="✅ Day 1–2"></a>✅ Day 1–2</h3><ul>
+<li>文本 → chunk → embedding → FAISS</li>
+<li>能查到正确段落 ✅</li>
+</ul>
+<h3 id="✅-Day-3"><a href="#✅-Day-3" class="headerlink" title="✅ Day 3"></a>✅ Day 3</h3><ul>
+<li>加 metadata</li>
+<li>加 Top‑K 控制</li>
+</ul>
+<h3 id="✅-Day-4"><a href="#✅-Day-4" class="headerlink" title="✅ Day 4"></a>✅ Day 4</h3><ul>
+<li>接进 Agent，做成一个 Skill</li>
+</ul>
+<p><strong>到这一步，你就已经拥有80% 实际价值。</strong></p>
+<hr>
+<h1 id="十、一句话总结（可以当座右铭）"><a href="#十、一句话总结（可以当座右铭）" class="headerlink" title="十、一句话总结（可以当座右铭）"></a>十、一句话总结（可以当座右铭）</h1><blockquote>
+<p><strong>RAG ≠ 高大上系统</strong>**<br>**<strong>RAG = 稳定切分 + 可控检索 + 克制上下文</strong></p>
+</blockquote>
+<p>只要你做到：</p>
+<ul>
+<li>chunk 切得合理</li>
+<li>检索不过量</li>
+<li>上下文严格受控</li>
+</ul>
+<p>RAG 的效果就会非常可靠，而且成本极低。</p>
+<hr>
+<p>如果你愿意，下一步我可以非常具体地帮你：</p>
+<ul>
+<li>✅ 写一个**“本地 FAISS 向量库 + Markdown 文档 ingest 的最小工程目录”**</li>
+<li>✅ 或帮你设计一个**“RAG Skill 的接口定义”，直接能接进你现在的 Agent**</li>
+</ul>
+<p>你想先走哪一步？</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" class="category-chain-item">人工智能</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/RAG%E4%B8%8EAgent/" class="category-chain-item">RAG与Agent</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/RAG/" class="print-no-link">#RAG</a>
+      
+        <a href="/tags/%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/" class="print-no-link">#向量检索</a>
+      
+        <a href="/tags/%E7%9F%A5%E8%AF%86%E5%BA%93/" class="print-no-link">#知识库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>RAG实现</div>
+      <div>https://q792821266.github.io/yuque/263608534/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年3月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/263612873/" title="视频生成2">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">视频生成2</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/263607002/" title="增加RAG">
+                        <span class="hidden-mobile">增加RAG</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,828 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="https:&#x2F;&#x2F;docs.oracle.com&#x2F;database&#x2F;121&#x2F;ARPLS&#x2F;d_space.htm#ARPLS68105  最近有一个业务功能要上线，生产数据库环境之前已经到位，目前要做的是估算下，业务数据量对数据库空间，有何影响。开发同学根据表字段定义，分别统计出了最大占用空间，以及预计占用空间量，计算得很细致。 今儿碰巧看见了一篇MOS文章，《How to Estimate the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="预估表和索引空间容量的方法">
+<meta property="og:url" content="https://q792821266.github.io/yuque/84687351/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="https:&#x2F;&#x2F;docs.oracle.com&#x2F;database&#x2F;121&#x2F;ARPLS&#x2F;d_space.htm#ARPLS68105  最近有一个业务功能要上线，生产数据库环境之前已经到位，目前要做的是估算下，业务数据量对数据库空间，有何影响。开发同学根据表字段定义，分别统计出了最大占用空间，以及预计占用空间量，计算得很细致。 今儿碰巧看见了一篇MOS文章，《How to Estimate the">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a274d8e604cd98e613eecf068e835183b7588bd70bfaec8de61ed08d816027ad.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/898ad597607e52e7d335c4385569a987110492d2bf3212b68a626ea33f186f98.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/08a4d395be74c6c5d7f0d28962e30f8e3c2a3851d8230ec1a74cb1d02bdfb290.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3c021dd176b75c83afbbf5492939f1d40ea1b74509aaf15d6eb069b3e51306ea.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/66726718fed78ff75ef21b76c522ee1d0cb8007e94015cce633b45e4767e3a2a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ae3ce5304f02a87e0da3c7365ea95a19be1cb5371420f9e384d57ce47aac65f2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/999fcf3c2f5425fade57cdb0d73ebf10d80b7df77dfeb617060d69e529fdfb44.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/de8cac74ef7ac27143c4fa90bbf1f63c01e95d02b5f826fcc6fc875c6cc55ef2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/131c30d888bfe324448cd7e35b181c8f9702a9d2b7fea39e77375e54b63d328c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fb7069eee4a27ab67c5ef67f97a5007212e5fadf97e321ccd5dcfad76909c162.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/56398f00d38bd33def24118782496d9e7633acfd1d5b4e7c75a6100dbba4f81d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ff3ce7dce34cb0b027649a84105869efc90a462af920581a1aa99077d4f89d6d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4949ba5438bd677a7a177c115b81d9738da8aeb76a4330aaa0d252c920f9b678.png">
+<meta property="article:published_time" content="2022-07-27T06:16:07.459Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.465Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="Oracle">
+<meta property="article:tag" content="容量规划">
+<meta property="article:tag" content="数据库索引">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/a274d8e604cd98e613eecf068e835183b7588bd70bfaec8de61ed08d816027ad.png">
+  
+  
+  
+  <title>预估表和索引空间容量的方法 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="预估表和索引空间容量的方法"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-27 14:16" pubdate>
+          2022年7月27日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          10 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">预估表和索引空间容量的方法</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/database/121/ARPLS/d_space.htm#ARPLS68105">https://docs.oracle.com/database/121/ARPLS/d_space.htm#ARPLS68105</a></p>
+</blockquote>
+<p>最近有一个业务功能要上线，生产数据库环境之前已经到位，目前要做的是估算下，业务数据量对数据库空间，有何影响。开发同学根据表字段定义，分别统计出了最大占用空间，以及预计占用空间量，计算得很细致。</p>
+<p>今儿碰巧看见了一篇MOS文章，《How to Estimate the Size of Tables and Indexes Before Being Created and Populated in the Database? (文档 ID 1585326.1)》，其中介绍了一些存储过程，可以用来估算表和索引空间，用起来比较方便，所以做一些实验说明下，会有用武之地，当然之前就说过，工具是用来方便执行一些功能，但前提是需要从原理上理解，融会贯通，将他变为自己的知识，这才是王道。</p>
+<p>首先对于表的估算，用到的是DBMS_SPACE包中的CREATE_TABLE_COST这个存储过程，这个存储过程有两个版本，第一个版本是根据平均行长，估算表的容量，第二个版本是根据列的信息，估算表的容量，究竟有何区别？</p>
+<p>这是对这两个版本的介绍，</p>
+<p><img src="/yuque-assets/a274d8e604cd98e613eecf068e835183b7588bd70bfaec8de61ed08d816027ad.png" srcset="/img/loading.gif" lazyload></p>
+<p>这是这两个版本的定义，</p>
+<p><img src="/yuque-assets/898ad597607e52e7d335c4385569a987110492d2bf3212b68a626ea33f186f98.png" srcset="/img/loading.gif" lazyload></p>
+<p>总结下可以看出，这两个版本的相同点，就是需要预计行数、pct_free参数以及表空间名称，这几个参数，输出均有使用量(used_bytes)，以及分配量(alloc_bytes)这两个维度。不同点就是，版本一需要平均行长(avg_row_size)，版本二需要CREATE_TABLE_COST_COLUMNS类型的变量(colinfos)。</p>
+<p>这是对于这两个存储过程，输出信息说明，</p>
+<ul>
+<li>The used_bytes : represent the actual bytes used by the data. This includes the overhead due to the block metadata, pctfree etc.</li>
+<li>The alloc_bytes : represent the size of the table segment when it is created in the tablespace. This takes into account, the size of the extents in the tablespace and tablespace extent management properties.</li>
+</ul>
+<p>创建测试表，手工收集表的统计信息，</p>
+<p><img src="/yuque-assets/08a4d395be74c6c5d7f0d28962e30f8e3c2a3851d8230ec1a74cb1d02bdfb290.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看出，测试表平均行长是68，</p>
+<p><img src="/yuque-assets/3c021dd176b75c83afbbf5492939f1d40ea1b74509aaf15d6eb069b3e51306ea.png" srcset="/img/loading.gif" lazyload></p>
+<p>用版本一，输入参数为表空间名称，平均行长，预计数据量(10万行)，pct_free，输出参数为ub和ab，显示使用的字节数为8036352，分配的字节数为8388608，</p>
+<p><img src="/yuque-assets/66726718fed78ff75ef21b76c522ee1d0cb8007e94015cce633b45e4767e3a2a.png" srcset="/img/loading.gif" lazyload></p>
+<p>上面则是根据平均行长，预估的表容量，下面实际测试10万条数据，检索user_segments视图，其占用空间为9437184字节，</p>
+<p><img src="/yuque-assets/ae3ce5304f02a87e0da3c7365ea95a19be1cb5371420f9e384d57ce47aac65f2.png" srcset="/img/loading.gif" lazyload></p>
+<p>可知，根据版本一存储过程，计算出表预计空间量为8M，实际表占用空间量为9M，</p>
+<p><img src="/yuque-assets/999fcf3c2f5425fade57cdb0d73ebf10d80b7df77dfeb617060d69e529fdfb44.png" srcset="/img/loading.gif" lazyload></p>
+<p>使用版本二的存储过程，其中CREATE_TABLE_COST_COLUMNS类型要求写出所有字段，包括类型和长度，计算出使用的空间容量为9314304，分配的字节数为9437184，这和实际分配的表空间一致，</p>
+<p><img src="/yuque-assets/de8cac74ef7ac27143c4fa90bbf1f63c01e95d02b5f826fcc6fc875c6cc55ef2.png" srcset="/img/loading.gif" lazyload></p>
+<p>版本二比版本一计算准确，原因是因为版本二用了字段定义，包括类型和长度，外加存储属性，版本一则是根据平均行长，来预计空间，会相对不准。但需要注意，这是计算的字段极限值，比如VARCHAR2(30)并未用满，则可能实际占用空间，并不是此值，只能说明版本二计算的容量，任何情况下不会超过，但有可能用不了这些。</p>
+<p>版本二这块，MOS中对于两个字符串类型，用的是CHAR，并未直接用VARCHAR2，有如下解释，</p>
+<p>Note : we changed VARCHAR2 to CHAR to get the maximum possible estimation .</p>
+<p>这点有些迷惑，而且使用CHAR和VARCHAR2计算出来的一样，不知道如何解释，有理解的朋友，还请指教！</p>
+<p>这是CREATE_TABLE_COST_COLINFO的定义，</p>
+<p><img src="/yuque-assets/131c30d888bfe324448cd7e35b181c8f9702a9d2b7fea39e77375e54b63d328c.png" srcset="/img/loading.gif" lazyload></p>
+<p>这是存储过程其他字段描述，</p>
+<p><img src="/yuque-assets/fb7069eee4a27ab67c5ef67f97a5007212e5fadf97e321ccd5dcfad76909c162.png" srcset="/img/loading.gif" lazyload></p>
+<p>其次，对于索引空间的预算，使用的是CREATE_INDEX_COST存储过程，</p>
+<p><img src="/yuque-assets/56398f00d38bd33def24118782496d9e7633acfd1d5b4e7c75a6100dbba4f81d.png" srcset="/img/loading.gif" lazyload></p>
+<p>他的使用有几点注意，</p>
+<ul>
+<li>The table on which the index is created must already exist.</li>
+<li>The computation of the index size depends on statistics gathered on the segment.</li>
+<li>It is imperative that the table must have been analyzed recently.</li>
+<li>In the absence of correct statistics, the results may be inaccurate, although the procedure will not raise any errors.</li>
+</ul>
+<p>其中参数DDL为需要创建的索引，此处为a和b字段建索引，显示使用的字节数为3800000，分配的字节数为6291456，</p>
+<p><img src="/yuque-assets/ff3ce7dce34cb0b027649a84105869efc90a462af920581a1aa99077d4f89d6d.png" srcset="/img/loading.gif" lazyload></p>
+<p>创建实际索引，检索user_segments视图，其占用索引空间容量为6291456，说明上面的存储过程，预计的结果是准确的，</p>
+<p><img src="/yuque-assets/4949ba5438bd677a7a177c115b81d9738da8aeb76a4330aaa0d252c920f9b678.png" srcset="/img/loading.gif" lazyload></p>
+<p>总结：</p>
+<ol>
+<li><p>对于表和索引空间的预估，可以使用DBMS_SPACE包的CREATE_TABLE_COST和CREATE_INDEX_COST存储过程，虽然没有看这两个存储过程的实现，但猜测平均行长算法，会根据预计行数，做一些计算，字段定义算法，则会根据每个字段的长度，和预计行数，做一些计算，其实和我们手工根据这些算法，计算的方式类似，只是封装起来，便于调用。</p>
+</li>
+<li><p>CREATE_TABLE_COST根据列字段定义预估，是比较准确的，根据平均行长，并不很准确。需要注意的是，这里计算的是字段极限值，不会超过此值，但有可能实际用不了这些。</p>
+</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E5%AD%98%E5%82%A8/" class="category-chain-item">数据库与存储</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E5%AD%98%E5%82%A8/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%90%E7%BB%B4/" class="category-chain-item">数据库运维</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Oracle/" class="print-no-link">#Oracle</a>
+      
+        <a href="/tags/%E5%AE%B9%E9%87%8F%E8%A7%84%E5%88%92/" class="print-no-link">#容量规划</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95/" class="print-no-link">#数据库索引</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>预估表和索引空间容量的方法</div>
+      <div>https://q792821266.github.io/yuque/84687351/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/104937414/" title="JVM内存布局">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">JVM内存布局</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/83431078/" title="容器监控">
+                        <span class="hidden-mobile">容器监控</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

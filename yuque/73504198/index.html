@@ -1,0 +1,996 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="BeanFactory与FactoryBean 、ApplicationContext https:&#x2F;&#x2F;blog.csdn.net&#x2F;CrankZ&#x2F;article&#x2F;details&#x2F;84325872  Spring 作为一种IoC容器最大的目的就是降低组件与组件之间的依赖关系。而BeanFactory作为整个Spring IoC容器的核心使用了一种统一的方法来装配所有的应用对象，通过Java的反射机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring原理">
+<meta property="og:url" content="https://q792821266.github.io/yuque/73504198/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="BeanFactory与FactoryBean 、ApplicationContext https:&#x2F;&#x2F;blog.csdn.net&#x2F;CrankZ&#x2F;article&#x2F;details&#x2F;84325872  Spring 作为一种IoC容器最大的目的就是降低组件与组件之间的依赖关系。而BeanFactory作为整个Spring IoC容器的核心使用了一种统一的方法来装配所有的应用对象，通过Java的反射机制">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-05-30T03:11:22.318Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.458Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="IoC">
+<meta property="article:tag" content="Bean生命周期">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>spring原理 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="spring原理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-30 11:11" pubdate>
+          2024年5月30日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">spring原理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="BeanFactory与FactoryBean-、ApplicationContext"><a href="#BeanFactory与FactoryBean-、ApplicationContext" class="headerlink" title="BeanFactory与FactoryBean 、ApplicationContext"></a>BeanFactory与FactoryBean 、ApplicationContext</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/CrankZ/article/details/84325872">https://blog.csdn.net/CrankZ/article/details/84325872</a></p>
+</blockquote>
+<p>Spring 作为一种IoC容器最大的目的就是降低组件与组件之间的依赖关系。而BeanFactory作为整个Spring IoC容器的核心使用了一种统一的方法来装配所有的应用对象，通过Java的反射机制和依赖注入来实现这一装配过程，使受之管理的对象无需知道Spring的存在，同时也降低了组件间的依赖程度，同时受管对象的生命周期由BeanFactory来统一管理，开发者就不用实现大量的自制的工厂Singleton。</p>
+<p>1、ApplicationContext是BeanFactory的子类，并扩展了功能</p>
+<p>可以看到，ApplicationContext继承了BeanFactory，BeanFactory是Spring中比较原始的Factory，它不支持AOP、Web等Spring插件，而ApplicationContext不仅包含了BeanFactory的所有功能，还支持Spring的各种插件，还以一种面向框架的方式工作以及对上下文进行分层和实现继承。</p>
+<p>BeanFactory是Spring框架的基础设施，面向Spring本身；而ApplicationContext面向使用Spring的开发者，相比BeanFactory提供了更多面向实际应用的功能，几乎所有场合都可以直接使用ApplicationContext而不是底层的BeanFactory。</p>
+<p>2、初始化</p>
+<p>BeanFactory在初始化容器时，并未实例化 Bean。直到 Bean 被调用时（调用getBean()方法）才会被实例化。对于单实例的 Bean 来说，BeanFactory 会缓存 Bean 的实例，所以第二次使用 getBean() 方法时，可以直接从 IoC 容器的缓存中来获取 Bean 的实例了。</p>
+<p>ApplicationContext在初始化应用上下文时，会实例化所有单实例的 Bean，所以相对来说，占用空间较大、初始化时间会比 BeanFactory 稍长。</p>
+<p>3、延迟加载</p>
+<p>BeanFactroy采用的是延迟加载形式来注入Bean的，即只有在使用到某个Bean时(调用getBean())，才对该Bean进行加载实例化。</p>
+<p>举个例子：如果Bean的某一个属性没有注入，BeanFacotry加载后，直至第一次使用调用getBean方法才会抛出异常；</p>
+<p>这样，我们就不能发现一些存在的Spring的配置问题。</p>
+<p>而ApplicationContext则相反，它是自身初始化的时候，就会一次性创建了所有的Bean。这样，在容器启动时，我们就可以发现Spring中存在的配置错误。 有利于检查所依赖属性是否注入；所以通常情况下我们选择使用 ApplicationContext。</p>
+<p>4、手动、自动注册</p>
+<p>BeanFactory和ApplicationContext都支持BeanPostProcessor、BeanFactoryPostProcessor的使用，但两者之间的区别是：BeanFactory需要手动注册，而ApplicationContext则是自动注册。</p>
+<h2 id="FactoryBean"><a href="#FactoryBean" class="headerlink" title="FactoryBean"></a>FactoryBean</h2><p>概述</p>
+<p>Spring中有两种类型的Bean，一种是普通Bean，另一种是工厂Bean，即FactoryBean，这两种Bean都被容器管理，以Bean结尾，表示它是一个Bean，不同于普通Bean的是：它是实现了FactoryBean&lt;T&gt;接口的Bean，正常情况下根据从BeanFactory中获取的并不是这个类本身，而是FactoryBean的getBean()返回的对象，如果要获取FactoryBean对象，请在id前面加一个&amp;符号来获取。</p>
+<p>为什么要使用FactoryBean？</p>
+<p>一般情况下，Spring通过反射机制利用&lt;bean&gt;的class属性指定实现类实例化Bean，在某些情况下，实例化Bean过程比较复杂，如果按照传统的方式，则需要在&lt;bean&gt;中提供大量的配置信息。配置方式的灵活性是受限的，这时采用编码的方式可能会得到一个简单的方案。Spring为此提供了一个FactoryBean的工厂类接口，用户可以通过实现该接口定制实例化Bean的逻辑。</p>
+<p>有些情况我们需要自己的工厂类，通过这个工厂类可以生成相应的对象。而通过实现FactoryBean接口，我们可以实现自己的工厂类</p>
+<p>————————————————</p>
+<p>版权声明：本文为CSDN博主「CrankZ」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。</p>
+<p>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/CrankZ/article/details/84325872">https://blog.csdn.net/CrankZ/article/details/84325872</a></p>
+<h1 id="oneToMany-如何实现"><a href="#oneToMany-如何实现" class="headerlink" title="oneToMany 如何实现"></a>oneToMany 如何实现</h1><p>线程池的原理</p>
+<p>springBean的生命周期</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/158468104">https://zhuanlan.zhihu.com/p/158468104</a></p>
+<p>spring事务原理</p>
+<p>死锁出现的场景以及解决方法</p>
+<p>spring中的组件</p>
+<p>java对象创建过程</p>
+<p>SQL优化</p>
+<h1 id="循环依赖"><a href="#循环依赖" class="headerlink" title="循环依赖"></a>循环依赖</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1769948">https://cloud.tencent.com/developer/article/1769948</a></p>
+</blockquote>
+<p>循环依赖是实例化阶段spring bean未能创建而产生的。所以Spring使用三级缓存来解决，只要在实例化阶段注入了对象，这个对象即使只有引用，也能在后续初始化阶段完成属性填充成为完整的对象。</p>
+<p><strong>循环依赖问题发生在实例化阶段，因为两个 Bean 都需要对方的引用才能继续创建。Spring 的解决方案是：</strong></p>
+<ul>
+<li><strong>在实例化阶段</strong>：<br>Spring 先 <code>new</code> 出对象（只是空壳），并通过三级缓存提前暴露一个“早期引用”（可能是原始对象，也可能是代理对象）。这样，另一个 Bean 可以拿到这个引用，避免死锁。</li>
+<li><strong>在初始化阶段</strong>：<br>Spring 会继续完成属性注入、执行 <code>@PostConstruct</code>、<code>InitializingBean</code> 等回调，把这个对象填充完整，最终放入一级缓存。</li>
+</ul>
+<p>二级缓存存储的是早期对象引用，这个早期对象引用可能是原始对象，也可能是代理对象，取决于是否需要AOP</p>
+<p><strong>代理对象什么时候创建？</strong></p>
+<ul>
+<li>如果 Bean 需要被代理（比如有事务、切面），Spring 在初始化后才确定代理逻辑。</li>
+<li>但是循环依赖要求在初始化前就能拿到引用，否则会死锁。</li>
+<li>所以 Spring 引入 <strong>三级缓存</strong>，存放一个 <code>ObjectFactory</code>，用于在需要时创建代理对象。</li>
+</ul>
+<h3 id="三级缓存解决的问题"><a href="#三级缓存解决的问题" class="headerlink" title="三级缓存解决的问题"></a><strong>三级缓存解决的问题</strong></h3><ul>
+<li><p>如果没有三级缓存，Spring只能在二级缓存中放原始对象，导致 AOP 代理无法提前暴露。</p>
+</li>
+<li><p>有了三级缓存，Spring可以延迟决定是否创建代理，同时打破循环依赖。</p>
+</li>
+<li><p><strong>二级缓存</strong>：存放的是“早期引用”，这个引用通常是<strong>已经实例化但未完全初始化的原始对象</strong>（没有代理）。</p>
+</li>
+<li><p><strong>三级缓存</strong>：存放的是一个 <code>ObjectFactory</code>，用于在需要时<strong>创建早期引用</strong>，并且可以在这个过程中决定是否应用代理（比如 AOP）。</p>
+</li>
+</ul>
+<p>所以区别在于：</p>
+<ul>
+<li>如果 Bean 不需要代理，三级缓存的工厂会返回原始对象，之后放入二级缓存。</li>
+<li>如果 Bean 需要代理，三级缓存的工厂会返回代理对象，之后放入二级缓存。</li>
+</ul>
+<p><strong>为什么不直接把代理对象放到二级缓存？</strong><br>因为在 Bean 刚实例化时，Spring还不知道是否需要代理（AOP逻辑通常在后置处理器阶段才确定）。三级缓存提供了<strong>延迟决定</strong>的能力。</p>
+<p>✅ 总结：</p>
+<ul>
+<li><strong>二级缓存</strong>：存放已经确定的早期引用（可能是原始对象，也可能是代理对象）。</li>
+<li><strong>三级缓存</strong>：存放工厂，用于在需要时生成早期引用，并决定是否应用代理。</li>
+</ul>
+<p>这意味着三级缓存是为了能处理代理的情况。</p>
+<p>但是现在我们只考虑非代理的情况，基于非代理的情况下，什么时候会使用二级缓存，什么时候使用三级缓存呢？</p>
+<h3 id="1-实例化后，为什么先用三级缓存？"><a href="#1-实例化后，为什么先用三级缓存？" class="headerlink" title="1. 实例化后，为什么先用三级缓存？"></a><strong>1. 实例化后，为什么先用三级缓存？</strong></h3><ul>
+<li>当 Spring 完成 Bean 的实例化（<code>new</code> 对象）后，还没进行属性注入和初始化。</li>
+<li>此时，如果出现循环依赖，另一个 Bean需要这个对象。</li>
+<li>Spring 会先把一个 <code>ObjectFactory</code> 放入 <strong>三级缓存</strong>，这个工厂的作用是：<strong>在需要时返回当前 Bean 的早期引用</strong>。</li>
+<li>在非代理场景下，这个工厂返回的就是原始对象。</li>
+</ul>
+<p><strong>原因</strong>：<br>三级缓存提供了“延迟暴露”的能力，避免直接暴露对象引用，给后置处理器（比如 AOP）一个机会修改对象。如果后续确定不需要代理，工厂就返回原始对象。</p>
+<hr>
+<h3 id="2-二级缓存什么时候用？"><a href="#2-二级缓存什么时候用？" class="headerlink" title="2. 二级缓存什么时候用？"></a><strong>2. 二级缓存什么时候用？</strong></h3><ul>
+<li>当另一个 Bean 请求早期引用时，Spring 会调用三级缓存中的工厂，拿到对象引用（原始对象）。</li>
+<li>然后把这个引用放入 <strong>二级缓存</strong>，并删除三级缓存对应的工厂。</li>
+<li>后续如果再有 Bean 请求这个早期引用，就直接从二级缓存拿，而不是每次都调用工厂。</li>
+</ul>
+<p><strong>原因</strong>：<br>二级缓存是为了避免重复调用三级缓存工厂，提高性能。</p>
+<hr>
+<h3 id="3-一级缓存什么时候用？"><a href="#3-一级缓存什么时候用？" class="headerlink" title="3. 一级缓存什么时候用？"></a><strong>3. 一级缓存什么时候用？</strong></h3><ul>
+<li>当 Bean 完成属性注入和初始化后，Spring 会把它放入 <strong>一级缓存</strong>（<code>singletonObjects</code>），并清理二级缓存。</li>
+<li>从此以后，所有请求都直接拿完整的 Bean。</li>
+</ul>
+<p>✅ <strong>总结流程（非代理场景）</strong>：</p>
+<ol>
+<li>实例化 Bean → 放工厂到三级缓存。</li>
+<li>另一个 Bean需要早期引用 → 调用工厂 → 返回原始对象 → 放入二级缓存。</li>
+<li>Bean 完成初始化 → 放入一级缓存 → 清理二级缓存。</li>
+</ol>
+<p><strong>访问顺序是：一级 → 二级 → 三级</strong>，但在循环依赖场景下，第一次暴露早期引用时，确实是通过三级缓存的工厂来完成的。</p>
+<p>✅ <strong>关键点补充：</strong></p>
+<ul>
+<li>早期引用只是为了打破循环依赖，不会在业务逻辑阶段使用。</li>
+<li>初始化完成后，所有 Bean 都是完整的，不会影响正常运行。</li>
+<li>如果在初始化阶段调用依赖 Bean 的方法，可能会出问题（因为它还没填充完），所以要避免这种情况。</li>
+</ul>
+<p>代理场景下的循环依赖处理   关键在于 早期引用是否需要代理</p>
+<ol>
+<li>为什么代理会影响循环依赖？</li>
+</ol>
+<p>如果 Bean 需要 AOP（事务、切面），Spring 必须在 Bean 完成初始化后才能创建代理对象。<br>但是循环依赖要求在初始化前就能拿到引用，否则会死锁。<br>这就出现矛盾：如何在初始化前暴露一个“最终形态”的引用（代理），而不是原始对象？</p>
+<ol start="2">
+<li>三级缓存的作用</li>
+</ol>
+<p>Spring在实例化后，会把一个 ObjectFactory 放入 三级缓存。<br>当另一个 Bean 请求早期引用时，Spring调用这个工厂：</p>
+<p>如果 Bean 需要代理，工厂会通过 SmartInstantiationAwareBeanPostProcessor 创建代理对象。<br>如果不需要代理，工厂返回原始对象。</p>
+<p>然后把这个引用（代理或原始）放入 二级缓存，并删除三级缓存。</p>
+<p>✅ 关键点：<br>三级缓存提供了“延迟决定”的能力，保证即使在循环依赖场景下，另一个 Bean 拿到的引用就是最终形态（代理对象），而不是原始对象。</p>
+<p>Spring如何判断是否需要代理呢？</p>
+<p>. 核心机制：BeanPostProcessor</p>
+<p>Spring 在 Bean 生命周期中，会调用各种后置处理器。<br>关键接口：</p>
+<p>InstantiationAwareBeanPostProcessor：在实例化前后进行处理。<br>SmartInstantiationAwareBeanPostProcessor：可以预测 Bean 类型，决定是否需要代理。<br>BeanPostProcessor：在初始化前后进行处理。</p>
+<ol start="2">
+<li>判断是否需要代理的时机</li>
+</ol>
+<p>当 Spring 创建 Bean 时，会调用 AbstractAutoProxyCreator（AOP 的核心后置处理器）。<br>它会检查：</p>
+<p>是否有 Advisor（切面通知）匹配当前 Bean。<br>是否有事务、@AspectJ 注解等。</p>
+<p>如果匹配，Spring 就会决定创建代理。</p>
+<ol start="3">
+<li>代理创建的过程</li>
+</ol>
+<p>如果需要代理，Spring 会在 三级缓存的 ObjectFactory 中，调用 getEarlyBeanReference()。<br>这个方法会返回代理对象，而不是原始对象。<br>所以另一个 Bean 注入的就是代理对象。</p>
+<p>✅ 总结一句话：<br>Spring 通过 AOP 后置处理器（如 AbstractAutoProxyCreator）在 Bean 初始化阶段判断是否需要代理，并在三级缓存工厂中创建代理对象。</p>
+<p>✅ Spring Bean 生命周期流程</p>
+<ol>
+<li>Bean 定义加载</li>
+</ol>
+<p>Spring 从配置文件或注解中读取 Bean 定义，注册到 BeanDefinition。</p>
+<ol start="2">
+<li>实例化（Instantiation）</li>
+</ol>
+<p>调用构造器 new 出对象。<br>此时对象还没有属性值。<br>如果有循环依赖，Spring 会在这里把工厂放入 三级缓存。</p>
+<ol start="3">
+<li>属性填充（Populate Properties）</li>
+</ol>
+<p>Spring 通过依赖注入（DI）为 Bean 设置属性。<br>@Autowired、@Resource 在此阶段完成。</p>
+<ol start="4">
+<li>初始化前（Before Initialization）</li>
+</ol>
+<p>调用 BeanPostProcessor 的 postProcessBeforeInitialization()。<br>如果有 AOP，可能在这里决定是否需要代理。</p>
+<ol start="5">
+<li>初始化（Initialization）</li>
+</ol>
+<p>调用：</p>
+<p>InitializingBean.afterPropertiesSet()<br>@PostConstruct 方法</p>
+<p>完成 Bean 的初始化逻辑。</p>
+<ol start="6">
+<li>初始化后（After Initialization）</li>
+</ol>
+<p>调用 BeanPostProcessor 的 postProcessAfterInitialization()。<br>如果需要代理，Spring 在这里创建代理对象（最终形态）。</p>
+<ol start="7">
+<li>Bean 可用</li>
+</ol>
+<p>Bean 放入 一级缓存，供应用使用。</p>
+<ol start="8">
+<li>销毁（Destruction）</li>
+</ol>
+<p>当容器关闭时，调用：</p>
+<p>DisposableBean.destroy()<br>@PreDestroy 方法</p>
+<p>✅ 关键点：</p>
+<p>循环依赖解决在实例化阶段，通过三级缓存提前暴露引用。<br>代理对象创建在初始化后阶段，通过后置处理器完成。</p>
+<p>Spring 容器在启动过程中会经历一系列的生命周期阶段。你提到的“Bean 初始化后”是其中的一个关键节点。下面是 Spring 容器启动和 Bean 生命周期的完整执行顺序，帮助你理解每个阶段的作用和时机：</p>
+<hr>
+<h3 id="🌱-Spring-Bean-生命周期执行顺序"><a href="#🌱-Spring-Bean-生命周期执行顺序" class="headerlink" title="🌱 Spring Bean 生命周期执行顺序"></a>🌱 Spring Bean 生命周期执行顺序</h3><ol>
+<li><strong>实例化（Instantiation）</strong></li>
+</ol>
+<ul>
+<li>Spring 使用反射创建 Bean 实例（调用构造方法）。</li>
+</ul>
+<ol start="2">
+<li><strong>属性注入（Populate Properties）</strong></li>
+</ol>
+<ul>
+<li>Spring 将配置文件或注解中的依赖注入到 Bean 中（如 <code>@Autowired</code>、<code>@Value</code>）。</li>
+</ul>
+<ol start="3">
+<li><strong>Aware 接口回调（可选）</strong></li>
+</ol>
+<ul>
+<li><p>如果 Bean 实现了以下接口，Spring 会调用对应方法：</p>
+</li>
+<li><p><code>BeanNameAware</code>：注入 Bean 的名称</p>
+</li>
+<li><p><code>BeanFactoryAware</code>：注入 BeanFactory</p>
+</li>
+<li><p><code>ApplicationContextAware</code>：注入 ApplicationContext</p>
+</li>
+</ul>
+<ol start="4">
+<li>**BeanPostProcessor 的 **<code>postProcessBeforeInitialization()</code></li>
+</ol>
+<ul>
+<li>所有注册的 <code>BeanPostProcessor</code> 会在初始化方法调用前执行。</li>
+</ul>
+<ol start="5">
+<li><strong>初始化（Initialization）</strong></li>
+</ol>
+<ul>
+<li>如果 Bean 实现了 <code>InitializingBean</code> 接口，会调用其 <code>afterPropertiesSet()</code> 方法。</li>
+<li>如果使用了 <code>@PostConstruct</code> 注解，会执行标注的方法。</li>
+<li>如果在 <code>@Bean</code> 中指定了 <code>initMethod</code>，也会执行。</li>
+</ul>
+<ol start="6">
+<li>**BeanPostProcessor 的 **<code>postProcessAfterInitialization()</code></li>
+</ol>
+<ul>
+<li>所有注册的 <code>BeanPostProcessor</code> 会在初始化方法调用后执行。</li>
+</ul>
+<ol start="7">
+<li><strong>Bean 准备就绪，可被使用</strong></li>
+</ol>
+<hr>
+<h3 id="🚀-Spring-Boot-应用启动流程（更高层次）"><a href="#🚀-Spring-Boot-应用启动流程（更高层次）" class="headerlink" title="🚀 Spring Boot 应用启动流程（更高层次）"></a>🚀 Spring Boot 应用启动流程（更高层次）</h3><ol>
+<li><strong>SpringApplication.run() 启动</strong></li>
+<li><strong>创建并刷新 ApplicationContext</strong></li>
+<li><strong>加载配置、自动装配、创建 Bean</strong></li>
+<li>**执行 <strong><code>CommandLineRunner</code></strong> 和 **<code>ApplicationRunner</code></li>
+<li><strong>发布 <strong><code>ApplicationReadyEvent</code></strong> 事件</strong></li>
+</ol>
+<hr>
+<h3 id="🧭-Bean-初始化后处于什么阶段？"><a href="#🧭-Bean-初始化后处于什么阶段？" class="headerlink" title="🧭 Bean 初始化后处于什么阶段？"></a>🧭 Bean 初始化后处于什么阶段？</h3><p>当 Bean 初始化完成（即执行完 <code>@PostConstruct</code>、<code>afterPropertiesSet()</code>、<code>initMethod()</code>）后，它就进入了“<strong>可用状态</strong>”，可以被其他 Bean 引用或参与业务逻辑。</p>
+<p>如果你想在整个应用完全启动后（包括所有 Bean 初始化完成）再执行某些操作，推荐使用：</p>
+<ul>
+<li><code>ApplicationRunner</code></li>
+<li><code>CommandLineRunner</code></li>
+<li><code>@EventListener(ApplicationReadyEvent.class)</code></li>
+</ul>
+<p>这些方式都发生在 <strong>Spring Boot 启动完成之后</strong>，比 Bean 初始化更晚。</p>
+<hr>
+<p>如果你有具体的初始化任务（比如加载缓存、连接远程服务等），我可以帮你选择最合适的生命周期钩子。你现在是想在哪个阶段执行操作？是在 Bean 初始化后，还是整个应用启动完成后？</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/Spring/" class="category-chain-item">Spring</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Spring/" class="print-no-link">#Spring</a>
+      
+        <a href="/tags/IoC/" class="print-no-link">#IoC</a>
+      
+        <a href="/tags/Bean%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" class="print-no-link">#Bean生命周期</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>spring原理</div>
+      <div>https://q792821266.github.io/yuque/73504198/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/16/kafka/" title="kafka">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">kafka</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/77709315/" title="类加载机制">
+                        <span class="hidden-mobile">类加载机制</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

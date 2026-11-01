@@ -1,0 +1,991 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="以下内容由Microsoft Copilot提供，请自行甄别  LDAP🧠 LADP是什么？为什么出现？✅ 定义LDAP（Lightweight Directory Access Protocol）是一种用于访问和管理目录服务的协议。目录服务是一种专门优化用于读取的数据库，常用于存储用户、组织、设备等信息 ✅ 出现的背景在企业种，随着用户数量和系统复杂度的增加，传统的数据库或文件系统难以高效管">
+<meta property="og:type" content="article">
+<meta property="og:title" content="身份验证与鉴权">
+<meta property="og:url" content="https://q792821266.github.io/yuque/231048501/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="以下内容由Microsoft Copilot提供，请自行甄别  LDAP🧠 LADP是什么？为什么出现？✅ 定义LDAP（Lightweight Directory Access Protocol）是一种用于访问和管理目录服务的协议。目录服务是一种专门优化用于读取的数据库，常用于存储用户、组织、设备等信息 ✅ 出现的背景在企业种，随着用户数量和系统复杂度的增加，传统的数据库或文件系统难以高效管">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-05T03:13:12.441Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.461Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="LDAP">
+<meta property="article:tag" content="身份认证">
+<meta property="article:tag" content="鉴权">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>身份验证与鉴权 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="身份验证与鉴权"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-05 11:13" pubdate>
+          2025年8月5日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          17 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">身份验证与鉴权</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>以下内容由Microsoft Copilot提供，请自行甄别</p>
+</blockquote>
+<h1 id="LDAP"><a href="#LDAP" class="headerlink" title="LDAP"></a>LDAP</h1><h2 id="🧠-LADP是什么？为什么出现？"><a href="#🧠-LADP是什么？为什么出现？" class="headerlink" title="🧠 LADP是什么？为什么出现？"></a>🧠 LADP是什么？为什么出现？</h2><h3 id="✅-定义"><a href="#✅-定义" class="headerlink" title="✅ 定义"></a>✅ 定义</h3><p>LDAP（Lightweight Directory Access Protocol）是一种用于访问和管理目录服务的协议。目录服务是一种专门优化用于读取的<strong>数据库</strong>，常用于存储用户、组织、设备等信息</p>
+<h3 id="✅-出现的背景"><a href="#✅-出现的背景" class="headerlink" title="✅ 出现的背景"></a>✅ 出现的背景</h3><p>在企业种，随着用户数量和系统复杂度的增加，传统的数据库或文件系统难以高效管理用户身份信息。LDAP作为一种轻量级协议，提供了：</p>
+<ul>
+<li>高效的读取性能</li>
+<li>层级结构（类似文件系统）</li>
+<li>标准化的身份管理方式</li>
+</ul>
+<p>它最初由X.500标准演化而来，成为企业身份管理的核心技术之一</p>
+<h2 id="🔐LDAP的身份验证与权限控制机制"><a href="#🔐LDAP的身份验证与权限控制机制" class="headerlink" title="🔐LDAP的身份验证与权限控制机制"></a>🔐LDAP的身份验证与权限控制机制</h2><h3 id="身份验证（Authentication）"><a href="#身份验证（Authentication）" class="headerlink" title="身份验证（Authentication）"></a>身份验证（Authentication）</h3><p>LDAP的身份验证通常通过以下方式实现：</p>
+<ul>
+<li>简单绑定（Simple Bind）：客户端提供用户名（DN）和密码，LDAP服务器验证</li>
+<li>SASL绑定：支持更复杂的认证机制，如Kerberos</li>
+<li>在Spring Security中，通常使用userDnPatterns 来构造用户的DN，然后进行密码验证</li>
+</ul>
+<h3 id="权限控制（Authorization）"><a href="#权限控制（Authorization）" class="headerlink" title="权限控制（Authorization）"></a>权限控制（Authorization）</h3><p>LDAP本身不直接控制权限，而是通过以下方式实现：</p>
+<h4 id="✅-基于组（Group-Based-Authorization）"><a href="#✅-基于组（Group-Based-Authorization）" class="headerlink" title="✅ 基于组（Group-Based Authorization）"></a>✅ 基于组（Group-Based Authorization）</h4><ul>
+<li>用户属性某个组（如 cn=admin ,ou =groups）</li>
+<li>应用根据用户所属组授予权限（如hasRole(“ADMIN”)）</li>
+</ul>
+<h4 id="✅-基于属性（Attribute-Based-Authorization）"><a href="#✅-基于属性（Attribute-Based-Authorization）" class="headerlink" title="✅ 基于属性（Attribute-Based Authorization）"></a>✅ 基于属性（Attribute-Based Authorization）</h4><ul>
+<li>用户条目中包含角色属性</li>
+<li>应用读取属性并映射为权限</li>
+</ul>
+<h4 id="✅-结合应用权限系统"><a href="#✅-结合应用权限系统" class="headerlink" title="✅ 结合应用权限系统"></a>✅ 结合应用权限系统</h4><ul>
+<li>LDAP只做身份验证</li>
+<li>权限控制由数据库或RBAC系统完成</li>
+</ul>
+<h2 id="🧰-LADP权限控制的细节"><a href="#🧰-LADP权限控制的细节" class="headerlink" title="🧰 LADP权限控制的细节"></a>🧰 LADP权限控制的细节</h2><table>
+<thead>
+<tr>
+<th><strong>控制点</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>DN（Distinguished Name）</strong></td>
+<td>唯一标识用户或组，如 <code>uid=john,ou=people,dc=example,dc=com</code></td>
+</tr>
+<tr>
+<td><strong>Group Membership</strong></td>
+<td>用户条目中包含 <code>memberOf</code><br>或组条目中包含 <code>member</code></td>
+</tr>
+<tr>
+<td><strong>ACL（Access Control List）</strong></td>
+<td>LDAP 服务器可配置访问控制策略，限制谁能读写哪些条目</td>
+</tr>
+<tr>
+<td><strong>Schema</strong></td>
+<td>定义哪些属性可用于权限控制，如 <code>role</code><br>, <code>department</code><br>, <code>title</code></td>
+</tr>
+</tbody></table>
+<h2 id="🧭-其他身份与权限校验方式"><a href="#🧭-其他身份与权限校验方式" class="headerlink" title="🧭 其他身份与权限校验方式"></a>🧭 其他身份与权限校验方式</h2><p>除了LDAP，还有下列现在身份校验与授权方式：</p>
+<h3 id="✅OAuth2-0-OpenID-Connect"><a href="#✅OAuth2-0-OpenID-Connect" class="headerlink" title="✅OAuth2.0 / OpenID Connect"></a>✅OAuth2.0 / OpenID Connect</h3><ul>
+<li>用于Web和移动应用的授权协议</li>
+<li>支持第三方登录，如Google，Github</li>
+<li>常用于微服务架构</li>
+</ul>
+<h3 id="✅SAML（Security-Assertion-Markup-Language）"><a href="#✅SAML（Security-Assertion-Markup-Language）" class="headerlink" title="✅SAML（Security Assertion Markup Language）"></a>✅SAML（Security Assertion Markup Language）</h3><ul>
+<li>企业级单点登录协议</li>
+<li>常用于与AD 、 SSO 系统集成</li>
+</ul>
+<h3 id="✅RBAC-（Role-Based-Access-Control）"><a href="#✅RBAC-（Role-Based-Access-Control）" class="headerlink" title="✅RBAC （Role-Based Access Control）"></a>✅RBAC （Role-Based Access Control）</h3><ul>
+<li>基于角色的权限控制</li>
+<li>用户 -&gt; 角色 -&gt; 权限</li>
+<li>这种其实更常用于Web应用</li>
+</ul>
+<h3 id="✅ABAC-（Attribute-Based-Access-Control）"><a href="#✅ABAC-（Attribute-Based-Access-Control）" class="headerlink" title="✅ABAC （Attribute-Based Access Control）"></a>✅ABAC （Attribute-Based Access Control）</h3><ul>
+<li>基于属性的权限控制</li>
+<li>更灵活，适合复杂场景</li>
+</ul>
+<hr>
+<h1 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h1><p>JWT（JSON Web Token）本质是一种令牌格式和传输机制，并不是一种完整的身份验证协议。它通常与OAuth2.0或OpenID Connect等协议配合使用，来完成身份验证和权限控制</p>
+<h2 id="JWT是什么"><a href="#JWT是什么" class="headerlink" title="JWT是什么"></a>JWT是什么</h2><p>JWT是一种轻量级的令牌格式，具有以下特点：</p>
+<ul>
+<li>自包含：令牌中包含用户信息和权限声明（Claims）</li>
+<li>无状态：服务器不需要储存会话信息</li>
+<li>可签名：通过HMAC或RSA 签名保证令牌完整性</li>
+</ul>
+<p>一个典型的JWT包含三部分：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plain">Header.Payload.Signature<br></code></pre></td></tr></tbody></table></figure>
+
+<h2 id="JWT和OAuth2-0的关系"><a href="#JWT和OAuth2-0的关系" class="headerlink" title="JWT和OAuth2.0的关系"></a>JWT和OAuth2.0的关系</h2><table>
+<thead>
+<tr>
+<th><strong>项目</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>OAuth2.0</strong></td>
+<td>是一个授权协议，定义了如何获取访问令牌（access token），只负责授权</td>
+</tr>
+<tr>
+<td><strong>JWT</strong></td>
+<td>是一种令牌格式，可以作为 OAuth2.0 的 access token</td>
+</tr>
+<tr>
+<td><strong>OpenID Connect</strong></td>
+<td>是基于 OAuth2.0 的身份认证协议，使用 JWT 作为 ID Token，同时兼顾授权与认证</td>
+</tr>
+</tbody></table>
+<p>虽然 JWT 本身不是权限控制系统，但它可以携带权限信息，例如：</p>
+<ul>
+<li>用户角色（<code>role</code>）</li>
+<li>权限列表（<code>scope</code>）</li>
+<li>组织或部门信息（<code>org</code>）</li>
+</ul>
+<p>这些信息可以被后端服务解析并用于授权判断。</p>
+<p>如果你正在设计一个身份认证系统，可以根据场景选择：</p>
+<ul>
+<li>企业内部系统：LDAP + RBAC</li>
+<li>微服务架构：OAuth2.0 + JWT</li>
+<li>跨域登录：OpenID Connect + JWT</li>
+</ul>
+<h3 id="✅-SAML（Security-Assertion-Markup-Language）基本流程"><a href="#✅-SAML（Security-Assertion-Markup-Language）基本流程" class="headerlink" title="✅ SAML（Security Assertion Markup Language）基本流程"></a>✅ <strong>SAML（Security Assertion Markup Language）基本流程</strong></h3><p>SAML 是一种 <strong>基于 XML 的身份认证协议</strong>，主要用于 <strong>SSO 场景</strong>，流程大致如下：</p>
+<ol>
+<li><strong>用户访问应用（Service Provider, SP）</strong><br>用户打开企业应用，应用发现用户未登录。</li>
+<li><strong>应用重定向到身份提供者（Identity Provider, IdP）</strong><br>SP 将用户重定向到 IdP（企业认证系统）。</li>
+<li><strong>用户在 IdP 登录</strong><br>用户输入账号密码，IdP完成身份验证。</li>
+<li><strong>IdP 生成 SAML Assertion（XML 格式）</strong><br>这个 Assertion 包含用户身份信息（如用户名、邮箱），并签名保证安全。</li>
+<li><strong>SP 验证 Assertion</strong><br>应用验证签名，确认用户身份，建立会话，实现 SSO。</li>
+</ol>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>使用 XML 格式，基于浏览器重定向。</li>
+<li>主要用于 <strong>身份认证</strong>，不涉及细粒度权限（通常权限在应用端处理）。</li>
+<li>常用于企业内部系统集成（如与 AD、LDAP）。</li>
+</ul>
+<h3 id="✅-1-授权服务器如何认证身份？"><a href="#✅-1-授权服务器如何认证身份？" class="headerlink" title="✅ 1. 授权服务器如何认证身份？"></a>✅ <strong>1. 授权服务器如何认证身份？</strong></h3><ul>
+<li><p>用户在 <strong>IdP（Identity Provider）</strong> 登录，输入账号密码。</p>
+</li>
+<li><p>IdP 验证用户凭证（通常对接 LDAP、AD 或数据库）。</p>
+</li>
+<li><p>登录成功后，授权服务器生成：</p>
+</li>
+<li><p><strong>ID Token</strong>（JWT格式）：用于身份认证，包含 <code>sub</code>（用户ID）、<code>name</code>、<code>email</code> 等。</p>
+</li>
+<li><p><strong>Access Token</strong>：用于授权访问资源，包含 <code>scope</code>、<code>audience</code>、<code>exp</code> 等。</p>
+</li>
+</ul>
+<hr>
+<h3 id="✅-2-ID-Token-的安全性"><a href="#✅-2-ID-Token-的安全性" class="headerlink" title="✅ 2. ID Token 的安全性"></a>✅ <strong>2. ID Token 的安全性</strong></h3><ul>
+<li><p><strong>格式</strong>：JWT（Header + Payload + Signature）。</p>
+</li>
+<li><p><strong>签名</strong>：</p>
+</li>
+<li><p>使用授权服务器的 <strong>私钥</strong>（通常是 RSA 或 EC）。</p>
+</li>
+<li><p>客户端或资源服务器使用 <strong>公钥</strong>验证签名。</p>
+</li>
+<li><p><strong>作用</strong>：证明“用户是谁”，用于 SSO。</p>
+</li>
+</ul>
+<hr>
+<h3 id="✅-3-Access-Token-的安全性"><a href="#✅-3-Access-Token-的安全性" class="headerlink" title="✅ 3. Access Token 的安全性"></a>✅ <strong>3. Access Token 的安全性</strong></h3><ul>
+<li><p><strong>格式</strong>：可以是 JWT，也可以是 opaque（不透明字符串）。</p>
+</li>
+<li><p><strong>验证方式</strong>：</p>
+</li>
+<li><p>如果是 JWT：</p>
+</li>
+<li><p>客户端或资源服务器验证签名（使用授权服务器的公钥）。</p>
+</li>
+<li><p>检查 <code>exp</code>（过期时间）、<code>aud</code>（目标服务）、<code>scope</code>（权限）。</p>
+</li>
+<li><p>如果是 opaque：</p>
+</li>
+<li><p>客户端调用授权服务器的 <strong>Token Introspection API</strong> 验证令牌有效性。</p>
+</li>
+</ul>
+<hr>
+<h3 id="✅-4-客户端如何验证授权码（Authorization-Code）？"><a href="#✅-4-客户端如何验证授权码（Authorization-Code）？" class="headerlink" title="✅ 4. 客户端如何验证授权码（Authorization Code）？"></a>✅ <strong>4. 客户端如何验证授权码（Authorization Code）？</strong></h3><ul>
+<li><p>授权码是 OAuth 2.0 授权流程中的临时凭证，客户端不能直接验证它。</p>
+</li>
+<li><p><strong>正确做法</strong>：</p>
+</li>
+<li><p>客户端拿授权码去授权服务器的 <strong>Token Endpoint</strong> 换取 Access Token 和 ID Token。</p>
+</li>
+<li><p>授权码本身只在服务器端验证，客户端只负责安全传输。</p>
+</li>
+</ul>
+<hr>
+<h3 id="✅-安全要点"><a href="#✅-安全要点" class="headerlink" title="✅ 安全要点"></a>✅ <strong>安全要点</strong></h3><ul>
+<li><p><strong>ID Token 和 Access Token 都必须签名</strong>，客户端验证签名。</p>
+</li>
+<li><p>使用 <strong>短期有效期</strong>（如 5-15 分钟），并支持刷新令牌。</p>
+</li>
+<li><p>使用 <strong>HTTPS</strong> 保证传输安全。</p>
+</li>
+<li><p>客户端必须验证：</p>
+</li>
+<li><p>签名是否正确。</p>
+</li>
+<li><p><code>exp</code> 是否过期。</p>
+</li>
+<li><p><code>aud</code> 是否匹配当前应用。</p>
+</li>
+<li><p><code>iss</code> 是否是可信授权服务器。</p>
+</li>
+</ul>
+<hr>
+<p>✅ <strong>一句话总结</strong>：<br><strong>授权服务器认证身份 → 生成 ID Token（身份）+ Access Token（授权），客户端验证签名、过期时间、audience，确保令牌合法。</strong></p>
+<hr>
+<hr>
+<p>** 资源服务器验证 Access Token 后，是否需要再次调用授权服务器  **</p>
+<p>答案取决于 Access Token 的类型：</p>
+<p>✅** 两种常见情况**</p>
+<ol>
+<li><strong>Access Token 是 JWT（自包含）</strong></li>
+</ol>
+<p><strong>验证方式：</strong></p>
+<p><strong>资源服务器使用授权服务器的 公钥 验证签名。<br>检查 exp（过期时间）、aud（目标服务）、scope（权限）。</strong></p>
+<p><strong>权限校验：</strong></p>
+<p><strong>如果 JWT 中包含 roles 或 scopes，资源服务器可以 直接根据这些信息做权限控制。</strong></p>
+<p><strong>是否需要再次调用授权服务器？</strong></p>
+<p><strong>不需要，因为 JWT 是自包含的，验证签名和字段即可。</strong></p>
+<p>✅** 企业最佳实践：<br>Access Token 使用 JWT，资源服务器本地验证签名 + 权限字段，避免额外网络调用，提高性能。**</p>
+<ol start="2">
+<li><strong>Access Token 是 Opaque（不透明字符串）</strong></li>
+</ol>
+<p><strong>验证方式：</strong></p>
+<p><strong>资源服务器无法解析 Token，只能调用授权服务器的 Token Introspection API。<br>授权服务器返回 Token 是否有效，以及用户信息、权限。</strong></p>
+<p><strong>是否需要再次调用授权服务器？</strong></p>
+<p><strong>需要，因为资源服务器无法自行验证。</strong></p>
+<p>✅** 这种方式常用于安全要求极高的场景，但性能较差。**</p>
+<p>✅** 总结**</p>
+<p><strong>JWT Access Token → 本地验证签名 + 权限字段，性能高。<br>Opaque Access Token → 调用授权服务器验证，安全性高但性能差。</strong></p>
+<p>✅** 企业微服务最佳实践**</p>
+<p><strong>Gateway 或 IdP 发放 JWT Access Token（签名 + 短期有效期）。<br>资源服务器本地验证签名和权限字段，不再调用授权服务器。<br>如果权限复杂，可以：</strong></p>
+<p><strong>JWT 中只放用户ID，资源服务器调用权限服务（不是授权服务器）。<br>或使用 API Gateway 做统一权限校验。</strong></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E8%AE%A4%E8%AF%81%E4%B8%8E%E5%AE%89%E5%85%A8/" class="category-chain-item">认证与安全</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/LDAP/" class="print-no-link">#LDAP</a>
+      
+        <a href="/tags/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/" class="print-no-link">#身份认证</a>
+      
+        <a href="/tags/%E9%89%B4%E6%9D%83/" class="print-no-link">#鉴权</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>身份验证与鉴权</div>
+      <div>https://q792821266.github.io/yuque/231048501/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/232515563/" title="分布式事务">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">分布式事务</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/82563153/" title="客户端负载均衡-Ribbon">
+                        <span class="hidden-mobile">客户端负载均衡-Ribbon</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

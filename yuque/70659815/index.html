@@ -1,0 +1,893 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最佳实践分为四大块，通过Producer、Consumer、NameServer、JVM与Linux内核配置四个方面来实现最佳实现。 Producer最佳实践 一个应用尽可用用一个Topic，消息子类型用tags来标识，tags由应用自由设置。只有发送消息设置了tags，消费方再订阅消息时，才可以利用tags在broker做消息过滤。message.setTags(&quot;TagA&quot;); 这样可以降低服">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ高性能最佳实践">
+<meta property="og:url" content="https://q792821266.github.io/yuque/70659815/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="最佳实践分为四大块，通过Producer、Consumer、NameServer、JVM与Linux内核配置四个方面来实现最佳实现。 Producer最佳实践 一个应用尽可用用一个Topic，消息子类型用tags来标识，tags由应用自由设置。只有发送消息设置了tags，消费方再订阅消息时，才可以利用tags在broker做消息过滤。message.setTags(&quot;TagA&quot;); 这样可以降低服">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/af09a4c456974936db4b0b98206203de421e69ee8c1f6576caf20819c8c691ef.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/999225ba5d0ca52c6ccff801c42db1d26d53f8bbfe7a2e8e6ac8f1fc830a10bb.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d8634ce0c6f615b19e988a125361223986b76c852647779753f5b30c5cd86e61.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c3f8cdc8b6ae27a1ca8fcbe1bb764cfee775be7222eeae6cb8e7df004ca7bca2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7318baedf59675f4ad4157bb748b0b3d375c94a3447ec02cab618cf96252ac0f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5e0e0c6b5d13400cc92a4696b76606380574a1cb142ab63f548081f708b9a1cc.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3627c440c196fadc0ee8211cd114b8ffb181455355efc8d793489e58fafbe983.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4aecf1f48ed8aa9a879c8e9b65c2bc64d18cbe3581a5532e217ca2f18408e2cd.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/746d46482cedf556b3d664fd16299cb1cab5e4e46ce71858a7176957a4ad2131.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/952bb46a77a0274304526126c5a9c5e37940f516d956246402d4e5ed2120f18c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/eaa2469d0e7653ec9299189ee81a4aec3c7b97640810d432111f0b0f6c926589.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8e5a6ba318f09c8458a8472739c1b05f4c424db0dd11c9c62a2d8b707f3eec09.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bc646839890a07805757e443c8ed538ed1e403fd423e0d40af1ca81ecba8b914.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/49afeb68690fd855c8533faae635ff4985ad4a3ae6e486f0244e3e3ac9844fa9.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/739c3ab1c7462032d9dc4690604b3fbdd8cda15887bbc70e819d31fa038c5957.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3f45c61597190f084d5c50df2b604a7c7b26d4f0935ed75c3a61a939c6d8cb52.png">
+<meta property="article:published_time" content="2022-03-23T11:57:50.000Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.472Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="RocketMQ">
+<meta property="article:tag" content="消息队列">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/af09a4c456974936db4b0b98206203de421e69ee8c1f6576caf20819c8c691ef.png">
+  
+  
+  
+  <title>RocketMQ高性能最佳实践 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="RocketMQ高性能最佳实践"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-23 19:57" pubdate>
+          2022年3月23日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">RocketMQ高性能最佳实践</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>最佳实践分为四大块，通过Producer、Consumer、NameServer、JVM与Linux内核配置四个方面来实现最佳实现。</p>
+<h1 id="Producer最佳实践"><a href="#Producer最佳实践" class="headerlink" title="Producer最佳实践"></a>Producer最佳实践</h1><ol>
+<li><p>一个应用尽可用用一个Topic，消息子类型用tags来标识，tags由应用自由设置。只有发送消息设置了tags，消费方再订阅消息时，才可以利用tags在broker做消息过滤。<code>message.setTags("TagA");</code> 这样可以降低服务器管理的复杂性。</p>
+</li>
+<li><p>消息在业务层面有唯一表示码，要设置到keys字段，方便将来定位消息丢失问题。服务器会为每个消息创建索引（hash索引），应用可以通过topic，key来查询这条消息内容，以及消息被谁消费。由于是hash索引，请务必保证key尽可能唯一，这样可以避免潜在的hash冲突。<br><img src="/yuque-assets/af09a4c456974936db4b0b98206203de421e69ee8c1f6576caf20819c8c691ef.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>如果有可靠性需求，消息发送成功或者失败，要打印消息日志（sendResult和key）</p>
+</li>
+<li><p>如果相同性质的消息量大，使用批量消息，可以提升性能</p>
+</li>
+<li><p>建议消息大小不超过512KB</p>
+</li>
+<li><p><code>send(msg)</code>会阻塞，如果有性能要求，可以使用异步的方式<code>send(msg,callback)</code></p>
+</li>
+<li><p>如果在一个JVM中，有多个生产者进行大数据处理，建议：</p>
+</li>
+<li><p>少数生成者使用异步方式发送（3-5个就够了），再多就其实性能提升也不明显，反而会增加性能争抢而损失性能</p>
+</li>
+<li><p>通过setInstanceName方法，给每个生产者设置一个实例名</p>
+</li>
+<li><p>send消息方法，只要不抛异常，就代表发送成功。但是发送成功会有很多个状态，在sendResult里定义</p>
+</li>
+</ol>
+<p><img src="/yuque-assets/999225ba5d0ca52c6ccff801c42db1d26d53f8bbfe7a2e8e6ac8f1fc830a10bb.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/d8634ce0c6f615b19e988a125361223986b76c852647779753f5b30c5cd86e61.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/c3f8cdc8b6ae27a1ca8fcbe1bb764cfee775be7222eeae6cb8e7df004ca7bca2.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="9">
+<li>对于消息不可丢失的应用，务必要有消息重发机制</li>
+</ol>
+<p>Producter的send方法本身支持内部重试：</p>
+<ul>
+<li>至多重试三次</li>
+<li>如果发送失败，则轮转到下一个broker，集群容错。</li>
+<li>这个方法的总耗时时间不超过sendMsgTimeout设置的值，默认10s。如果本身向broker发送消息产生超时异常，就不会再做重试</li>
+</ul>
+<p>以上策略仍然不能保证消息一定发送成功，为保证消息一定成功，建议将消息存储到DB，由后台线程定时重试，保证消息一定到达Broker。</p>
+<h1 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h1><p>我们在编写consumer的时候需要注意的是：</p>
+<ol>
+<li><p>消费者组和订阅：不同的消费群体可以独立地消费同样的主题，并且每个消费者都有自己的消费偏移量（offset）。确保同一个组的每个消费者订阅相同的主题。</p>
+</li>
+<li><p>消息监听器（MessageListener）：</p>
+</li>
+<li><p>顺序（orderly）：消费者将锁定每个MessageQueue，以确保每个消息被一个个按顺序使用，这将导致性能损耗。如果关心消息的顺序时，它就很有用。不建议抛出异常，可以返回<code>ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT</code>代替，这样MQ就会发起重试，重试次数也可以设置<code>consumer.setMaxReconsumeTimes(-1)</code>，-1代表默认16次。</p>
+</li>
+</ol>
+<p><img src="/yuque-assets/7318baedf59675f4ad4157bb748b0b3d375c94a3447ec02cab618cf96252ac0f.png" srcset="/img/loading.gif" lazyload></p>
+<p>在出错之后，消息会发生变化，消息会从原来的<code>RETRY_TOPIC</code>转变到<code>REAL_TOPIC</code>的地方。这是一个延时消息队列，延时时间就是之前说过配置过level的时间来计算，默认level是3，即10s，10s后这条消息会被重新发送。每一次失败都会提升level值，默认重发16次。这是原来的实现，感兴趣可以去看MessageExt源码。</p>
+<p><img src="/yuque-assets/5e0e0c6b5d13400cc92a4696b76606380574a1cb142ab63f548081f708b9a1cc.png" srcset="/img/loading.gif" lazyload></p>
+<p>要用顺序消息就要接收性能损耗</p>
+<ol start="2">
+<li><p>消费状态（Consume status）：对于MessageListenerConcurrently，可以返回RECONSUME_LATER告诉Broker，当前不能消费他，并且希望以后消费，让broker进入重试，然后可以继续操作其他消息，等于跳过了一条错误消息，。对于MessageListenerOrderly，如果关心顺序，就不能跳过消息，可以返回<code>SUSPEND_CURRENT_QUEUE_A_MOMENT</code>来告诉消费者稍等片刻</p>
+</li>
+<li><p>阻塞（Blocking）: 消费的时候不建议阻塞Listener， 因为它会阻塞线程池，最终可能会停止消费程序。如果存在一些处理很慢的任务，可以自行新建一个线程池进行处理</p>
+</li>
+<li><p>线程数：消费者使用要给ThreadPoolExecutor来处理内部的消费，因此可以通过设置setConsumeThreadMin或setConsumerThreadMax来更改它。</p>
+</li>
+<li><p>从何处开始消费</p>
+</li>
+<li><p>当建立一个新的consumer Group时，需要决定是否需要消费Broker中以及存在的历史消息</p>
+</li>
+<li><p>CONSUME_FROM_LAST_OFFSET 将会忽略历史消息，从消费者启动之后开始，并消费此后生成的任何内容</p>
+</li>
+<li><p>CONSUME_FROM_FIRST_OFFSET 将消耗Broker中存在的所有消息。还可以使用CONSUME_FROM_TIMESTAMP来消费指定的时间戳之后生成的消息</p>
+</li>
+<li><p>重复：RocketMQ无法避免重复消息，如果业务对重复数据非常敏感，务必在业务层面做去重，保持幂等</p>
+</li>
+<li><p>通过记录消息唯一键进行去重，比如orderId作为主键插入数据库失败那么就表示这个是重复消息，不能处理了。</p>
+</li>
+<li><p>使用业务层面的状态机制去重</p>
+</li>
+</ol>
+<h1 id="NameServer最佳实践"><a href="#NameServer最佳实践" class="headerlink" title="NameServer最佳实践"></a>NameServer最佳实践</h1><p>NameServer是Broker中非常重要的组件。</p>
+<p>在Apache RocketMQ中，NameServer用于协调分布式系统的每个组件，主要通过管理主题（topic）路由信息来实现协调。</p>
+<p>管理由两个部分组成：</p>
+<ol>
+<li>Brokers定期更新保存在每个名称服务器中的元数据</li>
+<li>名称服务器是为客户端提供最新的路由信息服务的，包括生产者、消费者和命令行客户端</li>
+</ol>
+<p>NameServer之间不会做数据交互，NameServer数据全部来着于Broker。</p>
+<p>因此，在启动brokers和clients之前，我们需要告诉他们通过给一个名称服务器地址列表来访问名称服务器。在Apache RocketMQ中，可以用四？种方式来完成。配置文件（broker上） 代码方式、环境变量方式、java参数方式、http方式。</p>
+<p><img src="/yuque-assets/3627c440c196fadc0ee8211cd114b8ffb181455355efc8d793489e58fafbe983.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/4aecf1f48ed8aa9a879c8e9b65c2bc64d18cbe3581a5532e217ca2f18408e2cd.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/746d46482cedf556b3d664fd16299cb1cab5e4e46ce71858a7176957a4ad2131.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/952bb46a77a0274304526126c5a9c5e37940f516d956246402d4e5ed2120f18c.png" srcset="/img/loading.gif" lazyload>将管理工具集成到项目中后，就可以在java中实现对集群的查询和监控</p>
+<p>如果没有使用前面提到的方法指定NameServer地址列表，Apache RocketMQ将每两分钟发起一次HTTP请求，以获取和更新NameServer地址列表，初始延迟10s。默认情况下（这个代码是写死的），访问的HTTP地址是 ： <code>Http://jmenv.tbsite.net:8080/rocketmq/nsaddr</code> 。通过Java参数<code>rocketmq.namesrv.domain</code>修改jmenv.tbsite.net。通过Java参数<code>rocketmq.namesrv.domain.subgroup</code>修改nsaddr。</p>
+<p><strong>优先级</strong>来说：编程方式&gt;java参数&gt;环境变量&gt;HTTP方式</p>
+<p>nameserver只有配置的问题，使用上还是比较简单省心的。</p>
+<h1 id="JVM与Linux内核配置"><a href="#JVM与Linux内核配置" class="headerlink" title="JVM与Linux内核配置"></a>JVM与Linux内核配置</h1><h2 id="JVM配置"><a href="#JVM配置" class="headerlink" title="JVM配置"></a>JVM配置</h2><ul>
+<li>推荐使用最新发布的JDK 1.8版本，使用服务器编译器和8G的堆内存了。</li>
+<li>设置相同的Xmx和Xms值，以防止JVM调整堆大小以获得更好的性能。在broker.conf文件里面可以设置，简单的JVM配置如下：</li>
+</ul>
+<p><img src="/yuque-assets/eaa2469d0e7653ec9299189ee81a4aec3c7b97640810d432111f0b0f6c926589.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>如果不关心Broker的启动时间，可以预先准备好Java堆 ，以确保在JVM初始化期间分配页是更好的选择，不需要启动Broker的时候再去拼凑内存，提前申请说不能能申请到一大块连续的内存空间.</li>
+</ul>
+<p><img src="/yuque-assets/8e5a6ba318f09c8458a8472739c1b05f4c424db0dd11c9c62a2d8b707f3eec09.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>禁用偏置锁定可能会减少JVM暂停</li>
+</ul>
+<p><img src="/yuque-assets/bc646839890a07805757e443c8ed538ed1e403fd423e0d40af1ca81ecba8b914.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>对于垃圾回收，建议使用G1收集器：</li>
+</ul>
+<p><img src="/yuque-assets/49afeb68690fd855c8533faae635ff4985ad4a3ae6e486f0244e3e3ac9844fa9.png" srcset="/img/loading.gif" lazyload></p>
+<p>这些GC选项看起来有点激进，但是事实证明它在生产环境具有良好的性能</p>
+<p>-XX:MaxGCPauseMillis不要设置太小的值（控制GC停止的时间，JVM不会严格执行，但是会尽量），否则JVM将使用一个小的新生代，这将导致非常频繁的新生代GC，总时间没变短还让频率增加了。</p>
+<ul>
+<li>推荐使用滚动GC日志文件，在系统没有稳定的时候可以开启：</li>
+</ul>
+<p><img src="/yuque-assets/739c3ab1c7462032d9dc4690604b3fbdd8cda15887bbc70e819d31fa038c5957.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>如果写入GC文件会增加服务的延迟，请将重定向GC日志文件考虑存在内存文件系统（linux）中：</li>
+</ul>
+<h2 id=""><a href="#" class="headerlink" title=""></a><img src="/yuque-assets/3f45c61597190f084d5c50df2b604a7c7b26d4f0935ed75c3a61a939c6d8cb52.png" srcset="/img/loading.gif" lazyload></h2><h2 id="Linux-内核配置"><a href="#Linux-内核配置" class="headerlink" title="Linux 内核配置"></a>Linux 内核配置</h2><p>linux参数比较复杂，如果不懂Linux内核的话就不要自己改了，多看看多了解之后再修改。</p>
+<ul>
+<li>在bin目录中，有一个os.sh脚本列出了许多内核参数，只需要稍微修改，就可以用于生产环境。</li>
+<li>以下参数需要注意，详细信息请参考<code>https://www.kernel.org/doc/Documentation/sysctl/vm.txt</code></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-chain-item">分布式与中间件</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="category-chain-item">消息队列</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/RocketMQ/" class="print-no-link">#RocketMQ</a>
+      
+        <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="print-no-link">#消息队列</a>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="print-no-link">#性能优化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>RocketMQ高性能最佳实践</div>
+      <div>https://q792821266.github.io/yuque/70659815/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/32089987/" title="Dubbo">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Dubbo</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/70076318/" title="Kafka优雅应用">
+                        <span class="hidden-mobile">Kafka优雅应用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,901 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="消息分发规则producer用partitioner.class来配置消息分发策略 partition.class默认值：org.apache.kafka.clients.producer.internals.DefaultPartitioner，其逻辑为；  如果key为null就会round-rabin 如果key不为null就会进行hash，然后对partition.size取模，类似于ha">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka优雅应用">
+<meta property="og:url" content="https://q792821266.github.io/yuque/70076318/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="消息分发规则producer用partitioner.class来配置消息分发策略 partition.class默认值：org.apache.kafka.clients.producer.internals.DefaultPartitioner，其逻辑为；  如果key为null就会round-rabin 如果key不为null就会进行hash，然后对partition.size取模，类似于ha">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8ce628e342013746238ac12ebeedf823723eb833b824284ff8faef6ce2e5ea8e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/09a196eafa1439fee4d8f47ad9abf4eff104253bc3277b990fca7b6db88bed4c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7ca73d6bd7e5226dbe30be3f848684033f62363026635e52fe139c82d45ca27a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c1f3579a87ef03f2d25c33e5de578d1a8563297418f53109f147c6cffd89b95a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/23b01ceb48dd9a63e69580b8c7c744c7711a07016af47f6c62c73dcde583158a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dae0193c0ca73cc5d2b0f9cc85d9d9b60d9095e6068ae746d8391f49ec79f08d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0de55031a52c88e37eb789df95f70d4445c559140810f07f59aa1e84b33a763d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e2dcce92f3abf2e681c79bcbced7d1909defebad931518122499e10bb95cb92c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/458c7da3c002df73d22dd45a77fc22a2f6c822f6d3e3bc8160658cfb388192e3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1efa2ede8755bb3f33ed265594d0154373affb901e7f1b9bd24f61f43a0589a9.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a0727f576861e6a82bbe22ce7cb72c32b07a7da748bc6c37e45dfba43f8e2ac0.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a0070442f889997efcc14e3d2e115cab55b0f821ebe448f80fc3b80fd8ec4fa4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8e9dfde712d825963eca5646776db2f46a43faff842013ea8ce64a629003acb5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/20ccbd67c84298484b9a2406b5c028453b9c49f5ada909fb972150f7356f2a30.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/064baf735da044d726c5e6f60d4fcd29a137a98b94e3465ac35617a17bcce81f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a016d76b7bdb25e4640522a6e869fa1cc57a4a53a213e45b3d553aac475e027c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/850212d6949ad8fa38583dd6d06ba749090e45ef873e2a6f874978a00553ae03.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a5f575037c92da9461d80479993640f306e6414e44bf8b9d44b823e818199b45.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8a4663eb5d3271ee0d013848ffe4cb81547c9fbb293d682205a4127621497a47.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c7543ce54d4d95ff8d0334e2f39b1ca43c54a7a618db329a0a5ad1207a688181.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6206c5a294500553f9f7549cda2d0f9e55878e172d94cd3e9dde5625fa44ea6c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/40da6b1e6981838fd2fc26bc7681d8dd38c6ba0bb9a0fac7be669557f8ce2dee.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f46e2999159e49e5a187932bf7f7899ea218533e2e341e1deef59da7b4a1e838.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8d89791be300727115329ba5b573d58caf240cc4bd62e954304f4bbf7ae2772f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0f8b43f8a5fae7168e40aeaa2140afb4249bdde30ee5bb9c8ea207a9d12c910d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2a0fed3a974aaa6efed3860044fba89d8a5ba30b86d17f15d638ade5d64f607d.png">
+<meta property="article:published_time" content="2022-03-21T03:17:22.000Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.447Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="消息队列">
+<meta property="article:tag" content="Kafka">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/8ce628e342013746238ac12ebeedf823723eb833b824284ff8faef6ce2e5ea8e.png">
+  
+  
+  
+  <title>Kafka优雅应用 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Kafka优雅应用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-21 11:17" pubdate>
+          2022年3月21日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          41 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Kafka优雅应用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="消息分发规则"><a href="#消息分发规则" class="headerlink" title="消息分发规则"></a>消息分发规则</h1><p>producer用partitioner.class来配置消息分发策略</p>
+<p>partition.class默认值：org.apache.kafka.clients.producer.internals.DefaultPartitioner，其逻辑为；</p>
+<ul>
+<li>如果key为null就会round-rabin</li>
+<li>如果key不为null就会进行hash，然后对partition.size取模，类似于hashmap的寻址算法</li>
+</ul>
+<p><img src="/yuque-assets/8ce628e342013746238ac12ebeedf823723eb833b824284ff8faef6ce2e5ea8e.png" srcset="/img/loading.gif" lazyload></p>
+<p>之前有讲过通过key来设置消息存放到Partition的位置规则，还提到可以指定存放在哪个partition上，代码示例中<code>partitioner.class</code>就是用来指定自定义partition分配规则，如果不设定<code>partitioner.class</code>的话使用的是<code>org.apache.kafka.clients.produces.internals.DefaultPartitions</code>这个默认规则。</p>
+<p><img src="/yuque-assets/09a196eafa1439fee4d8f47ad9abf4eff104253bc3277b990fca7b6db88bed4c.png" srcset="/img/loading.gif" lazyload></p>
+<p>这个是默认的实现代码，这个方法里面的逻辑可以按照自己的业务需求调整：</p>
+<p><img src="/yuque-assets/7ca73d6bd7e5226dbe30be3f848684033f62363026635e52fe139c82d45ca27a.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="kafka写入"><a href="#kafka写入" class="headerlink" title="kafka写入"></a>kafka写入</h1><p>先来回顾一下kafka producer消息写入的过程：</p>
+<ol>
+<li>生产者会指定一个blocker servers， 与集群中blocker一致。并指定acks级别，producer会连接上其中一个broker（任一broker提供元信息，比如“存活节点”、“partition leader列表”）</li>
+<li>producer获取元信息后，会和topic下的所有partition leader保持socket连接</li>
+<li>leader 将消息写入本地log</li>
+<li>followers 从leader pull消息，写入本地log后leader发送ack</li>
+<li>leader收到所有ISR中的replica的ACK后，想producer发送ACK</li>
+</ol>
+<p><img src="/yuque-assets/c1f3579a87ef03f2d25c33e5de578d1a8563297418f53109f147c6cffd89b95a.png" srcset="/img/loading.gif" lazyload></p>
+<p>kafka是基于磁盘写入，那么会不会很慢呢？</p>
+<p>我们都会认为磁盘的读写是远没有内存读写快的，但是这其实有个前提，那就是随机写入。我们在下图中可以看到，如果是顺序的写入，那么速度是不相上下的。</p>
+<p>顺序写入就是文件不停在上一个文件的后面追加，而DB就不是顺序的写入。</p>
+<p><img src="/yuque-assets/23b01ceb48dd9a63e69580b8c7c744c7711a07016af47f6c62c73dcde583158a.png" srcset="/img/loading.gif" lazyload></p>
+<p>而kafka其实也会用到内存，但是它使用的内存和JVM使用的内存不是同一个东西。我们讲java程序使用的内存是java程序进程使用的内存，是进程内的内存。而kafka使用的内存是操作系统的内存，更准确地说page cache内存。</p>
+<p>我们知道cpu访问的速率是非常快的， 所以cpu去访问ram的时候会有时间损耗，这时候我们在cpu和RAM之间使用了cpu高速缓存。那么同理，RAM的访问效率比Disk快，RAM和disk确实也会存在一个高速缓存，可以认为这个高速缓存就是page cache（叶式存储）。</p>
+<p><img src="/yuque-assets/dae0193c0ca73cc5d2b0f9cc85d9d9b60d9095e6068ae746d8391f49ec79f08d.png" srcset="/img/loading.gif" lazyload></p>
+<p>在操作系统中可能会运行着多个java程序，它们都会消耗操作系统的内存，而剩余没被使用空余的操作系统内存就是以page cache的形式存在，这个内存的作用是怎么起到高速缓存的作用？JVM要写入数据到磁盘中去的时候，并不会直接写入磁盘，而是先从JVM内的内存写入到page cache中，page cache并不会马上写入到disk，而是达到一定条件的时候，才会刷入到磁盘。所以说操作系统的内存其实时时刻刻都是在使用的， 不是说JVM用了2G，操作系统还剩2G，那么这2G就永远用不上。</p>
+<p>你可能会觉得这样多写一次的过程反而会让操作步骤变多而影响效率，有点多次一举，但是通过page cache我们实现一个预加载的过程，提升效率。</p>
+<p>kafka 这种Page Cache这种设计有什么好处？</p>
+<h2 id="Page-Cache-VS-JVM进程内内存"><a href="#Page-Cache-VS-JVM进程内内存" class="headerlink" title="Page Cache VS JVM进程内内存"></a>Page Cache VS JVM进程内内存</h2><p>数据放在JVM里面肯定是以JAVA对象存在，对 象的排列非常松散的，可能数据只有10M，但是用对象存储的方式可能会达到20M，30M。但是page cache就是以二进制的方式存储，不会占用额外的内存。如果kafka把数据都放到JVM的内存中，那么java发生GC的时候，一旦kafka没有及时刷数据到磁盘，那么GC被带走的数据那么就没法弥补，并且还有可能stop the world引发其他不可预估的问题。Page Cache是操作系统的内存，操作系统的东西一般来说都非常稳定，数据存储到page Cache不担心STW，并且同样高效。</p>
+<p>最核心的问题在于，假如我们要存储2G数据到内存，如果我们存储到JVM堆内存中，由于排列松散的原因，可能会变成5G（假设系数为2.5），我们还需要在page cache写入一份（因为从JVM写入磁盘，一定会经过page cache），最理想的情况下，就是page cache保留2G的数据在内存中，那么这份数据实际在内存占用了7G，这样其实浪费了非常多的内存，不是zero-copy的，在jvm内存复制了一份，这就是堆内存方式存储后写入磁盘的情况。而如果直接使用page cache，而不存储在jvm的堆内存中，那效果就是非常理想的。数据过来之后不在JVM中缓存，数据直接写到操作系统缓存，然后落地磁盘。kafka底层就是大量用到netty。</p>
+<p>使用page cache还有一个好处。数据如果存在jvm中，如果broker宕机了，重启之后就要重新从磁盘中加载数据进来，那么这个加载时间可能会很长，如果你是要恢复生成上的问题，那么问题就放大了。但是如果数据存在的是page cache中，就算broker宕机了，但是操作系统没宕机，数据也是不会丢失的。这是一个顺便带来的一个好处。</p>
+<p>如果整个操作系统宕机了，那么page cache也不能保证数据不丢失。这个时候要怎么处理会比较好。kafka为我们提供两个配置来解决这个问题，其实也不能说是解决了，这种我觉得是灾难级别的问题，最重要的是避免。</p>
+<p><img src="/yuque-assets/0de55031a52c88e37eb789df95f70d4445c559140810f07f59aa1e84b33a763d.png" srcset="/img/loading.gif" lazyload></p>
+<p><code>log.flush.interval.messages </code>和<code> log.flush.interval.ms </code> 配置在消息达到多少容量 或者 间隔多久，就强制把数据从page cache刷到磁盘上。一定程度上减少问题发生时候的严重性。</p>
+<p>但这个并没有完全解决这个问题。</p>
+<p>要知道kafka并不是单节点存在的，它是有replication的，数据被写到leader节点的page cache之后会马上被同步到replication中，也会保存在page cache中，主节点宕机之后，还有replication来接力。所以replication备份策略才是真正的保障。</p>
+<p>再严谨一点，如果在replication没有同步成功的时候就发生了故障，导致replication没有收到最后最新的数据怎么办？如果你的数据真的非常重要，还记得我们写入数据时候指定的acks吗，当设置为all的时候需要保证leader 和replication都写入成功才会返回，在刚刚的场景下，生产者是不会收到acks的，这种情况下生产者就要做处理了。</p>
+<p>总结一下，ack+replication就能完成数据完整性保证。</p>
+<p><img src="/yuque-assets/e2dcce92f3abf2e681c79bcbced7d1909defebad931518122499e10bb95cb92c.png" srcset="/img/loading.gif" lazyload></p>
+<p>MQ在消费数据时候有两种方式，pull（拉取）和push（推送）。</p>
+<p>服务端主动推动消息到消费端，服务端会维护一些元信息，这样服务端才知道有哪些客户端，推送的实时性更好，消息一来就能推送。但是这样就失去了可控性，消费者端被动承受服务端的数据推送压力，并且由于服务端保存的消费端的元信息，当消费端过多的话，也是会服务端造成性能消耗。</p>
+<p>拉取就是客户端不停轮询服务端，损失了数据的实时性，而轮询频率过高，给服务端也是带来了很大的压力。但是客户端能够根据自己的消费能力来定拉取的频率与大小，减少了客户端的压力。</p>
+<p>两种方式各有利弊。</p>
+<p>kafka在拉取的基础上进行了演进，有所不同的是，当客户端到服务端拉取消息的时候，如果没有消息，不会像普通的拉取方式直接返回，假设每隔2s拉取，这样就会有2s延时。kafka拉取的时候会带上个超时时间。</p>
+<p><code>ConsumerRecords&lt;String, String&gt; records=consumer.poll(2000);</code>在没有数据的情况下，不会马上返回，会将请求阻塞住，等待传入的这个时间，如果时间到了还是没有数据，服务端就会返回一个标识告诉客户端暂时没有数据。通过timeout时间解决了这个频繁拉取的问题。这个是kafka的解决方式。</p>
+<p>这个方式其实还存在一个问题，如果消息产生的速率并不是很快，在这个时间间隔内只拿了一条消息，而客户端又没有设置请求的间隔时间（比如直接<code>while(true)</code>），每次拿完了就又去服务端再请求，这样对服务端的压力也是非常大的。kafka也考虑到这样的一个问题，于是设置了另一个参数<code>fetch.min.bytes</code>，来设置fetch的消息数。这样使用两种控制方式来调节这种拉取的机制，定时定量。可以加大间隔事件，设置拉取消息数据来完善拉取规则。</p>
+<p>经过上面的问题分析我们发现解决这种问题的类似思想都是定时与定量。</p>
+<h1 id="kafka分段存储"><a href="#kafka分段存储" class="headerlink" title="kafka分段存储"></a>kafka分段存储</h1><p>kafka数据的存储结构</p>
+<p><img src="/yuque-assets/458c7da3c002df73d22dd45a77fc22a2f6c822f6d3e3bc8160658cfb388192e3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/1efa2ede8755bb3f33ed265594d0154373affb901e7f1b9bd24f61f43a0589a9.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里面有index文件，log文件，timeindex文件。主要是index和log文件作为数据的存储形式。</p>
+<p>我们知道消费进度的保存和拉取都需要用到offset。说到offset就要搞清楚消费的offset和拉取的offset不一定是同一个东西，除非是在autocommit的情况，毕竟拉取之后不一定会commit，你可以拉取三次才commit一次。而我们没有commit的话，那客户端怎么知道从哪里开始拉取呢？</p>
+<p><img src="/yuque-assets/a0727f576861e6a82bbe22ce7cb72c32b07a7da748bc6c37e45dfba43f8e2ac0.png" srcset="/img/loading.gif" lazyload></p>
+<p>实际上客户端会维护一套在内存中的消费进度，每个consumer会自己维护。拉取数据的时候自然需要带上这个不落地的拉取进度。</p>
+<p>物理上的存储：</p>
+<p><img src="/yuque-assets/a0070442f889997efcc14e3d2e115cab55b0f821ebe448f80fc3b80fd8ec4fa4.png" srcset="/img/loading.gif" lazyload></p>
+<p>文件名其实就是offset的index， 比如我们现在拉取的位置在6，那么这个进度就应该保存在0000.*文件里面，这时候我们先进去index里面找实际文件存储的index，index里面保存的数据形式是（offset（这个是kafka partition里面的offset），实际数据的index），然后再去log文件里面用这个实际数据的index作为索引去找到实际的message,</p>
+<h1 id="kafka消息读取"><a href="#kafka消息读取" class="headerlink" title="kafka消息读取"></a>kafka消息读取</h1><p>kafka使用顺序的写入，实际上kafka的读取也是顺序的。</p>
+<p><img src="/yuque-assets/8e9dfde712d825963eca5646776db2f46a43faff842013ea8ce64a629003acb5.png" srcset="/img/loading.gif" lazyload><br>    kafka不存在数据过滤的，即使有第三方能做数据过滤，但是他们的原理是将kafka数据全部load进来进行过滤，或者边load边丢弃。kafka只存在顺序读取，这个顺序读取会依赖page cache的。入上图，disk里面有很多个block，上面一层是page cache，分为各个page，page里面由多个buffer组成。</p>
+<p>kafka读取数据的时候，首先会先从磁盘找到这些数据加载到page cache上的page中，一般加载三个page，并不是只加载一个page，有可能只读第一个page1，但是还是会加载三个，这样做的好处就是，当你在很短的时间内，又来读取同一个file，首先会判断这个数据是否存在其他的page里面，如果page2、page3里面有这个数据那么读取就会非常快速，相当于做了个预加载。因为其他的page中有命中数据的情况，那么会继续加载更多的page进来。</p>
+<p>这就是kafka读取高效的原因，实际上原理就是操作系统中的page cache。</p>
+<p>kafka读取数据高效的原因还有个就是zero copy</p>
+<h1 id="kafka-zero-copy零拷贝"><a href="#kafka-zero-copy零拷贝" class="headerlink" title="kafka zero copy零拷贝"></a>kafka zero copy零拷贝</h1><p><img src="/yuque-assets/20ccbd67c84298484b9a2406b5c028453b9c49f5ada909fb972150f7356f2a30.png" srcset="/img/loading.gif" lazyload></p>
+<p>正常流程是从磁盘文件读取到page cache之后，在从page cach再缓存一次到JVM进程内，再由JVM复制一份到socket缓存区交由网卡发送，这种方式page cache会有一份数据，JVM进程内存会有一份数据，socket也会被copy一份，这样就由三份数据。</p>
+<p>page cache更详细的内容可以另外学习。</p>
+<p>而kafka利用netty的零拷贝会直接从page cache中发送到网卡接口发送出去，省去了两步拷贝，copy数据的性能消耗非常大， 省去两次的提升带来的提升是非常明显的。</p>
+<h1 id="kafka-扩容"><a href="#kafka-扩容" class="headerlink" title="kafka 扩容"></a>kafka 扩容</h1><p>这里创建了一个topic， 启动了consumer和producer。</p>
+<p><img src="/yuque-assets/064baf735da044d726c5e6f60d4fcd29a137a98b94e3465ac35617a17bcce81f.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/a016d76b7bdb25e4640522a6e869fa1cc57a4a53a213e45b3d553aac475e027c.png" srcset="/img/loading.gif" lazyload></p>
+<p>在这个基础上，我们来实现扩容，因为上面的步骤我们只创建了一个partition，replication-factor 2代表着leader和replication 数目加起来为2，所以其实replication partition只有一个。</p>
+<p><img src="/yuque-assets/850212d6949ad8fa38583dd6d06ba749090e45ef873e2a6f874978a00553ae03.png" srcset="/img/loading.gif" lazyload></p>
+<p>就把partition扩容成3个了。</p>
+<p><img src="/yuque-assets/a5f575037c92da9461d80479993640f306e6414e44bf8b9d44b823e818199b45.png" srcset="/img/loading.gif" lazyload></p>
+<p>这些命令都不需要记，用的时候查询一改就ok了</p>
+<p><img src="/yuque-assets/8a4663eb5d3271ee0d013848ffe4cb81547c9fbb293d682205a4127621497a47.png" srcset="/img/loading.gif" lazyload></p>
+<p>这样的扩容是没法做到负载均衡的。</p>
+<p>还可以通过topics来添加修改或删除config</p>
+<p><img src="/yuque-assets/c7543ce54d4d95ff8d0334e2f39b1ca43c54a7a618db329a0a5ad1207a688181.png" srcset="/img/loading.gif" lazyload></p>
+<p>kafka的扩容除了partition的增多，我们其实更多的broker加入。zk就不需要扩容，直接添加新的kafka不用动，除非是你觉得zk不够用。</p>
+<p>启动新的节点如果配置正确会自己加入到集群中。加入了新的节点会产生一个新的问题，分片的存储问题。原来的分片全部在两台机器，新加入的节点里面一点partition都没有，这样数据写入读取存储都是不均衡的。所以要手动迁移原有节点上的partition才能正常提供服务。</p>
+<p>我们通过配置来设置，指定topic，partition，以及replicas。代表着topic test1的partition 0 两个副本分布在机器0，1；partition 1两个副本存在机器1，2；partition 2两个副本存在机器2，1。创建完这个文件之后之后执行命令：</p>
+<p><img src="/yuque-assets/6206c5a294500553f9f7549cda2d0f9e55878e172d94cd3e9dde5625fa44ea6c.png" srcset="/img/loading.gif" lazyload></p>
+<p>就会得到</p>
+<p><img src="/yuque-assets/40da6b1e6981838fd2fc26bc7681d8dd38c6ba0bb9a0fac7be669557f8ce2dee.png" srcset="/img/loading.gif" lazyload></p>
+<p>注意的是生产上执行并不会这么快涉及到网络同步数据问题，所以可以使用命令来查询是否执行完成：</p>
+<p><img src="/yuque-assets/f46e2999159e49e5a187932bf7f7899ea218533e2e341e1deef59da7b4a1e838.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h1><p>平时往kafka里面写数据，数据进去到服务端。实际上在producer中kafka提供了拦截器，可以对数据进行一些处理。</p>
+<p><img src="/yuque-assets/8d89791be300727115329ba5b573d58caf240cc4bd62e954304f4bbf7ae2772f.png" srcset="/img/loading.gif" lazyload></p>
+<p>主要是这三个方法，onSend作用于数据发送前，onAcknowledgement 会在两个时间点被执行，消息应答之前和消息异常发生的时候，区分的方式就是Exception是否为null。close指的是consumer客户端关闭的时候调用的方法。</p>
+<p>慎用onAcknowledgement，因为它是由IO线程提供的，因为producer数据从buffer发送到kafka服务端的工作也是由这个IO线程完成的。如果onAcknowledgement里面写了比较重的逻辑，频繁或耗时调用都会影响消息的传递。</p>
+<h1 id="kafka在prod的方案之：网卡流量激增方案"><a href="#kafka在prod的方案之：网卡流量激增方案" class="headerlink" title="kafka在prod的方案之：网卡流量激增方案"></a>kafka在prod的方案之：网卡流量激增方案</h1><p>kafka是比较容易产生网卡流量激增的问题的，这个是容易踩坑的东西。kafka平时都是以流的形式产生的数据。但是如果数据出现了问题，恢复的时候想大量地很快地将数据读取出来，吞吐量非常大，如果不做控制，很可能就把交换器带宽打满了，特别是使用了业务区的交换机，业务区的带宽被打满了之后其他的业务系统都无法提供服务。这个是一个很严重的问题。为kafka放在了业务区的话，抽取数据的时候一定要注意这个问题。</p>
+<p><img src="/yuque-assets/0f8b43f8a5fae7168e40aeaa2140afb4249bdde30ee5bb9c8ea207a9d12c910d.png" srcset="/img/loading.gif" lazyload></p>
+<p>解决方案就是业务区的kafka应当配置多个网卡，让其中一个网卡ip走的是业务区的交换机，另一个网卡走数据区的交换机，这样不会影响到要业务区的交换机。</p>
+<p>具体操作是kafka（版本1.1）的server.properties文件中不对hostnam、adervised.host.name做配置，这样kafkaServer实例就会建通所有网卡。</p>
+<p><img src="/yuque-assets/2a0fed3a974aaa6efed3860044fba89d8a5ba30b86d17f15d638ade5d64f607d.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="kafka优化"><a href="#kafka优化" class="headerlink" title="kafka优化"></a>kafka优化</h1><p>从几个点进行，producer、broker、 consumer。但是优化的话建议问题产生的时候再去考虑优化，kafka的配置已经能够满足很高的需求。</p>
+<h2 id="producer"><a href="#producer" class="headerlink" title="producer"></a>producer</h2><p>写入数据最大的优化点在于 ack、buffer、数据类型</p>
+<ul>
+<li>ack：ack三个取值，根据数据的重要程度来设置</li>
+<li>buffer：buffer的大小需要根据压测的结果来设置</li>
+<li>数据类型：kafka存储数据使用的时binary类型，如果本来你的数据本身就是binary就不要去转类型了，直接传送，这是最高效的。</li>
+</ul>
+<h2 id="broker"><a href="#broker" class="headerlink" title="broker"></a>broker</h2><p>topic partition个数和replication个数都是优化的点。</p>
+<p>replication并不会提供读的服务，所以replication增加只会降低写的性能，读的话不太影响。</p>
+<p>针对写非常多的场景，考虑数据的重要程度，如果数据非常重要，那么就不能减少replication的数量，只能增加partition的个数。不过要注意的是在物理机器固定的情况下，增加partition个数不一定会提升写入性能，除非你没有极限使用到机器的并发度，否则只能增加机器；如果不重要，那就可以减少replication数量。详细的优化方案应该根据测试结果来灵活调整。</p>
+<h2 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h2><p>consumer优化点在consumer group，</p>
+<p>consumer group最大优化点 在于consumer的个数，关系到并发度的大小，consumer和partition个数相同能达到最高的并发度。</p>
+<p>timeout时间与拉取数据的大小，这两个值控制数据的吞吐量。吞吐量越大，数据处理延迟越大，消费能力越强。吞吐量小，实时性会更好，但是消费能力就变弱。根据实时性要求来做调整。</p>
+<p>JVM设置4G，kafka的稳定性就非常好了，不需要额外对JVM进行优化。kafka数据都不存JVM内，数据在pagecache。</p>
+<hr>
+<p>对于一个消费中间件，除了处理效率之外，更重要的是exactly-once，不重复消费也不会丢失数据。</p>
+<p>我们不考虑灾难、极端级别的情况。服务端要保证高可用，高可用是保证数据不丢失的前提，producer端至少replication要设置2，这样至少有一个replication才能保证高可用，并且还要设置IRS保证数据在交给partition写成功才算成功，kafka允许replication跟不上leader partition的同步，IRS保证了同步率。还需要设置ack为all， 这样才能保证数据一定写入replication成功。</p>
+<p>Consumer端需要将将offet_info（partition_id:offset）与数据绑定存储到一个地方，可以是DB，实现消费进度与数据落地的原子性。这个在讲consumer的时候有详细讲过，不记得的话可以回去看看。</p>
+<p>其实还是有个小小的坑。消息发送失败时候存在补偿处理，但是有可能知识网络抖动造成的，实际上服务端已经收到了消息，然后producer没有接收到ack，retries又发送了一次，这个情况其实只是保证了atleast once。我们只能考虑在consumer端来判断数据是否被消费过，但其实没办法去判断的…可行的方案可能是在producer从业务上唯一标识一条数据（uuid），来阻止相同uuid落地与消费，主要思想是要记录状态。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-chain-item">分布式与中间件</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="category-chain-item">消息队列</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="print-no-link">#消息队列</a>
+      
+        <a href="/tags/Kafka/" class="print-no-link">#Kafka</a>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="print-no-link">#性能优化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Kafka优雅应用</div>
+      <div>https://q792821266.github.io/yuque/70076318/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/70659815/" title="RocketMQ高性能最佳实践">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">RocketMQ高性能最佳实践</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/67841132/" title="分布式一致性算法">
+                        <span class="hidden-mobile">分布式一致性算法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

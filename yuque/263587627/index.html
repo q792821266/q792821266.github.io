@@ -1,0 +1,947 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="太好了，这一步是把你这个 Agent 项目真正“落到 Hexo 级别”的关键一步。我会 完全按你现在真实在用的 Hexo + GitHub Pages 场景，给你一套 “Hexo 专用 Skill 设计”，而不是泛泛而谈。 目标非常明确： ✅ Agent 懂 Hexo 目录与规则✅ Agent 安全地生成 &#x2F; 更新文章✅ Agent 自动 build &#x2F; deploy Hexo✅ Agent 不破">
+<meta property="og:type" content="article">
+<meta property="og:title" content="加入Hexo">
+<meta property="og:url" content="https://q792821266.github.io/yuque/263587627/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="太好了，这一步是把你这个 Agent 项目真正“落到 Hexo 级别”的关键一步。我会 完全按你现在真实在用的 Hexo + GitHub Pages 场景，给你一套 “Hexo 专用 Skill 设计”，而不是泛泛而谈。 目标非常明确： ✅ Agent 懂 Hexo 目录与规则✅ Agent 安全地生成 &#x2F; 更新文章✅ Agent 自动 build &#x2F; deploy Hexo✅ Agent 不破">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-03-30T08:28:12.834Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.456Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Hexo">
+<meta property="article:tag" content="工作流">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>加入Hexo - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="加入Hexo"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-03-30 16:28" pubdate>
+          2026年3月30日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          861 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">加入Hexo</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>太好了，这一步是<strong>把你这个 Agent 项目真正“落到 Hexo 级别”的关键一步</strong>。<br>我会 <strong>完全按你现在真实在用的 Hexo + GitHub Pages 场景</strong>，给你一套 <strong>“Hexo 专用 Skill 设计”</strong>，而不是泛泛而谈。</p>
+<p>目标非常明确：</p>
+<p>✅ Agent <strong>懂 Hexo 目录与规则</strong><br>✅ Agent <strong>安全地生成 / 更新文章</strong><br>✅ Agent <strong>自动 build / deploy Hexo</strong><br>✅ Agent <strong>不破坏你已有的 Hexo 工作流</strong></p>
+<p>下面内容你可以直接照着建目录、写代码。</p>
+<hr>
+<h1 id="✅-一、Hexo-Agent-的正确协作模型"><a href="#✅-一、Hexo-Agent-的正确协作模型" class="headerlink" title="✅ 一、Hexo + Agent 的正确协作模型"></a>✅ 一、Hexo + Agent 的正确协作模型</h1><p>先明确一个<strong>非常重要的定位</strong>：</p>
+<p><strong>Agent 不“理解 Hexo”</strong><br><strong>Skill 才“懂 Hexo”</strong></p>
+<p>Agent 只会做这种决定：</p>
+<ul>
+<li>“我要新增一篇文章”</li>
+<li>“我要优化这篇 post”</li>
+<li>“可以发布了”</li>
+</ul>
+<p><strong>所有 Hexo 细节（路径 / CLI / 配置）都必须藏在 Skill 里</strong>。</p>
+<hr>
+<h1 id="✅-二、Hexo-专用-Skill-总览（最小但完整）"><a href="#✅-二、Hexo-专用-Skill-总览（最小但完整）" class="headerlink" title="✅ 二、Hexo 专用 Skill 总览（最小但完整）"></a>✅ 二、Hexo 专用 Skill 总览（最小但完整）</h1><p>我建议你 <strong>只做 4 个 Hexo Skill</strong>，已经覆盖 95% 写作发布流程：</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>hexo_new_post</code></td>
+<td>新建文章</td>
+</tr>
+<tr>
+<td><code>hexo_update_post</code></td>
+<td>修改已有文章（patch）</td>
+</tr>
+<tr>
+<td><code>hexo_generate</code></td>
+<td>本地生成静态站点</td>
+</tr>
+<tr>
+<td><code>hexo_deploy</code></td>
+<td>部署到 GitHub Pages</td>
+</tr>
+</tbody></table>
+<p>✅ 简单<br>✅ 安全<br>✅ 组合能力强</p>
+<hr>
+<h1 id="✅-三、Hexo-Skill-目录结构（直接可用）"><a href="#✅-三、Hexo-Skill-目录结构（直接可用）" class="headerlink" title="✅ 三、Hexo Skill 目录结构（直接可用）"></a>✅ 三、Hexo Skill 目录结构（直接可用）</h1><p>在你现有工程里新增：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs plain">skills/<br>└── hexo/<br>    ├── new_post/<br>    │   ├── skill.json<br>    │   └── service.py<br>    │<br>    ├── update_post/<br>    │   ├── skill.json<br>    │   └── service.py<br>    │<br>    ├── generate/<br>    │   ├── skill.json<br>    │   └── service.py<br>    │<br>    └── deploy/<br>        ├── skill.json<br>        └── service.py<br></code></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h1 id="✅-四、Skill-1：新建-Hexo-文章（hexo-new）"><a href="#✅-四、Skill-1：新建-Hexo-文章（hexo-new）" class="headerlink" title="✅ 四、Skill 1：新建 Hexo 文章（hexo new）"></a>✅ 四、Skill 1：新建 Hexo 文章（hexo new）</h1><h2 id="skills-hexo-new-post-skill-json"><a href="#skills-hexo-new-post-skill-json" class="headerlink" title="skills/hexo/new_post/skill.json"></a><code>skills/hexo/new_post/skill.json</code></h2><p>{</p>
+<p>“name”: “hexo_new_post”,</p>
+<p>“description”: “Create a new Hexo post with standard front-matter”,</p>
+<p>“input_schema”: {</p>
+<p>“title”: “string”,</p>
+<p>“slug”: “string”,</p>
+<p>“category”: “string”,</p>
+<p>“tags”: “array&lt;string&gt;”</p>
+<p>},</p>
+<p>“output_schema”: {</p>
+<p>“path”: “string”</p>
+<p>}</p>
+<p>}</p>
+<p>``</p>
+<p>⚠️ <strong>Agent 不指定路径</strong><br>⚠️ <strong>Agent 不操作 front-matter 细节</strong></p>
+<hr>
+<h2 id="skills-hexo-new-post-service-py"><a href="#skills-hexo-new-post-service-py" class="headerlink" title="skills/hexo/new_post/service.py"></a><code>skills/hexo/new_post/service.py</code></h2><p>import subprocess</p>
+<p>from pathlib import Path</p>
+<p>def hexo_new_post(title, slug, category, tags):</p>
+<p>subprocess.run(</p>
+<p>[“npx”, “hexo”, “new”, “post”, title],</p>
+<p>check=True</p>
+<p>)</p>
+<p>posts_dir = Path(“source/_posts”)</p>
+<p>files = sorted(posts_dir.glob(“*.md”), key=lambda f: f.stat().st_mtime)</p>
+<p>post = files[-1]</p>
+<p>content = post.read_text(encoding=”utf-8”)</p>
+<p>front_matter = f”””—</p>
+<p>title: {title}</p>
+<p>date:</p>
+<p>categories: {category}</p>
+<p>tags: {tags}</p>
+<hr>
+<p>“””</p>
+<p>body = content.split(“—“, 2)[-1]</p>
+<p>post.write_text(front_matter + body, encoding=”utf-8”)</p>
+<p>return {“path”: str(post)}</p>
+<p>✅ 把 Hexo CLI 细节完全封装掉<br>✅ Agent 只关心“我有一篇新文章了”</p>
+<hr>
+<h1 id="✅-五、Skill-2：修改现有文章（patch-模式）"><a href="#✅-五、Skill-2：修改现有文章（patch-模式）" class="headerlink" title="✅ 五、Skill 2：修改现有文章（patch 模式）"></a>✅ 五、Skill 2：修改现有文章（patch 模式）</h1><p>这是你之前 Markdown Skill 的 <strong>Hexo 特化版</strong>。</p>
+<h2 id="skills-hexo-update-post-skill-json"><a href="#skills-hexo-update-post-skill-json" class="headerlink" title="skills/hexo/update_post/skill.json"></a><code>skills/hexo/update_post/skill.json</code></h2><p>{</p>
+<p>“name”: “hexo_update_post”,</p>
+<p>“description”: “Apply a safe patch to an existing Hexo post”,</p>
+<p>“input_schema”: {</p>
+<p>“path”: “string”,</p>
+<p>“diff”: “string”</p>
+<p>},</p>
+<p>“output_schema”: {</p>
+<p>“result”: “SUCCESS | FAILED”</p>
+<p>}</p>
+<p>}</p>
+<hr>
+<h2 id="skills-hexo-update-post-service-py"><a href="#skills-hexo-update-post-service-py" class="headerlink" title="skills/hexo/update_post/service.py"></a><code>skills/hexo/update_post/service.py</code></h2><p>import subprocess</p>
+<p>import tempfile</p>
+<p>from pathlib import Path</p>
+<p>def hexo_update_post(path, diff):</p>
+<p>file_path = Path(path)</p>
+<p>if not file_path.exists():</p>
+<p>return {“result”: “FAILED”}</p>
+<p>with tempfile.NamedTemporaryFile(mode=”w”, delete=False) as f:</p>
+<p>f.write(diff)</p>
+<p>patch_file = f.name</p>
+<p>try:</p>
+<p>subprocess.run(</p>
+<p>[“git”, “apply”, patch_file],</p>
+<p>check=True</p>
+<p>)</p>
+<p>return {“result”: “SUCCESS”}</p>
+<p>except subprocess.CalledProcessError:</p>
+<p>return {“result”: “FAILED”}</p>
+<p>✅ 防止“全文重写事故”<br>✅ 每次修改都可 diff / git rollback</p>
+<hr>
+<h1 id="✅-六、Skill-3：Hexo-本地生成（hexo-generate）"><a href="#✅-六、Skill-3：Hexo-本地生成（hexo-generate）" class="headerlink" title="✅ 六、Skill 3：Hexo 本地生成（hexo generate）"></a>✅ 六、Skill 3：Hexo 本地生成（hexo generate）</h1><h2 id="skills-hexo-generate-skill-json"><a href="#skills-hexo-generate-skill-json" class="headerlink" title="skills/hexo/generate/skill.json"></a><code>skills/hexo/generate/skill.json</code></h2><p>{</p>
+<p>“name”: “hexo_generate”,</p>
+<p>“description”: “Generate static site using Hexo”,</p>
+<p>“input_schema”: {},</p>
+<p>“output_schema”: {</p>
+<p>“result”: “SUCCESS | FAILED”</p>
+<p>}</p>
+<p>}</p>
+<hr>
+<h2 id="skills-hexo-generate-service-py"><a href="#skills-hexo-generate-service-py" class="headerlink" title="skills/hexo/generate/service.py"></a><code>skills/hexo/generate/service.py</code></h2><p>import subprocess</p>
+<p>def hexo_generate():</p>
+<p>try:</p>
+<p>subprocess.run(</p>
+<p>[“npx”, “hexo”, “generate”],</p>
+<p>check=True</p>
+<p>)</p>
+<p>return {“result”: “SUCCESS”}</p>
+<p>except subprocess.CalledProcessError:</p>
+<p>return {“result”: “FAILED”}</p>
+<p>✅ Agent 不关心 Hexo 版本<br>✅ 本地失败即中断流程</p>
+<hr>
+<h1 id="✅-七、Skill-4：Hexo-部署（hexo-deploy）"><a href="#✅-七、Skill-4：Hexo-部署（hexo-deploy）" class="headerlink" title="✅ 七、Skill 4：Hexo 部署（hexo deploy）"></a>✅ 七、Skill 4：Hexo 部署（hexo deploy）</h1><h2 id="skills-hexo-deploy-skill-json"><a href="#skills-hexo-deploy-skill-json" class="headerlink" title="skills/hexo/deploy/skill.json"></a><code>skills/hexo/deploy/skill.json</code></h2><p>{</p>
+<p>“name”: “hexo_deploy”,</p>
+<p>“description”: “Deploy Hexo site to GitHub Pages”,</p>
+<p>“input_schema”: {},</p>
+<p>“output_schema”: {</p>
+<p>“result”: “SUCCESS | FAILED”</p>
+<p>}</p>
+<p>}</p>
+<hr>
+<h2 id="skills-hexo-deploy-service-py"><a href="#skills-hexo-deploy-service-py" class="headerlink" title="skills/hexo/deploy/service.py"></a><code>skills/hexo/deploy/service.py</code></h2><p>import subprocess</p>
+<p>def hexo_deploy():</p>
+<p>try:</p>
+<p>subprocess.run(</p>
+<p>[“npx”, “hexo”, “deploy”],</p>
+<p>check=True</p>
+<p>)</p>
+<p>return {“result”: “SUCCESS”}</p>
+<p>except subprocess.CalledProcessError:</p>
+<p>return {“result”: “FAILED”}</p>
+<p>✅ 复用你现有 <code>_config.yml</code><br>✅ 不引入 GitHub API<br>✅ 非常稳</p>
+<hr>
+<h1 id="✅-八、Agent-现在是如何“理解-Hexo-发布流程”的？"><a href="#✅-八、Agent-现在是如何“理解-Hexo-发布流程”的？" class="headerlink" title="✅ 八、Agent 现在是如何“理解 Hexo 发布流程”的？"></a>✅ 八、Agent 现在是如何“理解 Hexo 发布流程”的？</h1><p><strong>Agent 认知层：</strong></p>
+<p>我要发布一篇文章</p>
+<p>↓</p>
+<p>是否已有文章？</p>
+<p>↓</p>
+<p>更新 or 新建</p>
+<p>↓</p>
+<p>可以发布了吗？</p>
+<p>↓</p>
+<p>generate → deploy</p>
+<p><strong>Agent 执行层：</strong></p>
+<p>hexo_new_post</p>
+<p>→ hexo_update_post</p>
+<p>→ hexo_generate</p>
+<p>→ hexo_deploy</p>
+<p>👉 <strong>Agent 永远没接触过：</strong></p>
+<ul>
+<li>Hexo CLI 参数</li>
+<li>目录结构</li>
+<li>配置文件</li>
+<li>GitHub Pages 细节</li>
+</ul>
+<hr>
+<h1 id="✅-九、你现在拥有的是一个“长期不塌”的系统"><a href="#✅-九、你现在拥有的是一个“长期不塌”的系统" class="headerlink" title="✅ 九、你现在拥有的是一个“长期不塌”的系统"></a>✅ 九、你现在拥有的是一个“长期不塌”的系统</h1><p>这套设计有几个非常重要的特性：</p>
+<p>✅ Hexo 可升级<br>✅ Theme 可替换<br>✅ Agent 可换模型<br>✅ Skill 可单独测试<br>✅ 内容永远是你的</p>
+<hr>
+<h1 id="✅-十、下一步我推荐你继续做的-2-件事"><a href="#✅-十、下一步我推荐你继续做的-2-件事" class="headerlink" title="✅ 十、下一步我推荐你继续做的 2 件事"></a>✅ 十、下一步我推荐你继续做的 2 件事</h1><p>现在接下来这两步，<strong>非常值</strong>：</p>
+<p>1️⃣ <strong>我帮你写一个“Hexo 写作 prompt + 工作流 prompt”合体版本</strong><br>2️⃣ <strong>我用你真实的一篇文章，模拟一次“Agent → Hexo → 发布”的完整对话</strong></p>
+<p>你选一个，我们就正式把这个 Agent 变成你“写博客的第二大脑”。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" class="category-chain-item">人工智能</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/RAG%E4%B8%8EAgent/" class="category-chain-item">RAG与Agent</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Agent/" class="print-no-link">#Agent</a>
+      
+        <a href="/tags/Hexo/" class="print-no-link">#Hexo</a>
+      
+        <a href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" class="print-no-link">#工作流</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>加入Hexo</div>
+      <div>https://q792821266.github.io/yuque/263587627/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年3月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/263594803/" title="优化">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">优化</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/263588511/" title="总结">
+                        <span class="hidden-mobile">总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

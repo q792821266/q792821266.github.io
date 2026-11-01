@@ -1,0 +1,1150 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="RabbitMQ是一个开源的AMQP实现，服务器端用Erlang语言编写，支持多种客户端。用于在分布式系统中存储转发消息，在易用性、扩展性、高可用等方面表现不俗。 入门安装与运行环境准备CentOS 7 、Erlang  安装Erlang sudo yum install -y erlang 安装socat sudo yum install -y socat RabbitMQ会办额定一些端口，安装">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ">
+<meta property="og:url" content="https://q792821266.github.io/yuque/68056730/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="RabbitMQ是一个开源的AMQP实现，服务器端用Erlang语言编写，支持多种客户端。用于在分布式系统中存储转发消息，在易用性、扩展性、高可用等方面表现不俗。 入门安装与运行环境准备CentOS 7 、Erlang  安装Erlang sudo yum install -y erlang 安装socat sudo yum install -y socat RabbitMQ会办额定一些端口，安装">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d3a2bddeb48b852788bc0eab273069f6a4fec4be69efe2afc45bf2cfb8b94135.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8194f89936b27f37206452a96f5cf6c2482db02d5e635b9174624b7c3dfb62c1.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dbee485784e66638d8b5e2f790d39a37fc63b6434dbee3ab514d62379069fb33.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4fd29259c3144eed7073f2612ac26e3b3daf6c3a890c3ee4f9815d13d49ffd14.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c1a0a7cf07fbd9f887af6e239e205dbd28e595af6e79ffb189d69039fcde48e0.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b63165b6cb858c2fb4f290b58847fbad8a4764ff9c2de415864873407657849b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f56b60bdaf498f1dc0b6101fa22713311f1b52d9eae2278d98b7512bdeb50cb6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c5d5fd82b62ff9230ff23f5dd6144cec1a0cb171527629ccf9b61bafcd7a4d66.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/02881b83e24109eeb3d26163b9c78d216ff436d3800434274b0b54be2d48c9ad.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/19904175261ac5d5075e3b1a723259924a1f1ab75b5d3e58ac4e52044282d711.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/08cceb4712c8ef3280a4e4635cf4dacbe8a3c721f5f2d15f9e0239f27c0653ac.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/cc51f789b076391d6a392a65819006db0909b357b0354eb973173980d5b9edfe.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1d429ffc3da6f000d9487b2789f8f0a9247007300449b158463b6eb60e3052bc.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/37505c3e2ffdf188ce7096539a459a41de74ef85b1335f614064c54185bf5498.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/46f8dcfb0548b83fa7bbaeea3f6dc488ce71d5f4039150c2577498e7f91bc665.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/944b42810a28187bb54857eb40588fae952563c1eba4a2b2fb8fd97eccd16ce6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2e6e948a2ccf713cfbfa552146eb1dc1737061dd5b99db5d380e5c0a011d3ae7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d0468336c2bb15a13dec1c9a6f57f41b65d1e916246cc88fe838226938f96447.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/16ab169c53a2e9a744c354687bc8d92cc45a0bb5349de233ffc6c91cd97a59f8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/31d78225302b922a7d995fd1b3892d2c54a39da209842abf4312aa65f906290b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/653489f789357ac7a908196bc6a2f271193e55152d726510b66ed5ade5740764.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f899b421c5a10a4692652ae08dd8ff28498b729c75439f635a438e0d5d259517.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7f209cc98bdd3b45dc78ce9e79e1567fbbc990a3dda13ad70a8ac8c6f766a026.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/645e5d95abff2c0cc100de5b92e23b492165247430c77a320cda8b39c81885ee.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b030006ed195ccb1e2262cdf3c4ebbdb5ab101c2a5653a1d7336593cfbd76972.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/02cef661a304c14e2323f0cbf8b8cf14e41c8f14900478ae625831e036a62730.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6622075cf8cb0f3dfcbe1f505d9d20bbd0b6b93434332f524999058442aeb725.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bfccfbc633274ae7ca517011f711712e82c87a3475c31c9db5129a4ae3958723.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4ff169e8c289c74aa2cb82e02b98ff375837250e28147dfca6080e97882ebebc.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3b90113c003697e5b9e2e93a7b0a76af84b34254c0f2c510b44e087de026a56e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a8755223753e58861dcda2da53d6b9df78f10d820e708f269c0f3d4c9ea7cb16.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4f5c6c119c921a5ef83e96b5c7548ed87ab19920d452842e1a2c37c8796b00c7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4eb6f2c4f92d1d53331e9f0730197b38b60fc6edd227fe66aca1b5a4dc36e3fe.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/94593bdb25f0d287df04d26856fadf977e2d997eb10317c770c78eebf62a72e6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a5229d4259488145ebb58782d75b6e4a13a65b96b13bbb189d1f79ae8d4998fe.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/424481889e81d5bafc6f3fee101843dd1d2aac1da288bd90371e1c5290603f76.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b0de3a055bd7d0af8dd35ff3e63ff8f4c680809b777847044c3b4252d8c3f11f.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/641c89f9be2db8a9b35302b733cf4cb2d7d37ac40a9d62c651d421ea143a1712.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e29eca2e2079a6b5712ab79357dfecd04966630972bec9ed5dcf00c3fbf08eae.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/de0e3e8973593994986d81c9d129f1975e458b2771ab2d91688764e872929a0c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/043465f72ee96497d47d44ce159470916de904bc8d681a96404f3c0c6cb1ddbc.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/435fa1a3d5fcd00f4f9b4fc2930e9083df3ccb55f6c16a860d3a0f1a50906545.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b7c0afb6c34553fded016b1af3268c8b78046b2e068ce98bbfa94909a20c33d3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5ffe5aa95e162d020552919c6773d546e9a2d9b85a82d19f4b92166ef3d2fb62.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/14d6b30cb98423106a606770fea711154f2ba655d8b5ceac25dfa4cc05576aff.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9fff94081f44e7229ef41acd9ddf5fe35dd623017f292da283940078a5bbf617.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d30b2f69db3f94ec2d40227e973456e507fb5db6715c4cff962a2d8b1f086150.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/edf78e63868451df37f46be2b68aee8243d03787fcf74ed88ce4baa2bfdca3d4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6d57d2031923e05481090f5adfb92eaa9df45155c4023d34a9cf9a7900e9e868.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/46baec3d77c3824f83d7c678bcc1917536a5ba60f671da5674208ff85c840ec4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/14e5eb2d7a305576cac4d058a213fceb5b162555fa89b6e8c398ceb0f289420c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ab5b0bcd8f526e473ccb73ae5a30c3f80bb5ecb94d012f3e1dd3ffbc39504d53.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9ed74bbcc026e7bd57a0288ba2f62b3bc3ba0e8af12ef6d106c192d7bb349d93.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a3fac27b606e9c9fbcb0ee70999c6fd3e935159f90c017164c94f89afb4b0547.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fe5cf4c8a43703f69c2ba1c813938fd5820a9e7dad8903598de7f84700d36d8b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/14abe4f45ff0cb2b92328f77da41fde9cefa692aac30786a2b5455cb4db0ed69.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ae78b0c3cfd598d2db07bbf89814a903b18ddf9d4462846011f5bd1655128682.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4ec4440d4381a9a9e3eefde9fc90cdeae54c3942644e9d7ace5ec8c4335878c7.png">
+<meta property="article:published_time" content="2022-03-07T14:49:25.000Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.471Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="RabbitMQ">
+<meta property="article:tag" content="AMQP">
+<meta property="article:tag" content="消息队列">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/d3a2bddeb48b852788bc0eab273069f6a4fec4be69efe2afc45bf2cfb8b94135.png">
+  
+  
+  
+  <title>RabbitMQ - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="RabbitMQ"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-07 22:49" pubdate>
+          2022年3月7日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          59 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">RabbitMQ</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>RabbitMQ是一个开源的AMQP实现，服务器端用Erlang语言编写，支持多种客户端。用于在分布式系统中存储转发消息，在易用性、扩展性、高可用等方面表现不俗。</p>
+<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="安装与运行"><a href="#安装与运行" class="headerlink" title="安装与运行"></a>安装与运行</h2><h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><p>CentOS 7 、Erlang</p>
+<p><img src="/yuque-assets/d3a2bddeb48b852788bc0eab273069f6a4fec4be69efe2afc45bf2cfb8b94135.png" srcset="/img/loading.gif" lazyload></p>
+<p>安装Erlang</p>
+<p><code>sudo yum install -y erlang</code></p>
+<p>安装socat</p>
+<p><code>sudo yum install -y socat</code></p>
+<p>RabbitMQ会办额定一些端口，安装完成后，需要将这些端口添加至防火墙开放。</p>
+<blockquote>
+<p>参考文档《rabbitmq单机到集群完整搭建》</p>
+</blockquote>
+<h3 id="RabbitMQ管理界面"><a href="#RabbitMQ管理界面" class="headerlink" title="RabbitMQ管理界面"></a>RabbitMQ管理界面</h3><p>RabbitMQ安装包中带有管理插件，但是需要手动激活：</p>
+<p><code>rabbitmq-plugins enable rabbitmq_management</code></p>
+<p>RabbitMQ有一个默认的用户”guest”，但这个用户默认只能通过本机访问，要让其他机器可以访问，需要创建一个新用户，为其分配权限</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#添加用户</span><br>rabbitmqctl add_user admin admin <br><span class="hljs-comment">#为用户分配权限</span><br>rabbitmqctl set_user_tags admin adminstrator<br><span class="hljs-comment">#为用户分配资源权限</span><br>rabbitmqctl set_permissions -p / admin <span class="hljs-string">"*"</span><span class="hljs-string">"*"</span><span class="hljs-string">"*"</span><br></code></pre></td></tr></tbody></table></figure>
+
+<p>启动管理控制台之后，能够通过<code>ip:15672</code>的方式访问到web控制台</p>
+<p><img src="/yuque-assets/8194f89936b27f37206452a96f5cf6c2482db02d5e635b9174624b7c3dfb62c1.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="RabbitMQ角色"><a href="#RabbitMQ角色" class="headerlink" title="RabbitMQ角色"></a>RabbitMQ角色</h3><p>角色分为5类：none、management、policymaker、monitoring、administrator</p>
+<ul>
+<li><p>none：不能访问management plugin</p>
+</li>
+<li><p>management：用户可以通过AMQP做任何事外加</p>
+</li>
+<li><p>列出自己可以通过AMQP登入的virtula hosts</p>
+</li>
+<li><p>查看自己的virtual hosts 中的queues，exchanges 和bindings</p>
+</li>
+<li><p>查看和关闭自己的channels和connections</p>
+</li>
+<li><p>查看有关自己的virtual hosts的“全局”的统计信息，包含其他用户在这些virtual hosts中的活动</p>
+</li>
+<li><p>policymaker: 在management的基础上外加</p>
+</li>
+<li><p>查看、创建和删除自己的virtual hosts所属的policies和parameters</p>
+</li>
+<li><p>monitoring：在management的基础上外加。主要是监控的</p>
+</li>
+<li><p>列出所有的virtual hosts，包括他们不能登录的virtual hosts</p>
+</li>
+<li><p>查看其他用户的connections 和channels</p>
+</li>
+<li><p>查看节点界别的数据，如clustering和memory使用情况</p>
+</li>
+<li><p>查看真正的关于所有virtual hosts 的全局的统计信息</p>
+</li>
+<li><p>administrator：policymaker和monitoring可以做的任何事外加</p>
+</li>
+<li><p>创建和删除virtual hosts</p>
+</li>
+<li><p>查看、创建和删除users</p>
+</li>
+<li><p>查看、创建和删除permissions</p>
+</li>
+<li><p>关闭其他用户connections</p>
+</li>
+</ul>
+<p>管理界面</p>
+<h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h1><p>下面直接java代码来操作一遍。</p>
+<p>先添加amqp-client依赖，如果是使用springboot会方便一点，spring对rabbitMQ做了支持（因为维护两者的是一个公司的），这也是为什么更多地在spring下面会使用rabbitMQ：</p>
+<p><img src="/yuque-assets/dbee485784e66638d8b5e2f790d39a37fc63b6434dbee3ab514d62379069fb33.png" srcset="/img/loading.gif" lazyload></p>
+<p>RabbitMQ里面vh的概念类似与数据库上的多个数据库，相互独立。</p>
+<p>前面介绍了RabbitMQ的基本使用。下面我们来学习一下它内部的相关核心概念。</p>
+<h1 id="AMQP协议"><a href="#AMQP协议" class="headerlink" title="AMQP协议"></a>AMQP协议</h1><p>Advabced Message Queueing Protocol 高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件设计。</p>
+<p>基于AMQP协议可以实现具体的中间件。</p>
+<h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><p><img src="/yuque-assets/4fd29259c3144eed7073f2612ac26e3b3daf6c3a890c3ee4f9815d13d49ffd14.png" srcset="/img/loading.gif" lazyload></p>
+<p>最高层提供了一些命令直接给用户使用。Session Layer会把Module Layer发过来的信息，套上一些协议的header，补全一些协议描述的报文。Transport Layer对消息提供错误检查，沾包拆包等基础处理。这里也不会详细介绍协议。</p>
+<h2 id="生产者流转过程"><a href="#生产者流转过程" class="headerlink" title="生产者流转过程"></a>生产者流转过程</h2><p><img src="/yuque-assets/c1a0a7cf07fbd9f887af6e239e205dbd28e595af6e79ffb189d69039fcde48e0.png" srcset="/img/loading.gif" lazyload></p>
+<p>类似TCP握手协议一样。在TCP连接建立之后，会基于AMQP协议的连接。Connection.start -&gt; Connection.Tune -&gt; Connection.open -&gt; Channel.Open -&gt; Basic.Publish -&gt;Channel.Close -&gt;Connection.Close</p>
+<h2 id="消费者流转过程"><a href="#消费者流转过程" class="headerlink" title="消费者流转过程"></a>消费者流转过程</h2><p><img src="/yuque-assets/b63165b6cb858c2fb4f290b58847fbad8a4764ff9c2de415864873407657849b.png" srcset="/img/loading.gif" lazyload></p>
+<p>注意一点：当消费者准备接收消息的时候会建立一个长连接，然后Broker可以推送消息给到消费者。其实这个连接是早就建立好的，只是在接收之前做一步类似登记的操作，将Consumer方的信息推送过去，例如IP，ConsumerID等，这样服务端才知道消息推送的目的地。推送之后Consumer会有个确认的消息回复，但是在代码端是没有看到这个确认的，因为这个ACK是默认自动的，后面会详细介绍这个ack。再往后就是释放资源的过程。</p>
+<h1 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h1><p>AMQP是RabbitMQ的核心基础，基于这个协议实现就会有一些核心概念。</p>
+<p>在RabbitMQ中消息服务被称为Broker。类似于一个数据库服务中中可以创建多个DB的概念，在RabbitMQ中有一个Broker中可以有多个Virual Host（虚拟主机）的概念。在每次进行RabbitMQ操作的时候都需要指定一个虚拟主机（默认名字是/），就好比运行SQL需要指定DB一样。在VH下有Queue（队列）的概念，是实际（消息）数据存放的地方。发送消息的一方称为producer（生产者），生产者与服务器之间有connection，建立在Connection之上使用channel来进行实际的数据传递，一个connection可以包含多个channel。</p>
+<p><img src="/yuque-assets/f56b60bdaf498f1dc0b6101fa22713311f1b52d9eae2278d98b7512bdeb50cb6.png" srcset="/img/loading.gif" lazyload></p>
+<p>消息发送阶段，消息由生产者产生，消息在RabbitMQ被称为message，message包含bady（消息体），它可以是xml可以是json，具体由我们自己定义；还有Label（标签），包含了很多种额外信息，比如消息的目的地（queue）。需要注意一点，消息在传递过程中不是直接发送到queue中，而是会发送到exchange，类似快递包裹（message）先发送到邮政中心（exchange），由邮政中心（exchange）分发给快递员（queue）去处理。</p>
+<p><img src="/yuque-assets/c5d5fd82b62ff9230ff23f5dd6144cec1a0cb171527629ccf9b61bafcd7a4d66.png" srcset="/img/loading.gif" lazyload></p>
+<p>exchange与queue存在bind的关系，表示这个exchange中拥有的queue。</p>
+<p>exchange也有自己的类型，比如说<strong>fanout</strong>类型会把接收到的消息分发到每一个与之绑定的queue上；</p>
+<p><strong>direct</strong>类型，在queue和exchange建立bind关系的时候会存在一个绑定key关系（图中的order、sms），用来和消息体里面的routeKey来匹配，消息走向routeKey对应的bindKey。</p>
+<p><img src="/yuque-assets/02881b83e24109eeb3d26163b9c78d216ff436d3800434274b0b54be2d48c9ad.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>topic</strong>类型，模糊匹配项，bindKey可能是一些匹配规则，#表示多个字符。只要符合条件，消息都会发送过去。</p>
+<p><img src="/yuque-assets/19904175261ac5d5075e3b1a723259924a1f1ab75b5d3e58ac4e52044282d711.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>header</strong>类型，这个不根据binder的关系来发送而是根据消息中自定义到的一些arguments。比如说定义了x=1，那么就会发送到header为x=1对应的queue上。</p>
+<p><img src="/yuque-assets/08cceb4712c8ef3280a4e4635cf4dacbe8a3c721f5f2d15f9e0239f27c0653ac.png" srcset="/img/loading.gif" lazyload></p>
+<p>在rabbitMQ中如果不指定exchange，会发送到一个默认的exchange，这个交换机把数据发送到body中指定了的queue中。</p>
+<p><img src="/yuque-assets/cc51f789b076391d6a392a65819006db0909b357b0354eb973173980d5b9edfe.png" srcset="/img/loading.gif" lazyload></p>
+<p>RabbitMQ中还可以定义一个临时队列，连接关闭后会自动删除，这个队列是排他的，这种永久exchang+临时队列的方式能提供发布订阅的功能，如果把exchange类型设置成fanout，所有新建的临时队列都会收到消息，连接关闭后就没有消息推送了。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 代码定义交换器</span><br>channel.exchangeDeclare(<span class="hljs-string">"ps_test"</span>, <span class="hljs-string">"fanout"</span>);<br><span class="hljs-comment">//  还可以定义一个临时队列，连接关闭后会自动删除，此队列是一个排他队列</span><br><span class="hljs-type">String</span> <span class="hljs-variable">queueName</span> <span class="hljs-operator">=</span> channel.queueDeclare().getQueue();<br>channel.queueBind(queueName, <span class="hljs-string">"ps_test"</span>, <span class="hljs-string">""</span>);<br></code></pre></td></tr></tbody></table></figure>
+
+<p>高并发的场景下queue堆积大量的数据，一个consumer处理不过来，我们会启动多个consumer集群，多个消费者消费同一个queue，消息是不会重复发送。有个非常重要的参数<code>channel.basicQos(1)</code> ，这个推送的数据量大小，RabbitMQ采用的是服务器端推送消息的方式，设置为1的话，同一个时刻，服务器只会发送一条消息给消费者。如果设置为10，推送10条，就算消费者在处理到第9条的时候发生异常，第10条消息还是会存在服务器端的，还可以恢复后再推送或者推送给其他的consumer。如果本来消息只有10条，设置了Qos为10，那么就算多个consumer启动了，也只有一个consumer会收到消息，因为服务器一次性推送10条给其中一个，其他人分不到消息了。Qos的设置可以帮助我们控制进度，并发度。</p>
+<h2 id="模型架构"><a href="#模型架构" class="headerlink" title="模型架构"></a>模型架构</h2><p>架构图和上面的图结构差不多。</p>
+<p><img src="/yuque-assets/1d429ffc3da6f000d9487b2789f8f0a9247007300449b158463b6eb60e3052bc.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h2><p>生产者，投递消息的一方。生产者创建消息后发布到RabbitMQ中。</p>
+<p>消息一般可以包含两个部分：消息体和附加信息</p>
+<ul>
+<li>消息体：payload，在实际应用中，消息体一般是一个带有业务逻辑结构的数据，比如一个JSON字符串。我们还可以进一步对这个消息进行序列化操作</li>
+<li>附加信息：用来描述这个消息，比如目标交换机的名称、路由键和一些自定义属性等</li>
+</ul>
+<h2 id="Broker"><a href="#Broker" class="headerlink" title="Broker"></a>Broker</h2><p>消息中间件的服务节点。</p>
+<p>对RabbitMQ来说，一个RabbitMQ Broker可以简单地看作一个RabbitMQ服务节点，或者RabbitMQ服务实例。也可以将一个RabbitMQ Broker看作一台RabbitMQ服务器。</p>
+<h2 id="Virtual-Host"><a href="#Virtual-Host" class="headerlink" title="Virtual Host"></a>Virtual Host</h2><p>虚拟主机，表示一批交换器、消息队列和相关对象。虚拟主机是共享相同的身份认证和加密环境的独立服务器域。</p>
+<p>每一个vhost本质上就是一个mini版的RabbitMQ服务器，拥有自己的队列、交换器、绑定和权限机制。vhost是AMQP概念的基础，必须在连接时指定，RabbitMQ默认vhost是/。</p>
+<h2 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h2><p>频道或信道，建立在connection之上的一种轻量级的连接。</p>
+<p>大部分的操作是在Channel这个接口中完成的，包括定义队列的声明（queueDeclare）、交换机的声明（exchangeDeclare）、队列的绑定（queueBind）、发布消息（basicPublish）、消费消息（basicConsume）等。</p>
+<h2 id="RoutingKey"><a href="#RoutingKey" class="headerlink" title="RoutingKey"></a>RoutingKey</h2><p>路由键，生产者将消息发给交换器的时候，一般会指定一个RoutingKey，用来指定这个消息的路由规则。</p>
+<p>RoutingKey需要与交换器类型和绑定键（bindingKey）联合使用的。在交换器类型和绑定键固定的情况下，生产者可以在发送消息给交换器时，通过指定RoutingKey来决定消息流向。</p>
+<h2 id="Exchange"><a href="#Exchange" class="headerlink" title="Exchange"></a>Exchange</h2><p>交换器，生产者将消息发送到Exchange上（通常用“X”来表示），由交换器将消息路由到一个或者多个队列中，如果路由不到，或返回给生产者，或直接丢弃。</p>
+<p><img src="/yuque-assets/37505c3e2ffdf188ce7096539a459a41de74ef85b1335f614064c54185bf5498.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h3><p>常用的交换机类型由fanout、direct 、topic、header 这四种。</p>
+<ul>
+<li>fanout 扇型交换器，会把所有发送到该交换器的消息路由到所有与该交换器绑定的队列中</li>
+<li>direct 直连交换器，会把消息路由到BindingKey与RoutingKey完全匹配的队列中</li>
+</ul>
+<p><img src="/yuque-assets/46f8dcfb0548b83fa7bbaeea3f6dc488ce71d5f4039150c2577498e7f91bc665.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>topic 主题交换器，与direct类型，通过通配符进行模糊匹配，<code>*</code>代表一个单词，<code>#</code>代表多个单词。</li>
+</ul>
+<p><img src="/yuque-assets/944b42810a28187bb54857eb40588fae952563c1eba4a2b2fb8fd97eccd16ce6.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>headers 头交换器 ，不依赖路由键的匹配规则，而是根据发送的消息内容种的headers属性进行匹配，性能较差，也不实用。</li>
+</ul>
+<h2 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h2><p>队列，是RabbitMQ的内部对象，用于存储消息。多个消费者消费同一个queue的消息不会产生重复消费的情况。</p>
+<p><img src="/yuque-assets/2e6e948a2ccf713cfbfa552146eb1dc1737061dd5b99db5d380e5c0a011d3ae7.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="Binding"><a href="#Binding" class="headerlink" title="Binding"></a>Binding</h2><p>绑定，RabbitMQ中通过绑定，将交换器与队列关联起来，在绑定的时候一般会指定一个绑定键（BindingKey），这样RabbitMQ就知道如何正确地将消息路由到队列了。</p>
+<p><img src="/yuque-assets/d0468336c2bb15a13dec1c9a6f57f41b65d1e916246cc88fe838226938f96447.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h2><p>消费者，就是接收消息的一方。消费者连接到RabbitMQ服务器，并订阅到队列上。</p>
+<p>当消费者消费一条消息时，只是消费消息的消息体（payload）。在消息路由的过程中，消息的标签会丢弃，存入到队列种的消息只有消息体，消费者也只会消费到消息体，也就不知道消息的生产者是谁，可能它并不需要知道。</p>
+<h2 id="运转流程"><a href="#运转流程" class="headerlink" title="运转流程"></a>运转流程</h2><p><img src="/yuque-assets/16ab169c53a2e9a744c354687bc8d92cc45a0bb5349de233ffc6c91cd97a59f8.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/31d78225302b922a7d995fd1b3892d2c54a39da209842abf4312aa65f906290b.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/653489f789357ac7a908196bc6a2f271193e55152d726510b66ed5ade5740764.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/f899b421c5a10a4692652ae08dd8ff28498b729c75439f635a438e0d5d259517.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/7f209cc98bdd3b45dc78ce9e79e1567fbbc990a3dda13ad70a8ac8c6f766a026.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/645e5d95abff2c0cc100de5b92e23b492165247430c77a320cda8b39c81885ee.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h1><blockquote>
+<p>操作请按照文档来完成</p>
+</blockquote>
+<p>默认情况下，集群并不会同步实际的数据，而是同步元信息。数据只会存放在一个节点上，集群知道数据的存放节点，会把请求发送到对应节点处理，但是这种情况下会出现单节点故障问题。可以通过配置policy来讲数据同步到指定节点或者所有节点上，即镜像节点的方式。</p>
+<p>小技巧：在log文件里可以看到各种异常。</p>
+<h2 id="常用管理命令"><a href="#常用管理命令" class="headerlink" title="常用管理命令"></a>常用管理命令</h2><h3 id="应用管理"><a href="#应用管理" class="headerlink" title="应用管理"></a>应用管理</h3><ul>
+<li><p><code>rabbitmqctl status</code> ： 查看节点状态</p>
+</li>
+<li><p><code>rabbitemqctl stop [pid_file]</code>：停止运行RabbitMQ的Erlang虚拟机和RabbitMQ服务应用。如果制定了pid_file，还需要等到指定进程的结束。pid_file时通过调用rabbitmq-server命令启动RabbitMQ服务时创建的，默认情况下存放在Mnesia目录中。如果使用<code>rabbitmq-server -detach</code>这个带有<code>-detach</code>的命令来启动MQ ，就不会生成pid file。</p>
+</li>
+<li><p><code>rabbitmqctl stop_app</code> : 停止MQ服务应用，但是Erlang虚拟机还是处于运行状态。此命令的执行优先于其他管理操作（这些管理操作需要先停止RabbitMQ应用，比如<code>rabbitmqctl reset</code>）服务其实还是在的，就是不提供使用。</p>
+</li>
+<li><p><code>rabbitmqctl start_app</code>：启动RRabbitMQ应用，此命令典型的用途就是在执行了其他管理命令之后，重新启动之前停止的RabbitMQ应用，比如<code>rabbitmqctl reset</code>。</p>
+</li>
+<li><p><code>rabbitmqctl reset</code>：将MQ节点重置还原到最初的状态。包括从原来所在的集群中删除此节点，从管理数据库中删除所有的配置数据，包括已配置的用户、vhost等，以及删除所有的持久化消息。执行reset命令之前必须先停止RabbitMQ应用，比如先执行<code>stop_app</code>命令</p>
+</li>
+<li><p><code>rabbitmqctl force_reset</code>：强制将MQ节点重置到最初状态。此命令不论当前管理数据哭的状态和集群配置是什么样，都会无条件地重置节点，只能在数据库或者集群配置已损坏的情况下使用。</p>
+</li>
+</ul>
+<h3 id="集群管理"><a href="#集群管理" class="headerlink" title="集群管理"></a>集群管理</h3><ul>
+<li><p><code>rabbitmqctl [-n nodename] join_cluster {cluster_node} [--ram]</code> ：将节点加入指定的集群中。</p>
+</li>
+<li><p>-n nodename：指定需要操作的目标节点，比如：rabbit@node1</p>
+</li>
+<li><p>cluster_node：需要加入的集群节点名，格式同上</p>
+</li>
+<li><p>–ram：集群节点类型，有两种类型：ram|disc，默认是disc</p>
+</li>
+<li><p>ram：内存节点，所有元数据都存储在内存中</p>
+</li>
+<li><p>disc：磁盘节点，所有元数据存储在磁盘中</p>
+</li>
+<li><p><code>rabbitmqctl cluster_status</code>：查看集群状态</p>
+</li>
+<li><p><code>rabbitmqctl change_cluster_node_type {disc|ram}</code> ：修改集群节点的类型，此命令在使用前要停止RabbitMQ应用。举个例子，本来有A\B\C三个节点。本来AB是一个集群，然后A节点离线，这时候C来与B组成了新的集群，新集群中B离开了这个集群，这个时候A再启动，A再去连接B节点组成集群是会失败的，应为AB已经不是一个集群了，这时候就需要执行<code>rabbitmqctl change_cluster_node_type A C</code>来重新组织集群。</p>
+</li>
+<li><p><code>rabbitmqctl forget_cluster_node[--offline]</code> ：将节点从集群中删除，允许离线执行</p>
+</li>
+<li><p><code>rabbitmqctl update_cluster_nodes {clusternode}</code> ：在集群中的节点应用启动前咨询clusterNode节点的最新信息，并更新相应的集群信息。这个和join_cluster不同，它不加入集群。</p>
+</li>
+<li><p><code>rabbitmqctl force_boot</code> ：确保节点可以启动，即使它不是最后一个关闭的节点。正常来说，如果集群异常，节点按顺序宕机，我们应该最先启动最晚宕机的节点，以保证最全的数据。但是有时候不知道谁是最后关闭的，就使用这个命令来确保节点能够启动。</p>
+</li>
+<li><p><code>rabbitmqctl set_cluster_name {name}</code> ： 设置集群的名称。集群名称在客户端连接时会通报给客户端。集群名称默认是集群中第一个节点的名称，通过这个命令可以重新设置。</p>
+</li>
+</ul>
+<p>命令肯定是列举不完了，知晓了这些基本的命令之后，还要知道哪里可以找到这些命令，这些命令在–help里面的用法。</p>
+<h2 id="高可用集群方案"><a href="#高可用集群方案" class="headerlink" title="高可用集群方案"></a>高可用集群方案</h2><p>集群模式有两种：普通模式和镜像模式</p>
+<h3 id="普通模式"><a href="#普通模式" class="headerlink" title="普通模式"></a>普通模式</h3><p><img src="/yuque-assets/b030006ed195ccb1e2262cdf3c4ebbdb5ab101c2a5653a1d7336593cfbd76972.png" srcset="/img/loading.gif" lazyload></p>
+<p>直接使用join方式加入集群。节点之间只进行元数据同步，数据可以在rabbit01节点上，客户端连接上02节点。缺点就是单节点故障。</p>
+<p>元数据包括一下内容：</p>
+<ul>
+<li>队列元数据：队列的名称及属性</li>
+<li>交换器：交换器的名称及属性</li>
+<li>绑定关系元数据：交换器与队列或者交换器与交换的绑定关系</li>
+<li>vhost元数据：为vhost内的队列、交换器和绑定提供命名空间及安全属性之间的绑定关系。</li>
+</ul>
+<p>部署方式一般采用多机多节点部署。每台机器中部署一个RabbitMQ服务节点，由多台机器组成一个RabbitMQ集群。</p>
+<p><img src="/yuque-assets/02cef661a304c14e2323f0cbf8b8cf14e41c8f14900478ae625831e036a62730.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h4><ol>
+<li>修改/etc/hosts文件，添加ip地址与节点名的映射信息</li>
+</ol>
+<p><img src="/yuque-assets/6622075cf8cb0f3dfcbe1f505d9d20bbd0b6b93434332f524999058442aeb725.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>编辑RabbitMQ的/var/lib/rabbitmq/.erlang.cookie文件，以确保各个节点的cookie文件使用的是同一个值，可以从一个节点复制到其他节点。</li>
+</ol>
+<p><img src="/yuque-assets/bfccfbc633274ae7ca517011f711712e82c87a3475c31c9db5129a4ae3958723.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="3">
+<li>将三个节点的端口添加到防火墙（自己玩的时候就可以直接关闭防火墙）</li>
+</ol>
+<p><img src="/yuque-assets/4ff169e8c289c74aa2cb82e02b98ff375837250e28147dfca6080e97882ebebc.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="4">
+<li>启动三个节点的RabbitMQ服务</li>
+</ol>
+<p><img src="/yuque-assets/3b90113c003697e5b9e2e93a7b0a76af84b34254c0f2c510b44e087de026a56e.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="5">
+<li>以node1为基准，将node2和node3加入node1的集群中。在node2和node3分别执行以下命令：</li>
+</ol>
+<p><img src="/yuque-assets/a8755223753e58861dcda2da53d6b9df78f10d820e708f269c0f3d4c9ea7cb16.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="同一个机器下启动多个MQ服务"><a href="#同一个机器下启动多个MQ服务" class="headerlink" title="同一个机器下启动多个MQ服务"></a>同一个机器下启动多个MQ服务</h4><p>由于某些因素的限制，有时候不得不在单台物理机器上去创建一个多RabbitMQ服务节点的集群。或者只是想实验性地验证集群的某些特征，也不需要浪费过多的物理机器。</p>
+<p><img src="/yuque-assets/4f5c6c119c921a5ef83e96b5c7548ed87ab19920d452842e1a2c37c8796b00c7.png" srcset="/img/loading.gif" lazyload></p>
+<p>为了后续方便操作，在/etc/rabbitmq/rabbitmq-env.conf 修改默认的节点名称为rabbit1:</p>
+<p><img src="/yuque-assets/4eb6f2c4f92d1d53331e9f0730197b38b60fc6edd227fe66aca1b5a4dc36e3fe.png" srcset="/img/loading.gif" lazyload></p>
+<p>为每个RabbitMQ服务节点设置不同的端口号和节点名称来启动相应服务：</p>
+<p><img src="/yuque-assets/94593bdb25f0d287df04d26856fadf977e2d997eb10317c770c78eebf62a72e6.png" srcset="/img/loading.gif" lazyload></p>
+<p>如果启用的插件有端口，比如rabbitmq_management，则需要增加启动参数，修改插件的端口号，否则会启动失败。</p>
+<p><img src="/yuque-assets/a5229d4259488145ebb58782d75b6e4a13a65b96b13bbb189d1f79ae8d4998fe.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="镜像模式"><a href="#镜像模式" class="headerlink" title="镜像模式"></a>镜像模式</h3><p>镜像模式是为了实现数据的高可用。这是在普通模式的基础上，通过policy来实现的，是RabbitMQ实现的高可用方案。</p>
+<p><img src="/yuque-assets/424481889e81d5bafc6f3fee101843dd1d2aac1da288bd90371e1c5290603f76.png" srcset="/img/loading.gif" lazyload></p>
+<p>当我们发送一条消息到节点的时候，会根据我们设置的策略（全部同步、同步部分机器，3台同步2台，5台同步3台这样）</p>
+<p>在管理界面上可以对镜像模式进行设置：</p>
+<p><img src="/yuque-assets/b0de3a055bd7d0af8dd35ff3e63ff8f4c680809b777847044c3b4252d8c3f11f.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="ha-mode"><a href="#ha-mode" class="headerlink" title="ha-mode"></a>ha-mode</h4><p>指明镜像队列的模式，有效值为all、exactly、nodes，默认为all。</p>
+<p><img src="/yuque-assets/641c89f9be2db8a9b35302b733cf4cb2d7d37ac40a9d62c651d421ea143a1712.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="ha-sync-mode"><a href="#ha-sync-mode" class="headerlink" title="ha-sync-mode"></a>ha-sync-mode</h4><p>队列中消息的同步方式，有效值为automatic和manual，默认是automatic。</p>
+<p><img src="/yuque-assets/e29eca2e2079a6b5712ab79357dfecd04966630972bec9ed5dcf00c3fbf08eae.png" srcset="/img/loading.gif" lazyload></p>
+<p>这种方式会导致数据冗余。</p>
+<h3 id="Federation"><a href="#Federation" class="headerlink" title="Federation"></a>Federation</h3><p>这个产检的设计目标是使RabbitMQ在不同的Broker节点之间进行消息传递而无须建立集群。该功能在一下场景非常有用：</p>
+<ul>
+<li>各个节点但运行在不同版本的Erlang和RabbitMQ上</li>
+<li>网络环境不稳定，比如广域网</li>
+</ul>
+<p>整体架构</p>
+<p><img src="/yuque-assets/de0e3e8973593994986d81c9d129f1975e458b2771ab2d91688764e872929a0c.png" srcset="/img/loading.gif" lazyload></p>
+<p>本来集群节点之间的同步时非常快的，但是由于版本号不同或者是网络问题导致了没办法直接使用镜像队列同步。在同步的时候由于没有办法直接进行镜像同步，借助Federation这个插件，在数据同步的时候，插件将需要同步的数据放在在本地服务器创建的一个queue中，再由插件负责数据的同步工作，代理发送，这个工作不再由MQ负责，这么做的好处在于网络差的情况下，插件构建的同步通道比MQ直接网络连接可靠。这种方式会有延迟感，数据存在不一致的问题。</p>
+<h3 id="Shovel"><a href="#Shovel" class="headerlink" title="Shovel"></a>Shovel</h3><p>与Federation类似 都具有数据转发的功能，Shovel能够可靠、持续地从一个Broker中的队列（作为源端，即source）拉取数据并转发至另一个Broker中的交换器（作为目的端，即destination）</p>
+<p>翻译为铲子，是一种比较形象的比喻，这个铲子可以将信息从一方挖到另一方。</p>
+<p>优势：</p>
+<ul>
+<li>松耦合：可以移动位于不同管理域中的Broker或者集群上的消息，这些Broker或者集群可以包含不同的用户与vhost，也可以用于不同的RabbitMQ和Erlang版本</li>
+<li>支持广域网：Shovel插件同样基于AMQP协议在Broker之间进行通信，被设计成可以容忍时断时续的网络连通情形，并且保证消息的可靠性</li>
+<li>高度定制：当Shovel成功连接后，可以对其进行配置以执行相关的AMQP命令</li>
+<li>比Federation主动，主动拉取。</li>
+</ul>
+<p><img src="/yuque-assets/043465f72ee96497d47d44ce159470916de904bc8d681a96404f3c0c6cb1ddbc.png" srcset="/img/loading.gif" lazyload></p>
+<p>这两个插件的方式了解一下就好了，这个效果其实都不好。</p>
+<h3 id="Federation-Shovel与Cluster的区别与联系"><a href="#Federation-Shovel与Cluster的区别与联系" class="headerlink" title="Federation/Shovel与Cluster的区别与联系"></a>Federation/Shovel与Cluster的区别与联系</h3><p><img src="/yuque-assets/435fa1a3d5fcd00f4f9b4fc2930e9083df3ccb55f6c16a860d3a0f1a50906545.png" srcset="/img/loading.gif" lazyload></p>
+<p>最大的区别就是CAP的保证</p>
+<h1 id="持久化机制"><a href="#持久化机制" class="headerlink" title="持久化机制"></a>持久化机制</h1><p>RabbitMQ的持久化分为队列持久化、消息持久化和交换器持久化。不管是持久化的消息还是非持久化的消息都可以被写入磁盘，区别点在于重启之后数据还在不在。</p>
+<p><img src="/yuque-assets/b7c0afb6c34553fded016b1af3268c8b78046b2e068ce98bbfa94909a20c33d3.png" srcset="/img/loading.gif" lazyload></p>
+<p>持久化的消息会同时存储到内存和磁盘上。如果是非持久化的消息，会先存储到内存中，当内存不够用的时候才会去存储到磁盘，但是重启之后就没了。</p>
+<p><img src="/yuque-assets/5ffe5aa95e162d020552919c6773d546e9a2d9b85a82d19f4b92166ef3d2fb62.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="队列持久化"><a href="#队列持久化" class="headerlink" title="队列持久化"></a>队列持久化</h2><p>是定义队列时的durable参数实现的，durable为true时，队列才会持久化。非持久化的队列在重启之后数据就没了。</p>
+<p><img src="/yuque-assets/14d6b30cb98423106a606770fea711154f2ba655d8b5ceac25dfa4cc05576aff.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/9fff94081f44e7229ef41acd9ddf5fe35dd623017f292da283940078a5bbf617.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="消息持久化"><a href="#消息持久化" class="headerlink" title="消息持久化"></a>消息持久化</h2><p>消息持久化通过消息的属性deliveryMode来设置是否持久化，在消息发送时通过basicPublish的参数传入。</p>
+<p><img src="/yuque-assets/d30b2f69db3f94ec2d40227e973456e507fb5db6715c4cff962a2d8b1f086150.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="交换器持久化"><a href="#交换器持久化" class="headerlink" title="交换器持久化"></a>交换器持久化</h2><p>同队列一样，交换器也需要在定义时设置持久化标识，否则在Broker重启后将丢失</p>
+<p><img src="/yuque-assets/edf78e63868451df37f46be2b68aee8243d03787fcf74ed88ce4baa2bfdca3d4.png" srcset="/img/loading.gif" lazyload></p>
+<p>持久化机制可以自己操作一遍试试。</p>
+<p>代码演示在a134下。</p>
+<h1 id="内存控制"><a href="#内存控制" class="headerlink" title="内存控制"></a>内存控制</h1><h2 id="最大内存"><a href="#最大内存" class="headerlink" title="最大内存"></a>最大内存</h2><p>在RabbitMQ中有<strong>最大内存</strong>控制，当内存占用超过配置的阈值或者磁盘剩余空间低于配置的阈值时，RabbitMQ会暂时阻塞客户端的连接，并停止接收从客户端发来的消息，以此避免服务崩溃，客户端与服务端的心跳检测也会失效。控制界面也能看到：</p>
+<p><img src="/yuque-assets/6d57d2031923e05481090f5adfb92eaa9df45155c4023d34a9cf9a7900e9e868.png" srcset="/img/loading.gif" lazyload></p>
+<p>当出现内存告警时，可以通过管理命令临时调整内存大小</p>
+<p><code>rabbitmqctl set_vm_memory_high_watermark &lt;fraction&gt;</code></p>
+<p>fraction为内存阈值，默认值为0.4，表示内存超过物理机器内存的40%，就会产生告警并阻塞所有生产者连接。通过此命令修改的阈值在Broker重启后会失效，通过修改配置文件的方式设置的阈值重启之后不会失效，但是需要重启Broker才生效。</p>
+<p>配置文件地址<code>/etc/rabbitmq/rabbitmq.conf</code></p>
+<p><img src="/yuque-assets/46baec3d77c3824f83d7c678bcc1917536a5ba60f671da5674208ff85c840ec4.png" srcset="/img/loading.gif" lazyload></p>
+<p>RabbitMQ提供relative或absolute两种配置方式：</p>
+<ul>
+<li>relative相对值，即前面的fraction，建议取值在0.4~0.66之间，不建议超过0.7</li>
+<li>absolute绝对值，单位为KB、MB、GB，对应命令：<code>rabbitmqctl set_vm_memory_high_watermark absolte &lt;value&gt;</code></li>
+</ul>
+<h2 id="内存换页阈值"><a href="#内存换页阈值" class="headerlink" title="内存换页阈值"></a>内存换页阈值</h2><p>在某个Broker节点触及内存并阻塞生产者之前，它会尝试将队列中的消息换页到磁盘以释放内存空间。持久化和非持久化的消息都会被转储到磁盘中，其中持久化的消息本身就在磁盘中有一份副本，这里会将持久化的消息从内存中清除。</p>
+<p>默认情况下，在内存达到内存阈值的50%就会进行换页动作了。换句话说，在默认内存阈值（0.4）的情况下，当内存超过0.2（0.4*0.5）时就会进行换页操作。</p>
+<p>可以通过配置文件中的<code>vm_memory_high_watermark_paging_ratio</code>项来修改此值</p>
+<p><img src="/yuque-assets/14e5eb2d7a305576cac4d058a213fceb5b162555fa89b6e8c398ceb0f289420c.png" srcset="/img/loading.gif" lazyload></p>
+<p>像上图的配置就将会在RabbitMQ内存使用率达到30%时进行换页操作，并且在40%时阻塞生产者，当<code>vm_memory_high_watermark_paging_ratio</code>的值大于1时，相当于禁用了换页功能。</p>
+<p>磁盘使用上也有最到磁盘使用值和阈值。</p>
+<h1 id="磁盘控制"><a href="#磁盘控制" class="headerlink" title="磁盘控制"></a>磁盘控制</h1><p>和内存控制差不多。当磁盘剩余空间低于确定的阈值时，RabbitMQ同样会阻塞生产者，这样可以便面因非持久化消息持续换页而耗尽磁盘空间导致服务崩溃。注意这里和内存的区别是，磁盘讲的是剩余空间，内存讲的是使用空间。</p>
+<p>默认情况下，磁盘阈值为50MB，表示当磁盘剩余空间低于50MB时会阻塞生产者并停止内存中的消息换页动作。</p>
+<p>这个阈值的设置可以减小，但不能完全消除因磁盘耗尽而导致崩溃的可能性。比如在两次磁盘空间检测期间内，磁盘空间被耗尽。正常情况下为10s检测一次，随着磁盘剩余使用量的减小，检测频率会变高。</p>
+<p>一个相对谨慎的做法是将磁盘阈值设置为与操作系统所显示的内存大小一致。</p>
+<p>同样地，通过命令可以临时调整磁盘阈值</p>
+<p><img src="/yuque-assets/ab5b0bcd8f526e473ccb73ae5a30c3f80bb5ecb94d012f3e1dd3ffbc39504d53.png" srcset="/img/loading.gif" lazyload></p>
+<p>disk_limit为固定大小，单位为KB、MB、GB</p>
+<p>fraction 为相对（最大）内存大小的比值，建议取值为1.0<del>2.0之间，意味着内存大小的1倍</del>2倍。</p>
+<p>对应的配置为：</p>
+<p><img src="/yuque-assets/9ed74bbcc026e7bd57a0288ba2f62b3bc3ba0e8af12ef6d106c192d7bb349d93.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="消息可靠性"><a href="#消息可靠性" class="headerlink" title="消息可靠性"></a>消息可靠性</h1><p>RabbitMQ的消息可靠性，一般是业务系统接入消息中间件所需要考虑的首个问题，一般通过三个方面保障：</p>
+<ol>
+<li>发送可靠：确保消息成功发送到Broker</li>
+<li>存储可靠：Broker对消息持久化，确保消息不丢失</li>
+<li>消费可靠：确保消息成功被消费</li>
+</ol>
+<h2 id="发送可靠"><a href="#发送可靠" class="headerlink" title="发送可靠"></a>发送可靠</h2><p>一般消息发送可靠性可以分为三个层级</p>
+<ul>
+<li>at most once：最多一次，消息可能会丢失，但是绝对不会重复传输</li>
+<li>at least once：最少一次，消息绝对不丢失，但是可能会重复传输</li>
+<li>Exactly once：恰好一次，每条消息肯定会被传输一次且只传输一次。</li>
+</ul>
+<p>RabbitMQ支持最多一次或最少一次。</p>
+<p>其中“最少一次”投递实现时需要考虑以下几个方面的内容：</p>
+<ul>
+<li>消息生产者需要开启事务机制或者publisher confirm机制，以确保消息可以可靠地传输到RabbitMQ中</li>
+<li>消息生产者需要配合使用mandatory参数或者备份交换器来确保消息能够从交换器路由到队列中，从而能够保存下来而不被丢弃。</li>
+</ul>
+<p>最多一次的方式无须考虑上面的问题，生产者随意发送，不过很难确保消息会成功发送。</p>
+<blockquote>
+<p>代码示例：a132/confirm</p>
+</blockquote>
+<p>消息可靠发送的流程：</p>
+<p>消息要确保发送到MQ上，那么必须通过DB支持（图中的MSG DB）</p>
+<p><img src="/yuque-assets/a3fac27b606e9c9fbcb0ee70999c6fd3e935159f90c017164c94f89afb4b0547.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="消费可靠"><a href="#消费可靠" class="headerlink" title="消费可靠"></a>消费可靠</h2><p>消费者在消费的同时，需要将autoAck设置为false，然后通过手动确认的方式取确认已经正确消费的消息，以免再消费端引起不必要的消息丢失。</p>
+<p>消费端在正确处理完成消息之后返回ack给MQ，MQ接收到了ack，才会去删除消息，避免消息丢失的情况。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 监听队列</span><br><span class="hljs-type">Channel</span> <span class="hljs-variable">finalChannel</span> <span class="hljs-operator">=</span> channel;<br>channel.basicConsume(queueName, <span class="hljs-literal">false</span>, <span class="hljs-string">"消费者-手动回执"</span>,<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">DefaultConsumer</span>(finalChannel) {<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">handleDelivery</span><span class="hljs-params">(String consumerTag,</span><br><span class="hljs-params">                                       Envelope envelope,</span><br><span class="hljs-params">                                       AMQP.BasicProperties properties,</span><br><span class="hljs-params">                                       <span class="hljs-type">byte</span>[] body)</span><br>                    <span class="hljs-keyword">throws</span> IOException {<br>                <span class="hljs-keyword">try</span> {<br>                    System.out.println(<span class="hljs-string">"收到消息: "</span> + <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(body));<br>                    <span class="hljs-comment">// TODO 业务处理</span><br>                    <span class="hljs-type">long</span> <span class="hljs-variable">deliveryTag</span> <span class="hljs-operator">=</span> envelope.getDeliveryTag();<br>                    <span class="hljs-comment">// 模拟业务处理耗时</span><br>                    Thread.sleep(<span class="hljs-number">1000L</span>);<br>                    <span class="hljs-comment">// 正常消费</span><br>                    <span class="hljs-comment">// finalChannel.basicAck(deliveryTag, false);</span><br>                    <span class="hljs-comment">// 异常消费</span><br>                    finalChannel.basicNack(envelope.getDeliveryTag(), <span class="hljs-literal">false</span>, <span class="hljs-literal">false</span>);<br>                } <span class="hljs-keyword">catch</span> (InterruptedException e) {<br>                    <span class="hljs-comment">// 异常消费, requeue参数 true重发，false不重发(丢弃或者移到DLQ死信队列)</span><br>                    <span class="hljs-comment">// finalChannel.basicNack(envelope.getDeliveryTag(), false, false);</span><br>                    e.printStackTrace();<br>                }<br>            }<br>        });<br></code></pre></td></tr></tbody></table></figure>
+
+<p>消息处理异常时，我们可以指定重发或者不重发，如果不重发，再指定丢弃消息还是移动到DLQ死信队列中。死信队列专门用来存储异常的数据，创建queue时可以指定死信队列的属性：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 队列中有死信产生时，消息会转发到交换器 dlq_exchange。</span><br>Map&lt;String, Object&gt; args = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;String, Object&gt;();<br>args.put(<span class="hljs-string">"x-dead-letter-exchange"</span>, <span class="hljs-string">"dlq_exchange"</span>);<br>channel.queueDeclare(queueName, <span class="hljs-literal">false</span>, <span class="hljs-literal">false</span>, <span class="hljs-literal">false</span>, args);<br></code></pre></td></tr></tbody></table></figure>
+
+<p>可以通过专门的消费者来处理死信队列的消息，做特殊处理。</p>
+<h1 id="插件机制"><a href="#插件机制" class="headerlink" title="插件机制"></a>插件机制</h1><p>前面使用的管理界面就是一种插件。RabbitMQ支持插件，通过插件可以扩展多种核心功能：支持多种协议、系统状态监控、其他AMQP 0-9-1交换类型、节点联合等。许多功能都是通过插件实现的。</p>
+<p>RabbitMQ内置的一些插件可以通过<code>rabbitmq-plugins list</code>命令查看到。</p>
+<p>通过rabbitmq-plugins 命令可以启动或禁用插件</p>
+<p><img src="/yuque-assets/fe5cf4c8a43703f69c2ba1c813938fd5820a9e7dad8903598de7f84700d36d8b.png" srcset="/img/loading.gif" lazyload></p>
+<p>常用插件：</p>
+<p><img src="/yuque-assets/14abe4f45ff0cb2b92328f77da41fde9cefa692aac30786a2b5455cb4db0ed69.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/ae78b0c3cfd598d2db07bbf89814a903b18ddf9d4462846011f5bd1655128682.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/4ec4440d4381a9a9e3eefde9fc90cdeae54c3942644e9d7ace5ec8c4335878c7.png" srcset="/img/loading.gif" lazyload></p>
+<p>这些插件更多的是使用，就不做过多的介绍了。可靠消息、内存管理这些核心原理需要理解。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-chain-item">分布式与中间件</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="category-chain-item">消息队列</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/RabbitMQ/" class="print-no-link">#RabbitMQ</a>
+      
+        <a href="/tags/AMQP/" class="print-no-link">#AMQP</a>
+      
+        <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="print-no-link">#消息队列</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>RabbitMQ</div>
+      <div>https://q792821266.github.io/yuque/68056730/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/68911719/" title="基于MQ的分布式事务解决方案">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">基于MQ的分布式事务解决方案</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/54414153/" title="J.U.C下的List Set Queue">
+                        <span class="hidden-mobile">J.U.C下的List Set Queue</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,909 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="OAuth 2.0 是一种开放授权标准，允许第三方应用在用户授权后安全访问其资源（如用户数据），而无需暴露用户凭证。其核心流程围绕 四种授权模式 展开，以下分模块详解整体流程及模式差异：  🔑 一、OAuth 2.0 核心角色 资源所有者（Resource Owner）即终端用户，拥有受保护资源（如个人数据）的控制权。 客户端（Client）请求访问资源的第三方应用（Web&#x2F;移动应用等）。 授权">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OAUTH2.0流程">
+<meta property="og:url" content="https://q792821266.github.io/yuque/227564440/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="OAuth 2.0 是一种开放授权标准，允许第三方应用在用户授权后安全访问其资源（如用户数据），而无需暴露用户凭证。其核心流程围绕 四种授权模式 展开，以下分模块详解整体流程及模式差异：  🔑 一、OAuth 2.0 核心角色 资源所有者（Resource Owner）即终端用户，拥有受保护资源（如个人数据）的控制权。 客户端（Client）请求访问资源的第三方应用（Web&#x2F;移动应用等）。 授权">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-11T03:19:47.321Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.460Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="OAuth2">
+<meta property="article:tag" content="授权">
+<meta property="article:tag" content="安全">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>OAUTH2.0流程 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="OAUTH2.0流程"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-07-11 11:19" pubdate>
+          2025年7月11日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">OAUTH2.0流程</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>OAuth 2.0 是一种开放授权<strong>标准</strong>，允许第三方应用在用户授权后安全访问其资源（如用户数据），而无需暴露用户凭证。其核心流程围绕 四种授权模式 展开，以下分模块详解整体流程及模式差异：</p>
+<hr>
+<h3 id="🔑-一、OAuth-2-0-核心角色"><a href="#🔑-一、OAuth-2-0-核心角色" class="headerlink" title="🔑 一、OAuth 2.0 核心角色"></a>🔑 <strong>一、OAuth 2.0 核心角色</strong></h3><ol>
+<li>资源所有者（Resource Owner）<br>即终端用户，拥有受保护资源（如个人数据）的控制权。</li>
+<li>客户端（Client）<br>请求访问资源的第三方应用（Web/移动应用等）。</li>
+<li>授权服务器（Authorization Server）<br>验证用户身份并颁发访问令牌（Access Token）的服务。</li>
+<li>资源服务器（Resource Server）<br>存储资源的服务，接收并验证令牌后返回资源（常与授权服务器合并实现）。</li>
+</ol>
+<hr>
+<h3 id="⚙️-二、授权码模式（Authorization-Code-Grant）"><a href="#⚙️-二、授权码模式（Authorization-Code-Grant）" class="headerlink" title="⚙️ 二、授权码模式（Authorization Code Grant）"></a>⚙️ <strong>二、授权码模式（Authorization Code Grant）</strong></h3><p>最安全且最常用，适合有后端的应用（如Web服务）：</p>
+<ol>
+<li>用户重定向至授权服务器<br>客户端引导用户跳转至授权端点，携带参数：</li>
+</ol>
+<figure class="highlight http"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">GET /authorize?response_type=code&amp;client_id=CLIENT_ID&amp;redirect_uri=CALLBACK_URL&amp;scope=read_data<br></code></pre></td></tr></tbody></table></figure>
+
+<ol start="2">
+<li>用户登录并授权<br>用户在授权服务器输入凭证，确认是否允许客户端访问指定资源。</li>
+<li>返回授权码（Code）<br>用户同意后，授权服务器重定向至 <code>redirect_uri</code>，附一次性授权码：</li>
+</ol>
+<figure class="highlight http"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">CALLBACK_URL?code=AUTHORIZATION_CODE<br></code></pre></td></tr></tbody></table></figure>
+
+<ol start="4">
+<li>客户端换取访问令牌<br>后端服务 用授权码+客户端密钥请求令牌端点：</li>
+</ol>
+<figure class="highlight http"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs http">POST /token<br>grant_type=authorization_code&amp;code=AUTHORIZATION_CODE&amp;client_id=CLIENT_ID&amp;client_secret=CLIENT_SECRET<br></code></pre></td></tr></tbody></table></figure>
+
+<ol start="5">
+<li>颁发访问令牌<br>授权服务器验证后返回：</li>
+</ol>
+<figure class="highlight json"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">{</span><br>  <span class="hljs-attr">"access_token"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"ACCESS_TOKEN"</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">"token_type"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Bearer"</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">"expires_in"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3600</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">"refresh_token"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"REFRESH_TOKEN"</span><br><span class="hljs-punctuation">}</span><br></code></pre></td></tr></tbody></table></figure>
+
+<ol start="6">
+<li>访问受保护资源<br>客户端在API请求头中加入令牌：</li>
+</ol>
+<figure class="highlight http"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs http">GET /userinfo<br><span class="hljs-attribute">Authorization</span><span class="hljs-punctuation">: </span>Bearer ACCESS_TOKEN<br></code></pre></td></tr></tbody></table></figure>
+
+<ol start="7">
+<li>资源服务器校验令牌<br>资源服务器向授权服务器验证令牌有效性，通过后返回数据。</li>
+</ol>
+<blockquote>
+<p>✅ 优势：令牌不暴露给前端，支持刷新令牌续期。</p>
+</blockquote>
+<hr>
+<h3 id="🔒-三、其他授权模式流程对比"><a href="#🔒-三、其他授权模式流程对比" class="headerlink" title="🔒 三、其他授权模式流程对比"></a>🔒 <strong>三、其他授权模式流程对比</strong></h3><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>适用场景</th>
+<th>流程核心差异</th>
+<th>安全性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>隐式模式（Implicit）</td>
+<td>纯前端应用（如SPA）</td>
+<td>跳过授权码，直接返回令牌至前端 <code>#access_token=XXX</code></td>
+<td>低（令牌暴露）</td>
+</tr>
+<tr>
+<td>密码模式（Password）</td>
+<td>高度信任的客户端（如官方App）</td>
+<td>用户直接提供账号密码，客户端换令牌</td>
+<td>最低（需传输密码）</td>
+</tr>
+<tr>
+<td>客户端模式（Client Credentials）</td>
+<td>服务间通信（无用户参与）</td>
+<td>客户端用自身 <code>client_id</code> + <code>client_secret</code> 直接换令牌</td>
+<td>中（仅验证客户端身份）</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="⚠️-四、关键安全实践"><a href="#⚠️-四、关键安全实践" class="headerlink" title="⚠️ 四、关键安全实践"></a>⚠️ <strong>四、关键安全实践</strong></h3><ol>
+<li>重定向URI校验<br>授权服务器必须严格匹配注册的 <code>redirect_uri</code>，防止劫持。</li>
+<li>令牌有效期控制<br>访问令牌宜短期（如1小时），刷新令牌可长期（如30天）。</li>
+<li>使用PKCE扩展<br>移动端/SPA建议增加 动态密钥交换（PKCE），防止授权码截取。</li>
+<li>避免前端存储密钥<br>客户端密钥（<code>client_secret</code>）必须由后端保管，禁止前端硬编码。</li>
+</ol>
+<hr>
+<h3 id="💎-授权模式选择指南"><a href="#💎-授权模式选择指南" class="headerlink" title="💎 授权模式选择指南"></a>💎 <strong>授权模式选择指南</strong></h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐模式</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>第三方Web应用（有后端）</td>
+<td>授权码模式</td>
+<td>令牌不暴露前端，支持刷新机制</td>
+</tr>
+<tr>
+<td>单页应用（SPA）</td>
+<td>隐式模式 + PKCE</td>
+<td>无后端服务器，简化流程但需增强安全</td>
+</tr>
+<tr>
+<td>企业内部系统/官方App</td>
+<td>密码模式（慎用）</td>
+<td>信任度高，但需确保传输加密</td>
+</tr>
+<tr>
+<td>微服务间API调用</td>
+<td>客户端模式</td>
+<td>无需用户参与，直接验证服务身份</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>💡 提示：90%的第三方集成场景应优先选择 授权码模式，安全性经过大规模验证。</p>
+</blockquote>
+<hr>
+<h3 id="🔍-五、常见问题与解决"><a href="#🔍-五、常见问题与解决" class="headerlink" title="🔍 五、常见问题与解决"></a>🔍 <strong>五、常见问题与解决</strong></h3><p>• 重定向URI不匹配：检查域名、协议（HTTP/HTTPS）及端口一致性。</p>
+<p>• 令牌过期：通过 <code>refresh_token</code> 调用令牌端点续期。</p>
+<p>• CSRF攻击：使用 <code>state</code> 参数绑定会话，验证请求来源</p>
+<h3 id="✅-为什么不是直接返回令牌？"><a href="#✅-为什么不是直接返回令牌？" class="headerlink" title="✅ 为什么不是直接返回令牌？"></a>✅ <strong>为什么不是直接返回令牌？</strong></h3><p>如果授权服务器在用户确认授权后直接把 **访问令牌（Access Token）**返回给客户端，会有严重风险：</p>
+<ul>
+<li><strong>令牌暴露在浏览器或 URL 中</strong>（因为授权服务器通常通过重定向返回结果）。</li>
+<li>攻击者可以通过拦截重定向 URL 或浏览器历史获取令牌。</li>
+<li>令牌一旦泄露，攻击者可以直接访问资源服务器。</li>
+</ul>
+<hr>
+<h3 id="✅-为什么要先返回授权码（Authorization-Code）？"><a href="#✅-为什么要先返回授权码（Authorization-Code）？" class="headerlink" title="✅ 为什么要先返回授权码（Authorization Code）？"></a>✅ <strong>为什么要先返回授权码（Authorization Code）？</strong></h3><ul>
+<li>授权码是一个 <strong>短期有效的临时凭证</strong>，只能用一次。</li>
+<li>客户端必须用授权码 <strong>通过后端服务器</strong>向授权服务器交换令牌。</li>
+<li>这个交换过程发生在 <strong>服务器到服务器的安全通道</strong>（通常是 HTTPS），并且需要客户端的 <strong>client_secret</strong>。</li>
+<li>这样即使授权码被拦截，攻击者也无法换取令牌，因为缺少 client_secret。</li>
+</ul>
+<p>如需实现细节，可参考华东师范大学的OAuth 2.0集成方案（含完整端点与参数示例），或Docker扩展开发中的令牌管理实践。</p>
+<h3 id="OAuth-2-0-授权服务器的主要功能（端点）"><a href="#OAuth-2-0-授权服务器的主要功能（端点）" class="headerlink" title="OAuth 2.0 授权服务器的主要功能（端点）"></a><strong>OAuth 2.0 授权服务器的主要功能（端点）</strong></h3><ol>
+<li><strong>授权端点（Authorization Endpoint）</strong></li>
+</ol>
+<ul>
+<li><strong>作用：</strong> 接收用户认证请求（例如用户名+密码，或第三方登录），确认用户授权。</li>
+<li><strong>输出：</strong> 授权码（Authorization Code）。</li>
+<li>**对应你的第 1 点：正确 **<strong>✅</strong></li>
+</ul>
+<ol start="2">
+<li><strong>令牌端点（Token Endpoint）</strong></li>
+</ol>
+<ul>
+<li><strong>作用：</strong> 接收授权码，颁发 <strong>Access Token</strong> 和（可选）<strong>Refresh Token</strong>。</li>
+<li>**对应你的第 2 点：正确 **<strong>✅</strong></li>
+</ul>
+<ol start="3">
+<li><strong>刷新令牌端点（通常也是 Token Endpoint）</strong></li>
+</ol>
+<ul>
+<li><strong>作用：</strong> 接收 <strong>Refresh Token</strong>，颁发新的 <strong>Access Token</strong>（以及可能新的 Refresh Token）。</li>
+<li>**对应你的第 3 点：正确 **<strong>✅</strong></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E8%AE%A4%E8%AF%81%E4%B8%8E%E5%AE%89%E5%85%A8/" class="category-chain-item">认证与安全</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/OAuth2/" class="print-no-link">#OAuth2</a>
+      
+        <a href="/tags/%E6%8E%88%E6%9D%83/" class="print-no-link">#授权</a>
+      
+        <a href="/tags/%E5%AE%89%E5%85%A8/" class="print-no-link">#安全</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>OAUTH2.0流程</div>
+      <div>https://q792821266.github.io/yuque/227564440/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年7月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/184010687/" title="服务中心-Eureka">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">服务中心-Eureka</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/227563333/" title="过滤器和拦截器">
+                        <span class="hidden-mobile">过滤器和拦截器</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

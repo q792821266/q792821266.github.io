@@ -1,0 +1,903 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="这个技术属于分布式消息中间件的实战应用。 事务是一个难点，分布式事务更是难上加难的一个知识点，希望能够理解和掌握。尤其金融类公司，数据非常重要，后台架构是分布式的企业，这个算是基本要求了。且这个是一个实际应用的问题，如果项目上没有用过的话，面试的时候很难应答，所以课后要多练习。本次使用RabbitMQ来作为中间件方案，内容包括：  RabbitMQ的简单介绍以及必须掌握的5个核心概念； 分布式事务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于MQ的分布式事务解决方案">
+<meta property="og:url" content="https://q792821266.github.io/yuque/68911719/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="这个技术属于分布式消息中间件的实战应用。 事务是一个难点，分布式事务更是难上加难的一个知识点，希望能够理解和掌握。尤其金融类公司，数据非常重要，后台架构是分布式的企业，这个算是基本要求了。且这个是一个实际应用的问题，如果项目上没有用过的话，面试的时候很难应答，所以课后要多练习。本次使用RabbitMQ来作为中间件方案，内容包括：  RabbitMQ的简单介绍以及必须掌握的5个核心概念； 分布式事务">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4febbd27b491c255632e0d86b9cbe0ddd096d65bbc57dcd1acb4d7c2e5a25452.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3f7d6950bc9df9ab3f9f0084aef24b29f0210b61b3de6ebebc97bd5bbeb59127.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2ce491496999bc325e439962ad22e89ecef5421959ab688a459b6132f6c329db.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9861bd77f203a5599d4c894d6eca1e512ea0370fff9876df221e000307be06e8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e70412f3a6ca47860829619df447343cef783c409f8c02a76d50e2f72380b6d2.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f8c571e46fe9ed3d646a6f6d13d43d2704c7d768b5f90ac09a5f963b52c06a45.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5dcad19e04d64993a3d4228941822235eceff222e987154feabd7d2c5f40f86e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6a4f80c59ab042dcb5931ab64d20971026bb25ce3efa03a2c513b37e5cdc461e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/413c4613150eff11628766a800d574f4b421e83ee8d69d490bb2b29e7a3ec25a.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c1f68edd43b9bb0ac0351a20f467ac86b094ccb54e65e3ec89c9d8ba7c2514b0.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2ce02a1f8aebbf70c7f144fb4778745fe2faa8e83cd8e27436fdc29ca005e46b.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a852894962769afdb610bfd38c4976c485aa28e3354e962d6eaa129ee0b34cbb.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/afbd95c140498bb2b1cc5c9b647f45f9c69ac8a59c12a4409dde0aca6d7a92ec.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1d3d9a7e1135ce62f675fea7ec4fd969910525fa2e4a559380b027a0f18125f4.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2a377ce78a94883e9566a8c77056e19bfa666cc847c6acdddd1d3138c66445a7.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/32aac3c1047e046bedb8373e02d5da32c110779d3ebe70510bb28682f42794c0.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8f2b644c26f22351f05b19e5f42d3f2ee13cbc3defc7ff02beee4d2eff957834.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0c84d667196f5e728405fe70754c1351506256baffb9bfbf2fa876d88579629e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/65d7d5c9fd5c9e1ddd85781351faf8a5b2dfa4e53614f1b2a95fd1a9640915af.png">
+<meta property="article:published_time" content="2022-03-10T10:55:46.000Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.477Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="分布式事务">
+<meta property="article:tag" content="RabbitMQ">
+<meta property="article:tag" content="最终一致性">
+<meta property="article:tag" content="幂等性">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/4febbd27b491c255632e0d86b9cbe0ddd096d65bbc57dcd1acb4d7c2e5a25452.png">
+  
+  
+  
+  <title>基于MQ的分布式事务解决方案 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="基于MQ的分布式事务解决方案"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-10 18:55" pubdate>
+          2022年3月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">基于MQ的分布式事务解决方案</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>这个技术属于分布式消息中间件的实战应用。</p>
+<p>事务是一个难点，分布式事务更是难上加难的一个知识点，希望能够理解和掌握。尤其金融类公司，数据非常重要，后台架构是分布式的企业，这个算是基本要求了。且这个是一个实际应用的问题，如果项目上没有用过的话，面试的时候很难应答，所以课后要多练习。本次使用RabbitMQ来作为中间件方案，内容包括：</p>
+<ul>
+<li>RabbitMQ的简单介绍以及必须掌握的5个核心概念；</li>
+<li>分布式事务问题。要清楚这是一个业务问题，不能脱离具体场景；</li>
+<li>实现分布式事务。通过MQ解决分布式事务的五个步骤，以及分布式事务处理中要注意的地方；</li>
+<li>总结，使用MQ作为方案的优缺点以及其他的解决方案。</li>
+</ul>
+<h1 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h1><p>一款分布式消息中间件，基于erlang语言开发，具有语言级别的高并发处理能力。和Spring框架是同一家公司。支持持久化和高并发。</p>
+<p>核心概念：</p>
+<ol>
+<li>Queue：真正存储数据的地方</li>
+<li>Exchange：接收请求，转存数据</li>
+<li>Bind：收到请求后存储到哪里，指定关系</li>
+<li>消息生产者：发送数据的应用</li>
+<li>消息消费者：取出数据处理的应用</li>
+</ol>
+<p><img src="/yuque-assets/4febbd27b491c255632e0d86b9cbe0ddd096d65bbc57dcd1acb4d7c2e5a25452.png" srcset="/img/loading.gif" lazyload></p>
+<p>脑子里面闪回一下RabbitMQ的基本流程和原理，不记得的话就回看<a href="/yuque/68056730/">RabbitMQ</a>。一份数据发送过来可以保存多个queue中，就是说一份数据可以被多个业务系统处理到。</p>
+<h1 id="分布式事务问题"><a href="#分布式事务问题" class="headerlink" title="分布式事务问题"></a>分布式事务问题</h1><p>分布式事务的几种解决方案</p>
+<ul>
+<li>基于数据库XA/JTA协议的方式：需要数据库厂商支持；java组件支持（atomikos等）</li>
+<li>异步校对数据的方式：后台对账、支付宝/微信主动查询支付状态</li>
+<li>基于可靠消息（MQ）的解决方案：异步场景、通用性较强、拓展性较强</li>
+<li>TCC编程式解决方案：严选、阿里、蚂蚁金服都有自己封装的DTX</li>
+</ul>
+<p>本次只介绍第三种基于可靠消息的，因为这中方式用途非常广泛</p>
+<p>先来看看美团点评系统架构（2018年）：</p>
+<p><img src="/yuque-assets/3f7d6950bc9df9ab3f9f0084aef24b29f0210b61b3de6ebebc97bd5bbeb59127.png" srcset="/img/loading.gif" lazyload></p>
+<p>细分一下，我们只管点外卖的情况下，流程是怎么样的</p>
+<p>用户在订单中心下单付款，产生了一个订单，入库：</p>
+<p><img src="/yuque-assets/2ce491496999bc325e439962ad22e89ecef5421959ab688a459b6132f6c329db.png" srcset="/img/loading.gif" lazyload></p>
+<p>只是下单整个外卖流程并没有完成，我们还需要分配外卖小哥派送，这时候就有个运单中心：</p>
+<p><img src="/yuque-assets/9861bd77f203a5599d4c894d6eca1e512ea0370fff9876df221e000307be06e8.png" srcset="/img/loading.gif" lazyload></p>
+<p>订单中心就需要传送订单给运单中心：</p>
+<p><img src="/yuque-assets/e70412f3a6ca47860829619df447343cef783c409f8c02a76d50e2f72380b6d2.png" srcset="/img/loading.gif" lazyload></p>
+<p>传递到运单中心的过程会涉及到两个事务：从订单中心操作订单数据库、运单中心操作运单数据库，这是两个独立系统之间的操作与事务。</p>
+<p><img src="/yuque-assets/f8c571e46fe9ed3d646a6f6d13d43d2704c7d768b5f90ac09a5f963b52c06a45.png" srcset="/img/loading.gif" lazyload></p>
+<p>那么多个系统的数据如何保持一致？这个问题就是分布式事务问题。</p>
+<h2 id="错误示例"><a href="#错误示例" class="headerlink" title="错误示例"></a>错误示例</h2><p><img src="/yuque-assets/5dcad19e04d64993a3d4228941822235eceff222e987154feabd7d2c5f40f86e.png" srcset="/img/loading.gif" lazyload></p>
+<blockquote>
+<p>代码示例: /master/transaction-mq/dispatch-service/src/main/java/com/study/transaction/dispatch/DispatchApplication.java</p>
+</blockquote>
+<p>常见地如上图代码所示，当接口调用失败时，订单系统事务回滚，提示用户操作失败；</p>
+<p>我们可能误以为上面这样的接口调用写法不会有分布式事务问题。</p>
+<p>考虑上面的代码情况，在2报错发生回滚的时候，会是什么情况？订单系统是否有数据？运单系统是否有数据？</p>
+<p>实际的结果是订单系统不会有数据，但是运单系统可能会有数据（示例代码，会抛出超时异常，但是运单系统还是会执行后面的代码，那么运单会有数据）。@Transactional并不能保证两个系统的事务都能回滚。</p>
+<p>不管接口调用成功或者失败都会产生分布式事务问题，比如说：</p>
+<ol>
+<li>接口调用成功，订单系统数据库事务提交失败，运单系统没有回滚，产生了数据；</li>
+<li>接口调用超时，订单系统数据库事务回滚，运单系统接口继续执行，产生数据；</li>
+</ol>
+<p>两种情况都导致了数据库一致问题。</p>
+<p>理解到分布式事务要解决的是什么问题就可以了。分布式事务和业务场景有相当的关系，所以在做解决方案的时候需要了解到当时的业务场景。</p>
+<h1 id="实现分布式事务的五个步骤"><a href="#实现分布式事务的五个步骤" class="headerlink" title="实现分布式事务的五个步骤"></a>实现分布式事务的五个步骤</h1><p>明白了什么是分布式事务问题，那么我们就来用MQ尝试解决问题，这里整理为5分步骤。先看看整体设计思路：</p>
+<p>首先订单中心存储了订单</p>
+<p><img src="/yuque-assets/6a4f80c59ab042dcb5931ab64d20971026bb25ce3efa03a2c513b37e5cdc461e.png" srcset="/img/loading.gif" lazyload></p>
+<p>错误示例中使用了http接口来传输这个运单，我们现在不用接口了。现在我们在存储完订单之后，我们发送一个消息给到RabbitMQ：</p>
+<p><img src="/yuque-assets/413c4613150eff11628766a800d574f4b421e83ee8d69d490bb2b29e7a3ec25a.png" srcset="/img/loading.gif" lazyload></p>
+<p>数据先放到MQ里面去，等运单系统连接来取，运单中心取数据然后做对应的操作，不采用HTTP连接的方式了：</p>
+<p><img src="/yuque-assets/c1f68edd43b9bb0ac0351a20f467ac86b094ccb54e65e3ec89c9d8ba7c2514b0.png" srcset="/img/loading.gif" lazyload></p>
+<p>这样的做法将同步改为异步。这样的设计有两个问题点：</p>
+<ol>
+<li>可靠生产：保证消息一定发送到RabbitMQ服务</li>
+<li>可靠消费：保证消息取出一定正确消费掉</li>
+</ol>
+<p>最终多方数据达到一致。</p>
+<h2 id="步骤一-可靠消息生成-记录消息发送"><a href="#步骤一-可靠消息生成-记录消息发送" class="headerlink" title="步骤一-可靠消息生成-记录消息发送"></a>步骤一-可靠消息生成-记录消息发送</h2><p>订单中心发送消息到MQ的过程是不可靠的，为了保证消息一定发送成功，那么消息的发送就需要被记录。在同一个事务中，增加一个记录表的操作，记录每一条发往MQ的数据以及它的发送状态，所以在订单数据库中记录了一个本地消息表，存储消息以及消息发送的状态。</p>
+<p><img src="/yuque-assets/2ce02a1f8aebbf70c7f144fb4778745fe2faa8e83cd8e27436fdc29ca005e46b.png" srcset="/img/loading.gif" lazyload><img src="/yuque-assets/a852894962769afdb610bfd38c4976c485aa28e3354e962d6eaa129ee0b34cbb.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="步骤二-可靠消息生成-修改消息发送状态"><a href="#步骤二-可靠消息生成-修改消息发送状态" class="headerlink" title="步骤二-可靠消息生成-修改消息发送状态"></a>步骤二-可靠消息生成-修改消息发送状态</h2><p>利用RabbitMQ发布确认机制，开启发布确认机制之后，MQ准备受理消息会返回回执（ACK/NACK）。根据收到的回执情况，我们就可以修改本地消息表对应消息的状态了。如果发送失败了，那我们可以另起一个线程来处理。</p>
+<p><img src="/yuque-assets/afbd95c140498bb2b1cc5c9b647f45f9c69ac8a59c12a4409dde0aca6d7a92ec.png" srcset="/img/loading.gif" lazyload></p>
+<p>具体代码修改可以自行去查看。引入完rabbitmq的starter包之后，进行MQ相关配置，重点是要开启消息发送确认机制。再往下就是业务代码的方式了。</p>
+<p><img src="/yuque-assets/1d3d9a7e1135ce62f675fea7ec4fd969910525fa2e4a559380b027a0f18125f4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/2a377ce78a94883e9566a8c77056e19bfa666cc847c6acdddd1d3138c66445a7.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/yuque-assets/32aac3c1047e046bedb8373e02d5da32c110779d3ebe70510bb28682f42794c0.png" srcset="/img/loading.gif" lazyload></p>
+<p>收到回执的处理：</p>
+<p><img src="/yuque-assets/8f2b644c26f22351f05b19e5f42d3f2ee13cbc3defc7ff02beee4d2eff957834.png" srcset="/img/loading.gif" lazyload></p>
+<p>这样的方案可能存在问题：如果出现了回执没有收到、消息状态修改失败等特殊情况，我们也有兜底方案就是定时检查本地消息表，超时没有发送成功的，重发或者人为干预。</p>
+<p>可见能允许异步操作的情况下给予了我们更多的操作空间。</p>
+<h2 id="步骤三-可靠消息处理-正常处理"><a href="#步骤三-可靠消息处理-正常处理" class="headerlink" title="步骤三-可靠消息处理-正常处理"></a>步骤三-可靠消息处理-正常处理</h2><p>数据推送过去可能遇到运单中心宕机，或者运单数据库宕机的问题，为了可靠的消息处理，我们需要做到两个保障：</p>
+<ul>
+<li>消费者端开启手动ACK模式。由消费者控制消息的重发/清除/丢弃。</li>
+<li>幂等性。防止在生产者端重复发送的情况下重复处理，一次用户操作，只对应一次数据处理。</li>
+</ul>
+<p><img src="/yuque-assets/0c84d667196f5e728405fe70754c1351506256baffb9bfbf2fa876d88579629e.png" srcset="/img/loading.gif" lazyload></p>
+<p>数据发送到运单中心之后，并不会马上在MQ上删除，就是防止消费者端故障。</p>
+<p>幂等性可以通过ID或者业务数据来判断数据是否重复，重复就忽略。保证幂等的代码由运单中心（消费者）端代码保证。</p>
+<h2 id="步骤四-可靠消息处理-消息重发"><a href="#步骤四-可靠消息处理-消息重发" class="headerlink" title="步骤四-可靠消息处理-消息重发"></a>步骤四-可靠消息处理-消息重发</h2><p>消费者处理失败的情况下，MQ没有收到消费端的ACK或者是收到了消费端的NACK，MQ会再次重发给消费者。</p>
+<p><img src="/yuque-assets/65d7d5c9fd5c9e1ddd85781351faf8a5b2dfa4e53614f1b2a95fd1a9640915af.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="步骤五-可靠消息处理-消息丢弃"><a href="#步骤五-可靠消息处理-消息丢弃" class="headerlink" title="步骤五-可靠消息处理-消息丢弃"></a>步骤五-可靠消息处理-消息丢弃</h2><p>无论是什么原因出现故障，JAVA操作数据库异常还是物理机宕机，出现异常一般会重试几次，由消费者自己记录重试次数，并进行次数控制。重试次数过多、消息内容格式错误等情况，处理失败之后，直接丢弃或者放到死信队列（DLQ），如果出现不能自己恢复的情况就通过线上预警机制通知运维人员进行人工干预。</p>
+<p>代码层面来说:</p>
+<p>@RabbitListener指定了消费的queue</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RabbitListener(queues = "orderDispatchQueue")</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">messageConsumer</span><span class="hljs-params">(String message, Channel channel, <span class="hljs-meta">@Header(AmqpHeaders.DELIVERY_TAG)</span> <span class="hljs-type">long</span> tag)</span><br>			<span class="hljs-keyword">throws</span> Exception {<br>		<span class="hljs-keyword">try</span> {<br>			<span class="hljs-comment">// mq里面的数据转为json对象</span><br>			<span class="hljs-type">JSONObject</span> <span class="hljs-variable">orderInfo</span> <span class="hljs-operator">=</span> JSONObject.parseObject(message);<br>			logger.warn(<span class="hljs-string">"收到MQ里面的消息："</span> + orderInfo.toJSONString());<br>			Thread.sleep(<span class="hljs-number">5000L</span>);<br><br>			<span class="hljs-comment">// 执行业务操作，同一个数据不能处理两次，根据业务情况去重，保证幂等性。 （拓展：redis记录处理情况）</span><br>			<span class="hljs-type">String</span> <span class="hljs-variable">orderId</span> <span class="hljs-operator">=</span> orderInfo.getString(<span class="hljs-string">"orderId"</span>);<br>			<span class="hljs-comment">// 这里就是一个分配外卖小哥...</span><br>			dispatchService.dispatch(orderId);<br>			<span class="hljs-comment">// ack - 告诉MQ，我已经收到啦</span><br>			channel.basicAck(tag, <span class="hljs-literal">false</span>);<br>		} <span class="hljs-keyword">catch</span> (Exception e) {<br>			<span class="hljs-comment">// 异常情况 :根据需要去： 重发/ 丢弃</span><br>			channel.basicNack(tag, <span class="hljs-literal">false</span>, <span class="hljs-literal">false</span>);<br>            <span class="hljs-comment">// 重发一定次数后， 丢弃， 日志告警 ，记录重发次数防止一致重发导致死循环</span><br>            <span class="hljs-comment">// 重试次数过多或者明确了不再继续重发的异常，通知MQ丢弃或通知运维告警，人工干预</span><br>			<span class="hljs-comment">// 系统 关键数据，永远是有人工干预</span><br>		}<br>		<span class="hljs-comment">// 如果不给回复，就等这个consumer断开链接后，mq-server会继续推送</span><br><br>	}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>关于幂等性问题，示例中使用了orderID作为表的主键ID，这样重复的数据插入表会失败保证了幂等性。还有一种做法就是用redis记录处理情况。</p>
+<h1 id="总结与扩展"><a href="#总结与扩展" class="headerlink" title="总结与扩展"></a>总结与扩展</h1><p>优点：</p>
+<ul>
+<li>通用性强</li>
+<li>扩展性强，支持消费者集群，自身也可以集群，不同业务可以消费不同的queue，不同的queue也可以存储相同的数据来提供给不同业务去处理。</li>
+<li>方案成熟</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>基于消息中间件实现，只适合异步的场景</li>
+<li>消息处理会有延迟，需要业务上能够容忍</li>
+</ul>
+<p>尽量避免分布式事务；尽量将非核心事务做成异步。</p>
+<p>分布式事务解决方案的理论依据：</p>
+<ul>
+<li>CAP理论</li>
+<li>BASE理论</li>
+<li>2PC协议</li>
+<li>3PC协议</li>
+<li>Paxos算法</li>
+<li>Raft一致性协议</li>
+</ul>
+<p>其实你可能已经注意到本次的内容中没有涉及到一方事务失败去回滚另一个方事务的场景。我的猜想是和成功一样都时发送消息到MQ去处理，失败的情况就发送失败的消息。</p>
+<p>还是外卖的场景：</p>
+<ul>
+<li>如果订单中心失败那么我们就不应该发送消息到MQ给到运单中心；</li>
+<li>如果订单中心成功，但是运单失败，那么运单中心就应该重试，直到达到不可容忍的重试次数来导致人工干预，在这种场景下是不能直接写消息给MQ让其通知订单中心回滚订单消息的，因为客户付款成功，但是系统无端退单时一定会引起客户不满的。所以才说分布式事务是一个和业务挂钩的问题。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-chain-item">分布式与中间件</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E4%B8%AD%E9%97%B4%E4%BB%B6/%E4%BA%8B%E5%8A%A1%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/" class="category-chain-item">事务与一致性</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="print-no-link">#分布式事务</a>
+      
+        <a href="/tags/RabbitMQ/" class="print-no-link">#RabbitMQ</a>
+      
+        <a href="/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/" class="print-no-link">#最终一致性</a>
+      
+        <a href="/tags/%E5%B9%82%E7%AD%89%E6%80%A7/" class="print-no-link">#幂等性</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>基于MQ的分布式事务解决方案</div>
+      <div>https://q792821266.github.io/yuque/68911719/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/67841132/" title="分布式一致性算法">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">分布式一致性算法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/68056730/" title="RabbitMQ">
+                        <span class="hidden-mobile">RabbitMQ</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

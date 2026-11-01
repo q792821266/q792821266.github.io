@@ -1,0 +1,900 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="由于docker compose启动的服务都在同一台宿主机上，对于一个宿主机上运行多个容器应用时，容器的运行情况如：CPU的使用率，内存使用率，网络状态，磁盘空间等一些列随时间变化的时序数据信息，都是需要去了解的，所以监控是必须的。 容器监控方案选择对于容器的监控方案可谓多种多样，本身自带命令docker stats命令，Scout，Data Dog，Sysdig Cloud，Sensu Moni">
+<meta property="og:type" content="article">
+<meta property="og:title" content="容器监控">
+<meta property="og:url" content="https://q792821266.github.io/yuque/83431078/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="由于docker compose启动的服务都在同一台宿主机上，对于一个宿主机上运行多个容器应用时，容器的运行情况如：CPU的使用率，内存使用率，网络状态，磁盘空间等一些列随时间变化的时序数据信息，都是需要去了解的，所以监控是必须的。 容器监控方案选择对于容器的监控方案可谓多种多样，本身自带命令docker stats命令，Scout，Data Dog，Sysdig Cloud，Sensu Moni">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f3c3a7c56374e48f075287e6a28ee9dbf2a1245ced5e180ec0b7401a0f817d95.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2062b2a631fb74abe1780ceff495220fb74c343e328400dca58771152a2bc511.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1c1b764e157f5e244b9658d02ebb7282797a07966521e3dca0de14f4e392d985.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/acabfd7f1501fc6c0d9809163b003fba4e7df02846f4172e10ce435d016d757d.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8e82ce0ca5118acd05eb678505fb1cae537735fac11b7799d4a86ab819e365b5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/77cba32195bed2eadec36fe53d9a6eb1daeb50864c6051d37bbac9cd2402aa73.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c39c95089187f9045a0d9b40861cc1eb0de8112aa8d1ed982e0c76acaf41c0fa.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/648a4852d3f4e325b932b8a3178e4e4bc41e3ed1f2be609ab6d61f8e5379db4c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ee0ac069d1571cbdad838e4f7571579aba6ca3c8b3a5e00d9d102e09ab774a56.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d654ea9c3b53df4c2c624c37d2572e79a7aee8c2c5ecd6e5d75b318ce6cc40a3.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4760d04cdd31d74d3b79f6c2e64bb8ab04b413dc60a496d2545e1c9c4d6942a6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/caafc97e2ce9ed5c16eb5968ace24ee3c7b5bdbfde7aec239e31b82343738f05.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7d895a3ef45143ec26a25411dac93357d8d2dabbe4af456cc989f3545bad5eaa.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5445ba067b492114d557b9e100a6de91a7b0b946777f83b8dcdcedd524b391ef.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0f216ddb89b8d64aed8f2d15fee48ba9561adff374840f53439228a54600a019.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0b49d0c1b1f1efd473e1f28510a60c5c0146915f4a7f490274d770626372e190.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/75a6f703533a59024853324abe12f4d9034b561bd5cea8db4d0ca0fdd4ead187.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/13143ed45636c4e6c3e5840ebc1dd66251bce08f166d0e1dd126ff71b06eef70.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e29ac6a3a7c846500d294d016c5161c2cfdb0b200451757083a80feda26ad59e.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dc820ca5338bdff3c9a36e87466bb97a9d82373310d2c43347d013755c014009.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/34ab482f555862c754f62461d16823ed20f08280a583619faf117aa61e015695.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/46c112290e94731603cb0c784279147e192509bfb888b14a73e63cbbc1f93363.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/19658cd471e0fb7bf543704d8acad81a44a7746bcf6446d0aaf3f675fae7a045.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e7d66a950fd801b5bd1f896b6cd2ce04375e06a0479addfcd188ba4c89e480c8.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bac449e1e250d0157bd6aa4244b96073ddc1c09e562b4ddd8d3c305d8df6be7c.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/efd94cd6acd1a63f9d6ce5dc706603a78ba82d3b1c98a895e2561234b87bf4a6.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/77ae93715327c48b6eff1039ed2e8f0c034f272fb8fc263532bbb40f7b260252.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/926f8c5cc87fa0b2cbe4ab767a18228eb7165319466a2cca896f521203fcaa94.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0bb360b2bd51dbf2b966f21e1e035b945ea6d5e147fd8ce9dda97c5d0fa09616.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/93ae1fff592cc488115a21dbbf5276f43380c60dcc43bef3a4f3f849b6489659.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/df54e825b9c4698e61112356b0007bdb1dd74d236e9fa50bbeabbaed0f2c3ff5.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dff7ec68a0173155862c3a34fd71136b68594ebd68b7448270c43851460ca535.png">
+<meta property="og:image" content="https://q792821266.github.io/yuque-assets/842df25773184616a50f9fa76f45c3849553bc17aab6b012252cfbe6e92bcc59.png">
+<meta property="article:published_time" content="2022-07-16T09:41:00.094Z">
+<meta property="article:modified_time" content="2026-11-01T11:31:14.475Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="cAdvisor">
+<meta property="article:tag" content="InfluxDB">
+<meta property="article:tag" content="Grafana">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/f3c3a7c56374e48f075287e6a28ee9dbf2a1245ced5e180ec0b7401a0f817d95.png">
+  
+  
+  
+  <title>容器监控 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="容器监控"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-16 17:41" pubdate>
+          2022年7月16日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">容器监控</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>由于docker compose启动的服务都在同一台宿主机上，对于一个宿主机上运行多个容器应用时，容器的运行情况如：CPU的使用率，内存使用率，网络状态，磁盘空间等一些列随时间变化的时序数据信息，都是需要去了解的，所以监控是必须的。</p>
+<h1 id="容器监控方案选择"><a href="#容器监控方案选择" class="headerlink" title="容器监控方案选择"></a>容器监控方案选择</h1><p>对于容器的监控方案可谓多种多样，本身自带命令docker stats命令，Scout，Data Dog，Sysdig Cloud，Sensu Monitoring Framework，CAdvisor等。通过docker stats 命令也可以很方便地看到当前宿主机上所有容器的CPU，内存以及网络流量等数据。</p>
+<p>但是 docker stats命令的缺点就是统计的只是当前宿主机的所有容器，而获取的监控数据是实时的，没有地方存储，也没有报警功能。</p>
+<p><img src="/yuque-assets/f3c3a7c56374e48f075287e6a28ee9dbf2a1245ced5e180ec0b7401a0f817d95.png" srcset="/img/loading.gif" lazyload></p>
+<p>而Scout、Sysdig Cloud、Data Dog 虽然都提供了较为完善的服务，但是他们的是托管服务，而且都是收费的，Sensu Monitoring Framework集成度较高，且免费，但是部署过于复杂。综合考虑，我们选择使用CAdvisor做容器监控工具。</p>
+<p>CAdvisor是谷歌出品，有点事开源，监控指标齐全，部署方便，而且有官方的docker镜像。缺点是集成度不高，默认只在本地保存2分钟数据。不过可以加上influxDB存储数据，对接Grafana展示图表，比较便利地搭建好了容器监控系统，数据收集和图标展示效果良好，对系统性能也几乎没有什么影响。</p>
+<h2 id="CAdvisor"><a href="#CAdvisor" class="headerlink" title="CAdvisor"></a>CAdvisor</h2><p>CAdvisor 是一个容器资源监控工具，包括容器的内存，CPU，网络IO，磁盘IO等监控，同时提供了一个WEB页面用于查看容器的实时运行状态。CAdvisor默认存储2分钟的数据，而且只是针对单物理机的。不过CAdvisor提供了很多数据集成接口，支持InfluxDB，Redis，Kafka，Elasticsearch等集成，可以加上对应配置将监控数据发往这些数据库存储起来。</p>
+<p>CAdvisor功能主要有两点：</p>
+<ol>
+<li>展示Host和容器两个层次的监控数据</li>
+<li>展示历史变化数据</li>
+</ol>
+<h3 id="InfluxDB"><a href="#InfluxDB" class="headerlink" title="InfluxDB"></a>InfluxDB</h3><p><img src="/yuque-assets/2062b2a631fb74abe1780ceff495220fb74c343e328400dca58771152a2bc511.png" srcset="/img/loading.gif" lazyload></p>
+<p>InfluxDB是用Go语言编写的一个开源分布式时序、事件和指标数据库，无需外部依赖。</p>
+<p>前面说到CAdvisor默认值在本机保存近2分钟的数据，为了持久化存储数据和统一收集展示监控数据，需要将数据存储到InfluxDB中。InfluxDB是一个时序数据库，专门用于存储时序相关数据，很适合存储CAdvisor的数据。而且，CAdvisor本身提供了InfluxDB的集成方法，在启动容器时指定配置即可。</p>
+<h4 id="主要功能"><a href="#主要功能" class="headerlink" title="主要功能"></a>主要功能</h4><ul>
+<li>基于时间序列，支持与时间有关的相关函数（如最大、最小、求和等）</li>
+<li>可度量性：你可以实时对大量数据进行计算</li>
+<li>基于事件：它支持任意的事件数据</li>
+</ul>
+<h4 id="主要特点"><a href="#主要特点" class="headerlink" title="主要特点"></a>主要特点</h4><ul>
+<li>无结构（无模式）</li>
+<li>可以是任意数量的列</li>
+<li>可拓展</li>
+<li>支持min、max、sum、count、mean、median等一系列函数，方便统计</li>
+<li>原生HTTP支持，内置HTTP API</li>
+<li>强大的类SQL语法</li>
+<li>自带管理界面，方便使用</li>
+</ul>
+<p>这些都是我们使用InfluxDB来存储数据的原因。</p>
+<h3 id="Grafana"><a href="#Grafana" class="headerlink" title="Grafana"></a>Grafana</h3><p>Grafana是一个开源的数据监控分析可视化平台， 支持多种数据源配置（支持的数据源包括InfluxDB、Mysql、ElasticSearch、OpenTSDB、Graphite等）和丰富的插件及模板功能，支持图表权限控制和报警。</p>
+<h4 id="主要特性"><a href="#主要特性" class="headerlink" title="主要特性"></a>主要特性</h4><ul>
+<li>灵活丰富的图形化选项</li>
+<li>可以混合多种风格</li>
+<li>支持白天和黑夜模式</li>
+<li>多个数据源</li>
+</ul>
+<p>利用这三者，就能实现一套完整的容器监控方案。</p>
+<h1 id="CAdvisor-InfluxDB-Grafan"><a href="#CAdvisor-InfluxDB-Grafan" class="headerlink" title="CAdvisor + InfluxDB + Grafan"></a>CAdvisor + InfluxDB + Grafan</h1><p><img src="/yuque-assets/1c1b764e157f5e244b9658d02ebb7282797a07966521e3dca0de14f4e392d985.png" srcset="/img/loading.gif" lazyload>CAdvisor：负责收集容器随时间变化的数据</p>
+<p>InfluxDB：负责存储时序数据</p>
+<p>Grafana：负责分析和展示时序数据</p>
+<p>这个结构就和ELK很相似了，LogStash 负责数据收集的清理分发，ElasticSearch负责存储数据，Kibana负责展示数据。</p>
+<p>接着我们来把这套方案部署起来。</p>
+<h1 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h1><h2 id="部署InfluxDB服务"><a href="#部署InfluxDB服务" class="headerlink" title="部署InfluxDB服务"></a>部署InfluxDB服务</h2><p><code>docker run -d --name influxdb -p 8086:8086 -v /data/infulxdb:/var/lib/influxdb --hostname=influxdb influxdb</code></p>
+<p>命令说明：</p>
+<ul>
+<li>–name ： 启动容器分配名字为influxdb</li>
+<li>-p：映射端口，8083为influxdb的管理端口，8086是influxdb的数据端口；这里我们只是配置了8086端口</li>
+<li>-v：挂载数据卷</li>
+<li>-d：后台运行容器</li>
+<li>influxdb ：最后的influxdb是指通过这个镜像来运行，如果本地没有会在docker官方仓库pull下来</li>
+</ul>
+<ol>
+<li>如果运行成功，就可以通过浏览器访问influxdb的管理端。<a target="_blank" rel="noopener" href="http://ip:8083/">http://ip:8083</a><br><img src="/yuque-assets/acabfd7f1501fc6c0d9809163b003fba4e7df02846f4172e10ce435d016d757d.png" srcset="/img/loading.gif" lazyload></li>
+<li>创建test数据库与root用户，这个用于后期配grafana<br><code>docker exec -it influxdb influx</code><br><code>CREATE DATABASE "TEST"CREATE USER "root" WITH PASSWORD 'root' WITH ALL PRIVILEGES </code></li>
+</ol>
+<h2 id="部署CAdvisor服务"><a href="#部署CAdvisor服务" class="headerlink" title="部署CAdvisor服务"></a>部署CAdvisor服务</h2><p>谷歌的CAdvisor可以用于收集Docker容器的时序信息，包括容器运行过程种的资源使用情况和性能数据。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java">docker run --volumn=/:/rootfs:ro --volumn=/<span class="hljs-keyword">var</span>/rum:/<span class="hljs-keyword">var</span>/run:ro \<br>--volumn=/sys:/sys:ro --volumn=/<span class="hljs-keyword">var</span>/lib/docker:/<span class="hljs-keyword">var</span>/lib/docker:ro \<br>--volumn=/dev/disk:/dev/disk:ro --volumn=/cgroup:/cgroup:ro \<br>--publish=<span class="hljs-number">8080</span>:<span class="hljs-number">8080</span> --detach=<span class="hljs-literal">true</span> --privileged=<span class="hljs-literal">true</span> --name=cadvisor \<br>google/cadvisor:lastest \<br>-storage_driver=influxdb-stroage_driver_host=influxdb:<span class="hljs-number">8086</span> \<br>-storage_driver_db=test-storage_driver_user=root \<br>-storage_driver_password=root<br></code></pre></td></tr></tbody></table></figure>
+
+<p>可以看到这个命令挂载了很多卷。后续会提供一个docker-compose文件，使用compose文件会更方便的运行。每个命令可以通过去dockerhub官网上看到CAdvisor的相关解释。</p>
+<p>这里的ro，我认为是打错了，正确的应该是rw。</p>
+<p>大致说明：</p>
+<ul>
+<li>-d：后台运行此容器</li>
+<li>–name：启动容器分配名字cadvisor</li>
+<li>-p：映射端口8080</li>
+<li>–mount：把宿主机的目录绑定到容器中，命令中的目录都是cadvisor需要采集的目录文件和监控内容</li>
+<li>-storage_driver ：需要指定cadvisor的存储驱动、数据库主机、数据库名</li>
+</ul>
+<p>通过IP + 8080端口访问测试如下，第一次访问这个页面会稍微慢一点：</p>
+<p><img src="/yuque-assets/8e82ce0ca5118acd05eb678505fb1cae537735fac11b7799d4a86ab819e365b5.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="部署Grafana服务"><a href="#部署Grafana服务" class="headerlink" title="部署Grafana服务"></a>部署Grafana服务</h2><p>grafana是一款开源的时序数据分析工具，而且界面专业易用，部署好了之后进入界面就能感受到。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java">docker run -d -p <span class="hljs-number">3000</span>:<span class="hljs-number">3000</span> \<br>-v /data/grafana:/<span class="hljs-keyword">var</span>/lib/grafana \<br>--link=influxdb:influxdb \<br>--name grafana \<br>grafana/grafana<br></code></pre></td></tr></tbody></table></figure>
+
+<p>因为Grafana依赖于influxDB ，就好比kibana必须依赖EleasticSearch一样，数据需要从influxDB里面读取，所以可以看到命令里面使用了–link 来连接到influxDB。</p>
+<p>注意：如果使用-v把数据挂载出来会出现容器启动失败，错误为：<code>mkdir:cannot create directory '/var/lib/grafana/plugins':Permission denied</code>，此时可以使用<code>docker run --entrypoint "id" grafana/grafana </code>得到uid ，gid，groups（默认是472）； 接着使用<code>chown -R 472:472 /data/grafana/</code>  修改目录权限就可以启动成功了。</p>
+<p>部署成功之后，我们可以通过ip + 3000端口的方式来访问grafana的web服务，第一次访问需要修改admin用户密码，默认用户名/密码为admin/admin。<br><img src="/yuque-assets/77cba32195bed2eadec36fe53d9a6eb1daeb50864c6051d37bbac9cd2402aa73.png" srcset="/img/loading.gif" lazyload></p>
+<p>前面说过我们会提供docker-compose文件来集成这三个服务，不需要一个一个跑。那么docker-compose如何去写呢：</p>
+<p><img src="/yuque-assets/c39c95089187f9045a0d9b40861cc1eb0de8112aa8d1ed982e0c76acaf41c0fa.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们来大致看看这里面的内容：</p>
+<p>首先先指定了version为3.1，接着定义了要给数据卷grafana_data，然后启动服务services。这些服务里包括</p>
+<ul>
+<li>influxdb，包括指定使用镜像（images）,重启策略restart，环境参数environment，开放端口ports，数据卷volumns;</li>
+<li>cadvisor：使用google/cadvisor镜像，需要连接到influxdb（links），启动的命令command，其余的基本相同重启策略restart，端口开放ports， 数据卷volumn</li>
+<li>grafana：除了基本的信息外，可以看到还多了一行user，这个是指定的用户信息user（具体含义需要另外查一下，视频中没有明说），除此以外还指定了环境参数environment，http的访问用户名HTTP_USER ，访问密码HTTP_PASS</li>
+</ul>
+<p>像这样使用这个docker-compose文件就能完成三个服务的编排与启动。</p>
+<h2 id="操作具体演示"><a href="#操作具体演示" class="headerlink" title="操作具体演示"></a>操作具体演示</h2><ol>
+<li>根据上面的内容，我们准备好docker-compose文件，并且通过docker-compose config来完成文件内容的校验，如果文件内容正确就会直接输出文件内容，如果有异常，就会输出异常原因。<br><img src="/yuque-assets/648a4852d3f4e325b932b8a3178e4e4bc41e3ed1f2be609ab6d61f8e5379db4c.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/ee0ac069d1571cbdad838e4f7571579aba6ca3c8b3a5e00d9d102e09ab774a56.png" srcset="/img/loading.gif" lazyload></li>
+<li>通过<code>docker-compose up</code> 来启动这三个服务。在第一次启动的时候不要使用-d命令，因为第一次启动我们需要监控一下是否有异常，如果-d放后台跑，需要另外找地方查看。<br><img src="/yuque-assets/d654ea9c3b53df4c2c624c37d2572e79a7aee8c2c5ecd6e5d75b318ce6cc40a3.png" srcset="/img/loading.gif" lazyload></li>
+<li>启动完成后，我们再开一个连接，去查看三个容器是否启动成功<br><img src="/yuque-assets/4760d04cdd31d74d3b79f6c2e64bb8ab04b413dc60a496d2545e1c9c4d6942a6.png" srcset="/img/loading.gif" lazyload></li>
+<li>启动成功后，我们就可以访问grafana，上图就可以看到grafana暴露的是3000端口，输入ip+端口，我们就能进入到grafana的界面。<br><img src="/yuque-assets/caafc97e2ce9ed5c16eb5968ace24ee3c7b5bdbfde7aec239e31b82343738f05.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/7d895a3ef45143ec26a25411dac93357d8d2dabbe4af456cc989f3545bad5eaa.png" srcset="/img/loading.gif" lazyload></li>
+<li>进来之后我们可以看到第一步install grafana 已经完成了，第二步要做的是add data source<br><img src="/yuque-assets/5445ba067b492114d557b9e100a6de91a7b0b946777f83b8dcdcedd524b391ef.png" srcset="/img/loading.gif" lazyload></li>
+<li>前面有讲过influxdb要创建一个数据库和一个管理员账号。有两种创建方式，第一种在命令行里面我们通过exec命令进入到容器中去创建；第二种方式就是通过influxDB提供的web界面进行创建，访问地址是ip+端口（8083）<br><img src="/yuque-assets/0f216ddb89b8d64aed8f2d15fee48ba9561adff374840f53439228a54600a019.png" srcset="/img/loading.gif" lazyload></li>
+<li>在页面上执行查询show databases，就可以看到两个数据库，一个是之前在docker-compose文件里面创建的cadvisor，而下面的_internal是influxDB内置的数据库。<br><img src="/yuque-assets/0b49d0c1b1f1efd473e1f28510a60c5c0146915f4a7f490274d770626372e190.png" srcset="/img/loading.gif" lazyload><br>通过<code>create Admin user</code> 就能完成admin用户的新建，这里就不新建了，直接使用默认的root用户，也是在docker-compose文件配置的environment。</li>
+<li>点击第五步中的create data，进入到DB的配置界面，进行influxDB的新增。<br><img src="/yuque-assets/75a6f703533a59024853324abe12f4d9034b561bd5cea8db4d0ca0fdd4ead187.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/13143ed45636c4e6c3e5840ebc1dd66251bce08f166d0e1dd126ff71b06eef70.png" srcset="/img/loading.gif" lazyload><br>主要需要修改的地方是details下面的database、user、password<br><img src="/yuque-assets/e29ac6a3a7c846500d294d016c5161c2cfdb0b200451757083a80feda26ad59e.png" srcset="/img/loading.gif" lazyload><br>点击save&amp;test会报告502 bad gateway的错误<br><img src="/yuque-assets/dc820ca5338bdff3c9a36e87466bb97a9d82373310d2c43347d013755c014009.png" srcset="/img/loading.gif" lazyload><br>需要把HTTP下面的URL 从<code>http://localhost:8086</code> 改为 <code>http://influxdb:8086</code>。原因是因为在docker-compose中，我们使用-link命令链接的是influxdb，所以在这里只需要写influxdb这个容器名就能找到。<br><img src="/yuque-assets/34ab482f555862c754f62461d16823ed20f08280a583619faf117aa61e015695.png" srcset="/img/loading.gif" lazyload></li>
+<li>配置好db后返回到home页面，下一步是创建一个仪表盘，通过图表的方式来展示influxdb中的数据<br><img src="/yuque-assets/46c112290e94731603cb0c784279147e192509bfb888b14a73e63cbbc1f93363.png" srcset="/img/loading.gif" lazyload><br>其中有很多图形展示方式，我们选择Graph<br><img src="/yuque-assets/19658cd471e0fb7bf543704d8acad81a44a7746bcf6446d0aaf3f675fae7a045.png" srcset="/img/loading.gif" lazyload><br>点击title -&gt; edit来编辑我们要在图表中展示的数据。<br><img src="/yuque-assets/e7d66a950fd801b5bd1f896b6cd2ce04375e06a0479addfcd188ba4c89e480c8.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/bac449e1e250d0157bd6aa4244b96073ddc1c09e562b4ddd8d3c305d8df6be7c.png" srcset="/img/loading.gif" lazyload><br>在metris中选择data source ，进行相关设置。容器名cadvisor_cadvisor_1是docker-compose自动帮我们生成的，规则是{当前目录名}<em>{image名}</em>{序号}。最后取一个别名“cadvisor容器内容使用监控”<br><img src="/yuque-assets/efd94cd6acd1a63f9d6ce5dc706603a78ba82d3b1c98a895e2561234b87bf4a6.png" srcset="/img/loading.gif" lazyload><br>完成查询的创建之后就可以保存这个图形了<br><img src="/yuque-assets/77ae93715327c48b6eff1039ed2e8f0c034f272fb8fc263532bbb40f7b260252.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/926f8c5cc87fa0b2cbe4ab767a18228eb7165319466a2cca896f521203fcaa94.png" srcset="/img/loading.gif" lazyload><br>保存之后我们就就可以看到cadvisor容器的内存使用情况。<br><img src="/yuque-assets/0bb360b2bd51dbf2b966f21e1e035b945ea6d5e147fd8ce9dda97c5d0fa09616.png" srcset="/img/loading.gif" lazyload><br>除了监控内存，我们还能对更多的信息进行监控，比如磁盘io，网络io等数据，这里就不一一列举了，具体监控的指标，我们可以在influxdb里面看到：<br><img src="/yuque-assets/93ae1fff592cc488115a21dbbf5276f43380c60dcc43bef3a4f3f849b6489659.png" srcset="/img/loading.gif" lazyload></li>
+</ol>
+<p>这样grafana的使用流程就大致讲完了。</p>
+<p>上面介绍了influxdb和grafana的web界面，我们也来看看cadvisor的web界面，端口默认是8080</p>
+<p><img src="/yuque-assets/df54e825b9c4698e61112356b0007bdb1dd74d236e9fa50bbeabbaed0f2c3ff5.png" srcset="/img/loading.gif" lazyload></p>
+<p>在这个web界面我们可以看到所采集的一些信息：</p>
+<p><img src="/yuque-assets/dff7ec68a0173155862c3a34fd71136b68594ebd68b7448270c43851460ca535.png" srcset="/img/loading.gif" lazyload><br><img src="/yuque-assets/842df25773184616a50f9fa76f45c3849553bc17aab6b012252cfbe6e92bcc59.png" srcset="/img/loading.gif" lazyload></p>
+<p>记得cadvisor本地只存储2分钟的数据，所以我们引入了influxdb来存储这些数据，最后通过grafana进行图表化展示。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本次，我们使用CAdvisor + InfluxDB + Grafana构建容器资源监控系统，是可行的而且是较为简便的方式。这三个组件全部以容器的方式运行，也符合我们线上服务皆为容器的概念。目前很多公司已经全面上线该监控系统。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E8%BF%90%E7%BB%B4/" class="category-chain-item">云原生与运维</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E8%BF%90%E7%BB%B4/%E6%97%A5%E5%BF%97%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/" class="category-chain-item">日志与可观测性</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Docker/" class="print-no-link">#Docker</a>
+      
+        <a href="/tags/cAdvisor/" class="print-no-link">#cAdvisor</a>
+      
+        <a href="/tags/InfluxDB/" class="print-no-link">#InfluxDB</a>
+      
+        <a href="/tags/Grafana/" class="print-no-link">#Grafana</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>容器监控</div>
+      <div>https://q792821266.github.io/yuque/83431078/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/yuque/84687351/" title="预估表和索引空间容量的方法">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">预估表和索引空间容量的方法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/55573752/" title="Spring事务">
+                        <span class="hidden-mobile">Spring事务</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
