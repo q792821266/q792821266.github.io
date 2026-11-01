@@ -24,9 +24,9 @@
       
       <tag>成本优化</tag>
       
-      <tag>多模态</tag>
-      
       <tag>视频生成</tag>
+      
+      <tag>多模态</tag>
       
     </tags>
     
@@ -86,9 +86,9 @@
       
       <tag>Agent</tag>
       
-      <tag>RAG</tag>
-      
       <tag>多模态</tag>
+      
+      <tag>RAG</tag>
       
     </tags>
     
@@ -115,11 +115,11 @@
     
     <tags>
       
+      <tag>成本优化</tag>
+      
       <tag>大语言模型</tag>
       
       <tag>内容审阅</tag>
-      
-      <tag>成本优化</tag>
       
     </tags>
     
@@ -148,9 +148,9 @@
       
       <tag>Agent</tag>
       
-      <tag>成本优化</tag>
-      
       <tag>本地模型</tag>
+      
+      <tag>成本优化</tag>
       
     </tags>
     
@@ -212,9 +212,9 @@
       
       <tag>Hexo</tag>
       
-      <tag>提示词</tag>
-      
       <tag>工作流</tag>
+      
+      <tag>提示词</tag>
       
     </tags>
     
@@ -735,9 +735,9 @@
     
     <tags>
       
-      <tag>ELK</tag>
-      
       <tag>Logback</tag>
+      
+      <tag>ELK</tag>
       
       <tag>审计日志</tag>
       
@@ -1318,11 +1318,11 @@
     
     <tags>
       
+      <tag>kafka</tag>
+      
       <tag>middileware</tag>
       
       <tag>mq</tag>
-      
-      <tag>kafka</tag>
       
     </tags>
     
@@ -1787,9 +1787,9 @@
     
     <tags>
       
-      <tag>消息队列</tag>
-      
       <tag>Kafka</tag>
+      
+      <tag>消息队列</tag>
       
       <tag>性能优化</tag>
       
@@ -1884,11 +1884,11 @@
     
     <tags>
       
+      <tag>消息队列</tag>
+      
       <tag>RabbitMQ</tag>
       
       <tag>AMQP</tag>
-      
-      <tag>消息队列</tag>
       
     </tags>
     
@@ -1924,6 +1924,37 @@
       <tag>Set</tag>
       
       <tag>Queue</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>并发容器类Map</title>
+    <link href="/yuque/13526688/"/>
+    <url>/yuque/13526688/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>本文按 JDK 7 与 JDK 8 的实现分别讨论。截图保留原学习笔记，文字对容量、树化条件和跳表结构作了校正；不同 JDK 更新版本的细节应结合对应源码阅读。</p></blockquote><p>学习这部分之前先说明下，这个部分涉及的源码比较多，需要一定的逻辑思维能力及一定的学习能力。每个人的学习方法都不一样，也没办法传授，我们要在学习中找到适合自己的学习方法。推荐一本书《金字塔原理》，能很好的梳理及提升我们的逻辑思维能力和表达能力。</p><p>具体地，有三种方法能提高我们思维能力：</p><p><img src="/yuque-assets/68b15b2d65ac7a70bf1288919a9b7f7fb7ae8f9190ecc0b700c2e2d5a396ef4e.png"></p><h1 id="HashMap在JDK1-7"><a href="#HashMap在JDK1-7" class="headerlink" title="HashMap在JDK1.7"></a>HashMap在JDK1.7</h1><p>言归正传，我们知道HashMap作为一个集合类，经常被用来存储数据。既然是要存储数据，那么底层必须有存储数据的结构，那么HashMap的存储结构是什么样的？</p><blockquote><p>后续过程会边读源码边解析，比较耗时，不需要看这部分的可以直接跳到总结。</p></blockquote><p>查看源码我们发现在put方法中都是将数据存储到Table这么一个成员变量里面。</p><p><img src="/yuque-assets/b3a041874c70e2b02d678ca1c3ae803027bb72ac59b965397dc5ccc27508a022.png"></p><p>那么我们就假定是存储在table这个里面，可以看到table是一种Entry&lt;K,V&gt;[]的结构。<img src="/yuque-assets/3e17647793106d0c2fa30dad8f5e44c4845ace399d11fdb303ecc9f30003ce2f.png"></p><p>当我们调用get方法获取一个Key值的value时，我们需要使用一些查找算法， 来查找到table里面相同key的数据。那么HashMap使用的是什么查找算法呢？点开get的源码找到：</p><p><img src="/yuque-assets/05827e2492b89779feed515bbdb0679893fee18c9ea05c9dc23b8478288712d0.png"></p><p><img src="/yuque-assets/be1bfbb65e50c3f1b893c44511a0786cd18cff8c6af384e64fe601efc2e45447.png"></p><p>HashMap 先根据 key 的 hash 定位数组中的桶，再在桶内比较 key，找到对应的值。JDK 7 的 indexFor 使用 <code>hash &amp; (length - 1)</code> 计算桶下标，数组长度为 2 的幂。不同的 key 可能落入同一桶，由链表保存；同一个 key 再次 put 时更新其值，不会为它另建一条重复映射。下面的 addEntry 展示了新增节点的过程。</p><p><img src="/yuque-assets/efc1980e5a0ed5df70175ee099d92761e1918681c277119e85ad4d5854a766c9.png"></p><p>值得注意的是这个createEntry方法中，先获取了原来index下的Entry，然后把原来的Entry作为参数创建了一个新的Entry作为table[index]，这样等于说将新的元素插入到了链表的头部。<img src="/yuque-assets/49cf97a1bbe8f6afe1260c43e31ca1ed9376082588f159db197a3086e587434f.png"></p><p>既然数据存储结构是个数组，那么数组必定有个初始长度，那么HashMap的table初始长度是多少呢？这个问题我们可以通过构造方法可以得知，因为初始化的操作一般都会在构造的时候就确定。</p><p><img src="/yuque-assets/c5e97838f4ef671e06643251bc4025e4cb7de4df66643efc1de0ccad6669dac6.png"></p><p><img src="/yuque-assets/26df04216f28087f871efd9d6eee7dff6adcf4ea465ef241505796b0d38c28d3.png"><img src="/yuque-assets/3f32abf819a4967a4689613399faf83aa5bf6ba0f3f30ef2cf5f6820f7cbbfbe.png"></p><p>默认初始容量是 16，负载因子是 0.75。容量表示桶数组的长度；<code>16 × 0.75 = 12</code> 是通常的扩容阈值，不能把 12 当作数组容量。JDK 7 的不同更新版本在数组初始化时机和扩容触发细节上有所差异，调试时应以使用的源码版本为准。</p><p>数组创建后长度固定，但 HashMap 可以分配更大的数组来容纳新增数据。随着映射数量增长，达到实现规定的扩容条件时，resize 会分配新表；常见的扩容倍率是 2。这里要区分元素数量、桶数组容量和扩容阈值。扩容有助于减少桶内拥挤，但如果大量 key 的哈希仍然冲突，链表依然可能很长。</p><p><img src="/yuque-assets/4f970ac44353ab058b57ba518b9f4ca33a5db80492ff08a86d914aad59a3cbe9.png">\</p><p>扩容后数组长度改变，原来的桶下标可能不再适用，所以要把旧表中的节点重新分配到新表。这里的重点是按新数组长度重新计算下标；不能理解为每次迁移都必须重新调用所有 key 的 hashCode 方法。</p><p><img src="/yuque-assets/95e122a431baa772903fa958a0e17a18491e8db35512fdc7d373443459aecfcc.png"></p><p>我们为什么说HashMap是线程不安全的呢？就看着下图<code>modCount++</code>这个操作没有任何并发控制，就可以说明它线程不安全了。</p><p><img src="/yuque-assets/b3427f958aff1c23b4cb937e95450e34872e714c9391b8af549de2b9bfb0d5e2.png"></p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>HashMap 使用桶数组和链表保存映射。落入同一桶的不同 key 形成链表，JDK 7 新增节点时使用头插方式。默认初始容量为 16，负载因子为 0.75，通常的扩容阈值为 12；扩容一般将桶数组长度翻倍，再重新分配节点。</p><p>HashMap 是线程不安全的，比如put方法中 modCount++这样的操作产生的原子性问题。</p><h2 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h2><p>JDK 7 中的 ConcurrentHashMap 是线程安全的 Map，不允许 null key 或 null value。它使用 Segment 数组组织数据，每个 Segment 管理自己的桶数组和链表，并对修改操作加锁。下面按这两个层次观察它的结构。</p><p>JDK 7 中 Segment 数组的长度在构造时确定，之后不会随元素增长而增加；扩容发生在某个 Segment 内部的桶数组中，由该 Segment 的 rehash 方法完成。<a href="https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/java/util/concurrent/ConcurrentHashMap.java">OpenJDK 7 源码</a></p><h3 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h3><p>使用了新的数据结构<code>Segment</code>来存储数据，这是一种特殊的hashTable（hashTable可以简单的认为是加了锁的hashMap，线程安全，使用同步锁实现，效率较低），每一个segment都是线程安全的。所以并发访问的时候，并发度是受到segment个数的影响所控制的(同步锁)，这种方式有点类似<strong>分段锁</strong>，将大的数据结构分为若干个小的，然后对小的数据加锁。</p><p><img src="/yuque-assets/88fc9e795d1253f0692a8dd7ad82ba5767e813b5b56baee885ad7bd1ba60ae8d.png"></p><p>每个 Segment 内部使用数组和链表存储条目。Segment 继承 ReentrantLock，以复用锁机制来保护该分段内的修改操作。</p><p><img src="/yuque-assets/d88830f90e18b17f7ba7c2132a4ef3dfda2582b588d1af6b816dcbb31c3c6cdd.png"></p><p>每一个segment都是一个数组+链表的实现，在计算完segment index之后还会再做一个计算，来确定segment下所属数组的index：</p><p><img src="/yuque-assets/a93653e9935ce62b6b3b6f287123d58dab609db29c8af900762e967b94dd8176.png"></p><p>ConcurrentHashMap 需要先定位 Segment，再定位该 Segment 内部的桶。它与 HashMap 都使用哈希和位运算，但哈希处理及下标计算不能视为完全相同。下面是 put 的实现：</p><p><img src="/yuque-assets/715f6a2fb2796b13a28ef0678542e4914be8918e1e633d2662c1064aa2f2eb67.png"></p><h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p><img src="/yuque-assets/635a2b68ead542c8ecd2b16ba6bf55a5a3147f379b7ba8dedaf6553a92aa4569.png"></p><ul><li>concurrencyLevel：构造时用于估算并发更新程度，默认值为 16；Segment 数量按该值向上取到 2 的幂。不同 Segment 的更新可以并行，同一 Segment 的更新需要竞争其锁，因此不能保证任意 16 个写线程都互不阻塞。</li><li>initialCapacity：整个 Map 的初始容量估计值，内部按 Segment 分配并调整。</li><li>loadFactor：各 Segment 内部桶数组的负载因子。</li><li>threshold：各 Segment 的扩容阈值，通常由其桶数组长度乘负载因子得到。</li></ul><p>Segment 在持有自身锁时扩容内部桶数组，保证分段内结构修改的线程安全。这不代表业务中的多个 Map 操作会自动组成原子操作。</p><p>ConcurrentHashMap初始化时会初始化第一个Segment[0]，其他的Segment都是在插入第一个值得时候进行初始化的。为什么要初始化Segment[0]呢 ？后面使用了这个值的当前值的数组长度和负载因子来初始化Segment[k]，要注意的是当前值，因为初始化使用的Segment[0]有可能已经被扩容。</p><h1 id="HashMap在JDK1-8"><a href="#HashMap在JDK1-8" class="headerlink" title="HashMap在JDK1.8"></a>HashMap在JDK1.8</h1><p>JDK 8 的 HashMap 在桶数组和链表之外引入了红黑树桶。是否树化同时取决于桶内节点数量和桶数组容量；当 treeifyBin 被调用而数组长度小于 64 时，会先扩容。不能只根据“超过 8 个节点”断言一定转成红黑树。<a href="https://github.com/openjdk/jdk8u/blob/master/jdk/src/share/classes/java/util/HashMap.java">OpenJDK 8 HashMap 源码</a></p><p><img src="/yuque-assets/917704d5a5f64a4a919cedee5b38aba132c60c9d5f18229fae887c254e997659.png"></p><p>1.8的源码可读性就没1.7好了，毕竟做了数据结构的转换：</p><p><img src="/yuque-assets/679e8b628eb38366a49d80e26f78d450e93e11887b1978b6e693a224e61cabe0.png"></p><p>putVal 中会区分链表节点和 TreeNode。链表插入路径达到相应阈值后调用 treeifyBin；该方法再检查数组长度，决定先扩容还是树化。TREEIFY_THRESHOLD 为 8，MIN_TREEIFY_CAPACITY 为 64。这里先关注判断路径，不展开红黑树操作。</p><h2 id="JDK1-8的concurrentHashmap"><a href="#JDK1-8的concurrentHashmap" class="headerlink" title="JDK1.8的concurrentHashmap"></a>JDK1.8的concurrentHashmap</h2><p>JDK 8 的 ConcurrentHashMap 不再以 Segment 作为常规存储和加锁单位，底层采用桶数组、链表及树桶。空桶插入主要使用 CAS，非空桶更新通常对桶的首节点加锁；如果正在扩容，还可能参与数据迁移。原有 Segment 相关定义主要用于序列化兼容。<a href="https://github.com/openjdk/jdk8u/blob/master/jdk/src/share/classes/java/util/concurrent/ConcurrentHashMap.java">OpenJDK 8 ConcurrentHashMap 源码</a></p><p>可以看到put代码里面是有同步代码块的，但是这个同步锁就和1.7的实现有所区别。</p><p><img src="/yuque-assets/bc2c568c8e80f01c55a248a993293a71453bbfc6dacd37babc585a69ad717126.png"></p><p>JDK 7 的多个桶共享一个 Segment 锁；JDK 8 的非空桶更新通常只竞争目标桶的锁，锁定范围因而更细。桶内仍可能发生冲突，所以更细的锁粒度并不意味着所有并发写入都无需等待。</p><p><img src="/yuque-assets/e2f1998ba77ba379cd9e0f476025d578ade60f9815a1e5a7154ca4c7a2f615e7.png"></p><h1 id="跳表ConcurrentSkipListMap"><a href="#跳表ConcurrentSkipListMap" class="headerlink" title="跳表ConcurrentSkipListMap"></a>跳表ConcurrentSkipListMap</h1><p>ConcurrentSkipListMap 提供线程安全的有序 Map 操作，但它不是 TreeMap 的加锁实现：TreeMap 使用红黑树，ConcurrentSkipListMap 使用跳表。下面用示意图观察 JDK 8 跳表中的数据节点和索引节点。<a href="https://github.com/openjdk/jdk8u/blob/master/jdk/src/share/classes/java/util/concurrent/ConcurrentSkipListMap.java">OpenJDK 8 ConcurrentSkipListMap 源码</a></p><h2 id="结构实现解析"><a href="#结构实现解析" class="headerlink" title="结构实现解析"></a>结构实现解析</h2><p>JDK 8 实现以 HeadIndex 作为顶层索引入口。数据 Node 保存 key、value 和 next；Index 保存 node、down 和 right；层数 level 字段属于 HeadIndex。初始结构中存在头部哨兵节点，它不代表用户插入的键值对。</p><p><img src="/yuque-assets/23770c3954718a1c81d6799e2723165fec05dd161d98536b996e79b0818ec38c.png"></p><p>存入数据时，创建一个Node作为存入的数据的结构，然后index中的Node就会指向新建的Node：</p><p><img src="/yuque-assets/9ef286b0716ac220d57c161cf58aa21ad4ede9db9e8e481ac0f9ce325781e9f7.png"></p><p>再插入第二个Node ，Node1会有一个next指向它。每个Node是否有Index，是一个随机的事件，比如图中的Node都没有。</p><p><img src="/yuque-assets/ec826eb752d2a66b581990bf67e5fde41094eb8981e5161b595ae7ab1ce3911e.png"></p><p>当我们添加Key为5的Node时候，我们发现其实Node是会按照Key值大小来进行排序。</p><p><img src="/yuque-assets/d60d352d66721cb0fe03297de3235ce9eb228ce5fd6e946d01fd7460b7ec13fa.png"></p><p>于是当我们插入key=4的Node的时候，Node会被放在3与5之间。</p><p><img src="/yuque-assets/0be91ba550cbac658242c51fc95673f00ea1160cb4157e5307742277b9ef170a.png"></p><p>前面我们提到Node是否有Index是个随机事件，现在如果Node4被赋予了Index，那么会有以下操作：</p><ol><li>Index被创建，且Index中的Node会指向Node4。</li><li>而最开始Index上会有一个right指向Node4的Index4.</li></ol><p><img src="/yuque-assets/e68afadbe5fd51df11a4b4de34ab8ac7c1a1b22d4937d9d44577a53b2400345b.png"></p><p>按照上面的存储结构，现在我们来查找key=5的数据时，步骤为：比较Index下的Node节点key，发现比它大，那么这时候并不会走next去比较Node3，而是走Index的right，找到另一个Index，此时找到Index4，比较Index4下面的Node4，发现要寻找的数据的Key（5）依然比Index4下的Node4的key（4）大，继续走right，但此时right已经没有指向的Index，就走下面的Node路线进行比较。。。</p><p>概括来说：就是优先比较Index，再去比较Node。</p><p>插入时，算法随机决定是否建立索引以及索引的高度；不是在数据 Node 上保存一个 level 字段。同一数据节点在不同索引层上的 Index 通过 down 连接，并共享 node 引用；同层索引之间通过 right 连接。图中的 level 标记用于说明所处层次。</p><p><img src="/yuque-assets/44e500e3fb7bb7b57d2f9070f1c07cbe253f2bf684fc2611538b82c1eca893a6.png"></p><p>但这还没结束，HeadIndex，就是最开始的Index 会升级，生成一个Level2的Index，保证自己持有最高Level，最终会变成这样：</p><p><img src="/yuque-assets/f399229d205880aeaa94c617c62094ad2a5ff23e2d05cf9ed39e9984f7160639.png"></p><p>明显这是一个典型的空间换时间方式，了解这种数据结构有利于我们后续工具类的学习。</p><h2 id="源码参考"><a href="#源码参考" class="headerlink" title="源码参考"></a>源码参考</h2><ul><li><a href="https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/java/util/HashMap.java">OpenJDK 7 HashMap</a></li><li><a href="https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/java/util/concurrent/ConcurrentHashMap.java">OpenJDK 7 ConcurrentHashMap</a></li><li><a href="https://github.com/openjdk/jdk8u/blob/master/jdk/src/share/classes/java/util/HashMap.java">OpenJDK 8 HashMap</a></li><li><a href="https://github.com/openjdk/jdk8u/blob/master/jdk/src/share/classes/java/util/concurrent/ConcurrentHashMap.java">OpenJDK 8 ConcurrentHashMap</a></li><li><a href="https://github.com/openjdk/jdk8u/blob/master/jdk/src/share/classes/java/util/concurrent/ConcurrentSkipListMap.java">OpenJDK 8 ConcurrentSkipListMap</a></li></ul>]]></content>
+    
+    
+    <categories>
+      
+      <category>后端开发</category>
+      
+      <category>Java基础</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Java</tag>
+      
+      <tag>HashMap</tag>
+      
+      <tag>ConcurrentHashMap</tag>
       
     </tags>
     
