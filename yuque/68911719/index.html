@@ -23,34 +23,16 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="这个技术属于分布式消息中间件的实战应用。 事务是一个难点，分布式事务更是难上加难的一个知识点，希望能够理解和掌握。尤其金融类公司，数据非常重要，后台架构是分布式的企业，这个算是基本要求了。且这个是一个实际应用的问题，如果项目上没有用过的话，面试的时候很难应答，所以课后要多练习。本次使用RabbitMQ来作为中间件方案，内容包括：  RabbitMQ的简单介绍以及必须掌握的5个核心概念； 分布式事务">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4febbd27b491c255632e0d86b9cbe0ddd096d65bbc57dcd1acb4d7c2e5a25452.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3f7d6950bc9df9ab3f9f0084aef24b29f0210b61b3de6ebebc97bd5bbeb59127.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2ce491496999bc325e439962ad22e89ecef5421959ab688a459b6132f6c329db.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9861bd77f203a5599d4c894d6eca1e512ea0370fff9876df221e000307be06e8.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e70412f3a6ca47860829619df447343cef783c409f8c02a76d50e2f72380b6d2.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f8c571e46fe9ed3d646a6f6d13d43d2704c7d768b5f90ac09a5f963b52c06a45.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5dcad19e04d64993a3d4228941822235eceff222e987154feabd7d2c5f40f86e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6a4f80c59ab042dcb5931ab64d20971026bb25ce3efa03a2c513b37e5cdc461e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/413c4613150eff11628766a800d574f4b421e83ee8d69d490bb2b29e7a3ec25a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c1f68edd43b9bb0ac0351a20f467ac86b094ccb54e65e3ec89c9d8ba7c2514b0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2ce02a1f8aebbf70c7f144fb4778745fe2faa8e83cd8e27436fdc29ca005e46b.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a852894962769afdb610bfd38c4976c485aa28e3354e962d6eaa129ee0b34cbb.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/afbd95c140498bb2b1cc5c9b647f45f9c69ac8a59c12a4409dde0aca6d7a92ec.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1d3d9a7e1135ce62f675fea7ec4fd969910525fa2e4a559380b027a0f18125f4.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2a377ce78a94883e9566a8c77056e19bfa666cc847c6acdddd1d3138c66445a7.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/32aac3c1047e046bedb8373e02d5da32c110779d3ebe70510bb28682f42794c0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8f2b644c26f22351f05b19e5f42d3f2ee13cbc3defc7ff02beee4d2eff957834.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0c84d667196f5e728405fe70754c1351506256baffb9bfbf2fa876d88579629e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/65d7d5c9fd5c9e1ddd85781351faf8a5b2dfa4e53614f1b2a95fd1a9640915af.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/68911719.svg">
 <meta property="article:published_time" content="2022-03-10T10:55:46.000Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.656Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.584Z">
 <meta property="article:author" content="Jerry JIANG">
 <meta property="article:tag" content="分布式事务">
 <meta property="article:tag" content="RabbitMQ">
 <meta property="article:tag" content="最终一致性">
 <meta property="article:tag" content="幂等性">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/4febbd27b491c255632e0d86b9cbe0ddd096d65bbc57dcd1acb4d7c2e5a25452.png">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/68911719.svg">
   
   
   
@@ -97,7 +79,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -107,35 +89,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -248,7 +201,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/68911719.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -294,14 +247,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -585,37 +530,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -711,31 +625,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -880,8 +769,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

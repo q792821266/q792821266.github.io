@@ -23,24 +23,15 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="摘自：https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;XGKn3xD3jnurZZBQX-vUjA  总体情况 图中其实堆区应该是最大的部分。 按照线程是否共享的维度来说，就是如下：  详细介绍下面是各个区域的介绍 Heap 堆介绍首先是Heap堆。堆是OOM故障最主要发生的区域。它是内存中最大的一块区域，被所有线程共享，存储着几乎所有的实例对象、数组。所有的对象实例以及数组都要在堆上分配">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7348a8ca1d8ce7e1908a6b1676f798b418b6674156b3231267f6444439b3352c.jpeg">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c40875b27e79e23d7af8f149a909156516c6ca860663c652fe46ccd22e817a79.jpeg">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3f41160b52506b33d7b25e447db89b78b625239ed4d8f42abb8eacf9d634b421.jpeg">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/040108f2320e53399f0239e6f6d375aad77a5cfe94c9cfc906bc5ff2f8311191.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bfd32bb64dcb385c0be003e74d22f8791036176743af3f6d6589c328a920470d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8ccab8e2bcc8089f34888784d0f711afcf3d25bd31035adc5ebe018a406014b2.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/79be721db0dc60ea633ff587080005cc1d7b6d9d0abeb03329174b8ce9b4da06.jpeg">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a6e7d6571a9cd843168d0652d58cf002a174ed5a486c0726ee8d2d160f9d5cf1.jpeg">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b2e578e60764b8c72948c486d4a71d849dacb47ce9694cd88374f35193558cff.jpeg">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/097e7a8e601f8869036d289d5c18dfe2503b0cd092e790200f64c4baae700222.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/104937414.svg">
 <meta property="article:published_time" content="2022-11-04T16:55:30.166Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.652Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.408Z">
 <meta property="article:author" content="Jerry JIANG">
 <meta property="article:tag" content="JVM">
 <meta property="article:tag" content="堆内存">
 <meta property="article:tag" content="内存布局">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/7348a8ca1d8ce7e1908a6b1676f798b418b6674156b3231267f6444439b3352c.jpeg">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/104937414.svg">
   
   
   
@@ -87,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -97,35 +88,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -238,7 +200,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/104937414.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -284,14 +246,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -574,37 +528,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -700,31 +623,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -869,8 +767,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

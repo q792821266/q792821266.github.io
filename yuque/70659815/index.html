@@ -23,30 +23,15 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="最佳实践分为四大块，通过Producer、Consumer、NameServer、JVM与Linux内核配置四个方面来实现最佳实现。 Producer最佳实践 一个应用尽可用用一个Topic，消息子类型用tags来标识，tags由应用自由设置。只有发送消息设置了tags，消费方再订阅消息时，才可以利用tags在broker做消息过滤。message.setTags(&quot;TagA&quot;); 这样可以降低服">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/af09a4c456974936db4b0b98206203de421e69ee8c1f6576caf20819c8c691ef.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/999225ba5d0ca52c6ccff801c42db1d26d53f8bbfe7a2e8e6ac8f1fc830a10bb.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d8634ce0c6f615b19e988a125361223986b76c852647779753f5b30c5cd86e61.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c3f8cdc8b6ae27a1ca8fcbe1bb764cfee775be7222eeae6cb8e7df004ca7bca2.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7318baedf59675f4ad4157bb748b0b3d375c94a3447ec02cab618cf96252ac0f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5e0e0c6b5d13400cc92a4696b76606380574a1cb142ab63f548081f708b9a1cc.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3627c440c196fadc0ee8211cd114b8ffb181455355efc8d793489e58fafbe983.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4aecf1f48ed8aa9a879c8e9b65c2bc64d18cbe3581a5532e217ca2f18408e2cd.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/746d46482cedf556b3d664fd16299cb1cab5e4e46ce71858a7176957a4ad2131.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/952bb46a77a0274304526126c5a9c5e37940f516d956246402d4e5ed2120f18c.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/eaa2469d0e7653ec9299189ee81a4aec3c7b97640810d432111f0b0f6c926589.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8e5a6ba318f09c8458a8472739c1b05f4c424db0dd11c9c62a2d8b707f3eec09.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bc646839890a07805757e443c8ed538ed1e403fd423e0d40af1ca81ecba8b914.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/49afeb68690fd855c8533faae635ff4985ad4a3ae6e486f0244e3e3ac9844fa9.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/739c3ab1c7462032d9dc4690604b3fbdd8cda15887bbc70e819d31fa038c5957.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3f45c61597190f084d5c50df2b604a7c7b26d4f0935ed75c3a61a939c6d8cb52.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/70659815.svg">
 <meta property="article:published_time" content="2022-03-23T11:57:50.000Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.651Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.591Z">
 <meta property="article:author" content="Jerry JIANG">
 <meta property="article:tag" content="RocketMQ">
 <meta property="article:tag" content="消息队列">
 <meta property="article:tag" content="性能优化">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/af09a4c456974936db4b0b98206203de421e69ee8c1f6576caf20819c8c691ef.png">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/70659815.svg">
   
   
   
@@ -93,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -103,35 +88,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -244,7 +200,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/70659815.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -290,14 +246,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -575,37 +523,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -701,31 +618,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -870,8 +762,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

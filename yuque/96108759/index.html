@@ -23,40 +23,15 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="为什么要用网关 存在一些典型的问题：  外部客户端无法发现服务。客户端种类多，并没有集成服务注册发现机制 服务地址无法访问。微服务实例众多，从安全性及ip资源的角度考虑，不会直接对公网开放 安全认证复杂。客户端直调服务实例，处于安全角度，每个角度都需要实现权限认证等功能  网关特性网关相当于进入家里的大门，我们用的智能门锁就提供权限校验的功能，其实这是很类似的。 为了解决上面的典型问题，网关必须有">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2e1fa5e84e5e120a1ddfd2596b00fc5be78fae4a1923190bcf5978256e39f100.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5a6c74e31864c6c9c4191998715eae5788fa83b852a64450f39cc31e8b6e6b8a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fe88a4df5c7d509bf98041de173f0ea3fe4d4d39ac1d75ba80b5eea3fa889945.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/977c6d55132a46830a353dfdccd56f601d005188f10c48cf6bf1492d3ad88df6.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/18a5ed4cd9caaf68603fb80565e79827962e5837431ea4f203ab94a93d7ccc17.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0927ffa84be2c15b76b3b7837f8d29f9c433671431889faae3ec83e4e15c32e8.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9735582fd2731690e8dff77091cb1f1ea07a411b0068a98b144d4d36268e11a5.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3eb1a2e1c07073e35ac41bf64299d7aee298fdd8ad0aa3b9025252e9051fe400.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c1849efe5c6eddef8bd7af5672225bffb3d4fcf0463a5f89b59224f5062ccc1a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c07c13b0dfb9c872197bd5352d29b7f439e68efd30188d345580c5d003eb6822.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a7ae9b301e6c9f9f2fb0a72c73cba7799cbcb6ba0e816b3a105590c6e63529d2.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c9c81cbc6e5fd5129759b86ac360acd082814514f5e87dc14c252c2b1c6839fc.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7abf3d5113eec502c2f9651a3eca78695e8c7d87d8b55f56e9db51ba31884418.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1f45b6bc5cf658a2d9b1fee1ef5b44a683b235e7e3440d8338413b41a6e34f54.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ea8179cf1941e576ad80c41f68045e9e73ed1ba39e6c5811e45f4f030ce4c69b.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ead4e856f8754ac729826a39e94907db7379af5a02c116962072d4d5381fa3a9.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f5698b87edb540d186ca7d0f7bdca7099e51c885d6f9455fcb928eea2c558f94.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/81700cf3518f45825046c3854c254786f558c0ae8a0ba45bfe0badcb7fef830d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c2ad6de2d1d108eb36418ba7fb2fe8eb45d792433acea7a91ff2f7fcb8c859d3.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c73dfe447196723f0d6e16add0925557f544607c1fc6c90ee2e67eeab56de25f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6d81e5572b6ca9d6f778fcfbbe4c423d15640a0a5e330debeebb6f3988007f1c.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ab229cc05f6529a4650f301a58ae248f289c45554e5ea30b48cd21d6e5f28cbd.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/78924a8363bbcff770f48aa083aa55bf8462d51b6339d7762ee16561ef5f3f6e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6fc0356542d14677a06f1e227d8bd6eb21f7c66e4f0ac6d5a9e7d9209cb890c0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0a04becfc6b2530a25f0663d9906a7cea7960ec9eed705fe1cca345194646e81.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9db5642c5663f3351804ead6daf39cac3cf56693c539a4980b5e5174d9681bda.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/96108759.svg">
 <meta property="article:published_time" content="2025-09-02T10:24:36.085Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.627Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.630Z">
 <meta property="article:author" content="Jerry JIANG">
 <meta property="article:tag" content="Spring Cloud">
 <meta property="article:tag" content="Zuul">
 <meta property="article:tag" content="API网关">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/2e1fa5e84e5e120a1ddfd2596b00fc5be78fae4a1923190bcf5978256e39f100.png">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/96108759.svg">
   
   
   
@@ -103,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -113,35 +88,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -254,7 +200,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/96108759.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -300,14 +246,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -612,37 +550,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -738,31 +645,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -907,8 +789,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

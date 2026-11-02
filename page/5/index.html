@@ -65,7 +65,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -75,35 +75,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -466,11 +437,11 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/kafka/">#kafka</a>
-            
               <a href="/tags/middileware/">#middileware</a>
             
               <a href="/tags/mq/">#mq</a>
+            
+              <a href="/tags/kafka/">#kafka</a>
             
           </div>
         
@@ -481,7 +452,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/73504198/" target="_self">
+          <img src="/covers/73504198.svg" srcset="/img/loading.gif" lazyload alt="spring原理">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/73504198/" target="_self">
@@ -490,7 +467,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/73504198/" target="_self">
+      <a class="index-excerpt " href="/yuque/73504198/" target="_self">
         <div>
           BeanFactory与FactoryBean 、ApplicationContext https://blog.csdn.net/CrankZ/article/details/84325872  Spring 作为一种IoC容器最大的目的就是降低组件与组件之间的依赖关系。而BeanFactory作为整个Spring IoC容器的核心使用了一种统一的方法来装配所有的应用对象，通过Java的反射机制
         </div>
@@ -553,7 +530,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/77709315/" target="_self">
+          <img src="/covers/77709315.svg" srcset="/img/loading.gif" lazyload alt="类加载机制">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/77709315/" target="_self">
@@ -562,7 +545,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/77709315/" target="_self">
+      <a class="index-excerpt " href="/yuque/77709315/" target="_self">
         <div>
           对于类加载的机制，之前我们应该也有一定的了解。我们知道运行时数据区，一个JVM要去执行java代码、实现业务逻辑 ，那么只能通过class文件来读取。于是我们应该考虑JVM是如何加载java代码的？我们虽然知道字节码被加载之后会对放到对应的方法区、堆内存，是谁负载加载这个class文件呢？这个class文件在我们的磁盘，在jar，在某个位置。 要了解这个加载的过程，需要从类的生命周期开始讲起。
         </div>
@@ -625,7 +608,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/158825746/" target="_self">
+          <img src="/covers/158825746.svg" srcset="/img/loading.gif" lazyload alt="AWS SAA备考">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/158825746/" target="_self">
@@ -634,7 +623,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/158825746/" target="_self">
+      <a class="index-excerpt " href="/yuque/158825746/" target="_self">
         <div>
           Amazon Macie 是一项专门用于发现敏感数据和保护数据安全的服务。Amazon Macie 可以运行数据发现作业，利用其托管的标识符和数据类型来发现包含敏感信息的数据，如个人可识别信息（PII）或财务信息，包括护照号码和信用卡号码。  AWS CloudTrail可记录AWS账户的API活动，包括对资源的配置更改，主要用于审计AWS资源的操作历史。它会记录谁执行了哪些操作，因此可以用于跟
         </div>
@@ -697,7 +686,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/104937414/" target="_self">
+          <img src="/covers/104937414.svg" srcset="/img/loading.gif" lazyload alt="JVM内存布局">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/104937414/" target="_self">
@@ -706,7 +701,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/104937414/" target="_self">
+      <a class="index-excerpt " href="/yuque/104937414/" target="_self">
         <div>
           摘自：https://mp.weixin.qq.com/s/XGKn3xD3jnurZZBQX-vUjA  总体情况 图中其实堆区应该是最大的部分。 按照线程是否共享的维度来说，就是如下：  详细介绍下面是各个区域的介绍 Heap 堆介绍首先是Heap堆。堆是OOM故障最主要发生的区域。它是内存中最大的一块区域，被所有线程共享，存储着几乎所有的实例对象、数组。所有的对象实例以及数组都要在堆上分配
         </div>
@@ -769,7 +764,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/84687351/" target="_self">
+          <img src="/covers/84687351.svg" srcset="/img/loading.gif" lazyload alt="预估表和索引空间容量的方法">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/84687351/" target="_self">
@@ -778,7 +779,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/84687351/" target="_self">
+      <a class="index-excerpt " href="/yuque/84687351/" target="_self">
         <div>
           https://docs.oracle.com/database/121/ARPLS/d_space.htm#ARPLS68105  最近有一个业务功能要上线，生产数据库环境之前已经到位，目前要做的是估算下，业务数据量对数据库空间，有何影响。开发同学根据表字段定义，分别统计出了最大占用空间，以及预计占用空间量，计算得很细致。 今儿碰巧看见了一篇MOS文章，《How to Estimate the
         </div>
@@ -841,7 +842,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/83431078/" target="_self">
+          <img src="/covers/83431078.svg" srcset="/img/loading.gif" lazyload alt="容器监控">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/83431078/" target="_self">
@@ -850,7 +857,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/83431078/" target="_self">
+      <a class="index-excerpt " href="/yuque/83431078/" target="_self">
         <div>
           由于docker compose启动的服务都在同一台宿主机上，对于一个宿主机上运行多个容器应用时，容器的运行情况如：CPU的使用率，内存使用率，网络状态，磁盘空间等一些列随时间变化的时序数据信息，都是需要去了解的，所以监控是必须的。 容器监控方案选择对于容器的监控方案可谓多种多样，本身自带命令docker stats命令，Scout，Data Dog，Sysdig Cloud，Sensu Moni
         </div>
@@ -915,7 +922,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/55573752/" target="_self">
+          <img src="/covers/55573752.svg" srcset="/img/loading.gif" lazyload alt="Spring事务">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/55573752/" target="_self">
@@ -924,7 +937,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/55573752/" target="_self">
+      <a class="index-excerpt " href="/yuque/55573752/" target="_self">
         <div>
           参考：https://cloud.tencent.com/developer/article/1745979#:~:text=spring%E6%98%AF%E9%80%9A,%EF%BC%8C%E4%BA%8B%E5%8A%A1%E6%89%8D%E4%BC%9A%E8%B5%B7%E6%95%88%E3%80%82 传播行为当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。例如：方法
         </div>
@@ -1042,31 +1055,6 @@
     </div>
   
   
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
   
   
 </div>
@@ -1117,8 +1105,6 @@
 
 
 
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

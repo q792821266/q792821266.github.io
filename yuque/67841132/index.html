@@ -23,61 +23,16 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="在分布式下处理数据一致性的算法。 一致性先理解一下什么叫一致性。多份数据保持一致性。 有如下场景：  多份相同的数据，在一处修改，又或是一份数据，存储在不同的数据存储节点。保证多份一致。	就比如mysql的主从一致；    业务方面，涉及到多个有状态的服务，一个业务变更多份不同的数据，数据之间也要保持整体一致。比如下单需增加订单数量，扣减库存；   什么情况下会导致不一致？ 只要有一份数据修改失败">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d1d1299f7a34de0e423a993bbb1f041b13731d6b8bb59b018dd23fafd0440ec4.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c8769de681305a4c914df42510ce6b5a3cba7cf8b4ccaae0c85d829c8e3b188f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8f2ff2b91675522655a21ba2d06a1ab56e4bf932be283b96d1bab9ffdb7f21e6.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e28165e964e42f3bddd873ce810c3ae21d73aeed634e81a492c17ee1fd3d3a49.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e937ebc9f0738aab216d0d8b3f3fa5bd5027851fe2f34c6bbf4d397d8749f1c1.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/37b08e4beef3cca7567786df60726cf755374c2359f8fa4a30736818b7c062d1.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9c9166d2d02a567cf5fbb75080bda45df689d570812febd813fce90dee391ecb.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3396d6039588ba92de891971b21e5c2829ed122560ffa5a702f31cfab99e969d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b4d837ea63f89123569f602c37df641b0e4c2231815b62802f89b3538b673427.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5b8d49a53cc76a1264f8764f5d074d891556d596e5a28d06839a4ffe00986c72.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/51403a2305a311548ee741eb74f7923580bd96fc7c6851a31ed6831df574a260.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3267b82f5e60608817ea16c2d51f06d75cbe147d43ef20184183f38336bbfdb8.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3ea09cb8ccb478171aae39267f2a2296fa7d671e8ebb1fe3a6c65717338de878.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c28478228700d48f3e93bb22030929ad70dbedd621eb569276bce711040f3b70.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5b1b8b1ded90e53e95abe08439c53d9540e6782e58c2187d0ca8eaa4a4459608.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/988e7ba9062d998f118b06417f1e667a62d160ab99a40647995f2b80a78b5ca3.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a9defa80695ebe83535e3d85a0a1f5f1e0f3e951630650548190121178acfe24.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c84c84577bf636131ec561f44901b5e2ec2d2913357786fbf010afbe35828e29.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ecf8e7213ba07368bac34ae65315b5719bfbe5c52d72e971311420385bb8cc3b.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5cbcb84798ace7f498ac38accd7d470525034ad4f79110583b7d9d1c0de673be.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fea22ef81a5832466dd2fd0609c8cd6758e14b5a5cdf6c531e57e856ac630742.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/46a10f0b34dccf88d9d4cda3e5b7ab7327c905e23bb6043a06a99d208d27be72.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c724cdd6337adb0f4ac6d846371b1d1f0853c28856c93324f191bf1dff8c9f3a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c78a47ae365e96d34a2a9bc81d4d383589d9eed8c071071164e8bb25d7a4c5ad.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bfa9ebf7289075643f5b23269e9b5682e06b620890f71d315036b0d5e915ca25.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/faae0be73d9acd6702c7da92b54d4e5f17046d0aac909484a6b7cc90aa30919e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/cc032ab08dc7579cb44833ce6f73e0d798b4c697be982ebf5cba38642ad86580.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/22e3bb15518543b9af7825eff494d500aab35b9ee8db04ed670498d3830e8dd6.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ab3cc1cfb821c95be7f690362b6306aedcf4eb042bbaee7a101ffa53d5623da3.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7c10e58700a88b47ad14c83b0eb3fc1a43c1d3ca3dfc04cba245fb8878ee9304.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/23ea3a642dffb0bdeb85f19c81f969f59112cf22e1fd74b7affbc98a3ff980b9.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/350127672919e92e061e75507a29e3a928fde81a1f0696187a1966c0b0c43e97.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/99d238b7b386169d3b7f338fdf8bce654f538afcdb7902f40e0f5db6916ef057.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9d02d0f65d290e46e65e7185c87fd4bdc2de2f1a4ba18389317928ebe4258205.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a51e9984fe5d125314824b690fd8ebc1713d2a0596798935d0e36588620d050e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a2ee452eb64ff5ab7c12d418e035fee282afa767fb59f9a38aca8d3a75daa874.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/01851d38bebb1127a8c0c2b11940cf815d556327d8e99ccda92ff2393bfbe60f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5ca5c4cbdf2fded128c8a6ae9aa188756556a9dba9847b4ed9e6fd5fc770fea7.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1965d22d6e35c8c22c457c9fc2a7f6d8f637f7e824874d590833595530074b3f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9d29507770907654e688cdf4a7cd6f204c04b8b46111e0508555bb342068aa74.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e4910d9c30c6d4977f6d95abece00f88fdbd9e9bf69feec6b9bddda3c186bef0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/57b21299e4a14ae37c13ddc6c08bf5ff98bc28753ae33465ee74a75b4dd33a72.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/69a76bdb8673ccfe6d66afb0b6a6c030d40480ecc45fce1ad897b8a90e872822.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b49381bf1e31931e4028c4a2b0e6b8e4662b1f5e505d0079e6019b04a80472b0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1bf83c30ffca7c28338626f5fb940f2b4d319db739c0ba5a6da68c25c88fe549.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8d0287edd662bf894f54ba22497b80d639c401c5a62f7d18f09e5962368f8f0f.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/67841132.svg">
 <meta property="article:published_time" content="2022-03-11T00:54:41.000Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.654Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.577Z">
 <meta property="article:author" content="Jerry JIANG">
 <meta property="article:tag" content="2PC">
 <meta property="article:tag" content="一致性">
 <meta property="article:tag" content="3PC">
 <meta property="article:tag" content="Paxos">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/d1d1299f7a34de0e423a993bbb1f041b13731d6b8bb59b018dd23fafd0440ec4.png">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/67841132.svg">
   
   
   
@@ -124,7 +79,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -134,35 +89,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -275,7 +201,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/67841132.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -321,14 +247,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -629,37 +547,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -755,31 +642,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -924,8 +786,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

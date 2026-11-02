@@ -23,33 +23,16 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="锁Lock包类的层次结构 ReentrantReadWriteLock是ReadWirteLock接口的典型实现，里面包含两把锁ReadLock和WriteLock，这两个都是Lock接口的实现。本次会先说明Lock接口的结构，与ReentrantLock的使用。 Lock接口中的方法 前四个方法都是提供获取锁的方法：  lock()：不死不休，意味着拿不到锁不会停止，会一直自旋。 tryLock">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e535b18fcb6eb3c5b15532e3f3472b9ed4b56ab129a168961218ab22b263edb7.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7ca6ca97cf624b7b7c6e1e03a600023059ad57ebe10e3706347daab2603e4a1a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6bcb6037f51c078cb912ae33d1f6f40516304e4ed08f45b66e30cdf73fd47bad.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/acfd960e7a0f43630c6368208b262b57a7bef0f7e291c1e7bb8b97c170ab2659.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b85ba66ed451f1c0603205c962be981581e74178ec6f9894270e3480ecaa66b7.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/869ae84acc42ddde229bc36f3d3b570eabbb186c6a53c845598abe645d588edf.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/30dc1301607cac8b1a9a6f4919e5c8edd801913305488861ddb7223142ce8544.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9614fcc2a1669fb22c2e7264105a9ba9b0038369c8693a9b1bc32aa5ffd869ae.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a4dfbe8a22ddc978b1518e2ee8fca5df6ba5cff01b3a32e29dda8de0f592237d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/018eda25bdcbf80eb9e339459a335b508c2827906e2f370a454d03a40b7a643b.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fa1ff3e7ec3133821918502050817064a8b213e24e19b4c3a477179fc95a095a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/838d2b46c0a2a253f264b8d9d5f0ab173076ca99209e6e2e2f0a7debd4d65496.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/654fc52c29f9071493b0954a7c3e4c5969cff61360a3acd05d8162b553e7811e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f3e4266782d8bf251804b1d531f695e4f7695545ea096911d312f7e96f77dfee.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2e693f3ad6637facc400ad4f5d52ec039d6b6631dd49e1abf0fd9b75d928c2bf.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dc732cd84d4b541a627df3675645e2043af5edce18c4cee35c9021aa9fc9b169.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fb280c6a4941be7312fd9c38902e1df377e219ff8807947eac682e4441aeeed1.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f2ee37e46fd0186d40d6b8e1a219340119230a1afd4ee3256ce796c7ca012038.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/16436242.svg">
 <meta property="article:published_time" content="2022-01-07T05:33:28.000Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.649Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.428Z">
 <meta property="article:author" content="Jerry JIANG">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="JUC">
 <meta property="article:tag" content="锁">
 <meta property="article:tag" content="ReentrantLock">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/e535b18fcb6eb3c5b15532e3f3472b9ed4b56ab129a168961218ab22b263edb7.png">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/16436242.svg">
   
   
   
@@ -96,7 +79,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -106,35 +89,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -247,7 +201,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/16436242.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -293,14 +247,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -564,37 +510,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -690,31 +605,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -859,8 +749,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

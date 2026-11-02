@@ -65,7 +65,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -75,35 +75,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -253,7 +224,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/249071402/" target="_self">
+          <img src="/covers/249071402.svg" srcset="/img/loading.gif" lazyload alt="服务治理">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/249071402/" target="_self">
@@ -262,7 +239,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/249071402/" target="_self">
+      <a class="index-excerpt " href="/yuque/249071402/" target="_self">
         <div>
           为什么有了K8S之后还需要有service mesh ? 这是一个非常好的问题，涉及到云原生架构的核心理念。我们可以分三个部分来理解：  1. Kubernetes (K8s) 的作用Kubernetes主要解决的是容器编排问题，包括：  应用部署与调度：自动将容器分配到合适的节点。 弹性伸缩：根据负载自动扩容或缩容。 服务发现与负载均衡：通过 Service 对象实现 Pod 的访问。 自愈能力
         </div>
@@ -325,7 +302,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/246543240/" target="_self">
+          <img src="/covers/246543240.svg" srcset="/img/loading.gif" lazyload alt="WebSocket">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/246543240/" target="_self">
@@ -334,7 +317,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/246543240/" target="_self">
+      <a class="index-excerpt " href="/yuque/246543240/" target="_self">
         <div>
           是什么WebSocket是一种协议。定义了如何在一个已经建立的TCP连接上进行全双工同行，包括握手、数据帧格式、关闭连接的规则等  WebSocket有明确的RFC标准（RFC 6455），规定：  握手过程（基于HTTP  Upgrade）  数据帧格式（文本帧、二进制帧、控制帧）  心跳、关闭连接的机制  运行在TCP上，是应用层协议   为什么需要WebSocket HTTP的局限性  HT
         </div>
@@ -397,7 +380,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/246464587/" target="_self">
+          <img src="/covers/246464587.svg" srcset="/img/loading.gif" lazyload alt="HTTP">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/246464587/" target="_self">
@@ -406,7 +395,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/246464587/" target="_self">
+      <a class="index-excerpt " href="/yuque/246464587/" target="_self">
         <div>
           发展过程HTTP/1.0  设计初衷：HTTP/1.0的设计初衷是为了简单的网页传输，典型场景是请求一个HTML网页，服务器返回后就关闭连接。  无状态协议：这时候的HTTP是无状态的，每次请求独立，服务器不需要记住客户端状态  连接策略：默认是短连接，即每次请求完成后立刻关闭TCP连接  优点：实现简单，资源释放快  缺点：每次请求都要重新建立TCP（三次握手），性能差   HTTP/1.1
         </div>
@@ -469,7 +458,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/245250550/" target="_self">
+          <img src="/covers/245250550.svg" srcset="/img/loading.gif" lazyload alt="OpenAPI设计原则">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/245250550/" target="_self">
@@ -478,7 +473,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/245250550/" target="_self">
+      <a class="index-excerpt " href="/yuque/245250550/" target="_self">
         <div>
           设计 OpenAPI（RESTful API） 时，需要遵循一系列原则，确保 安全性、可维护性、可扩展性和易用性。以下是企业级最佳实践：  ✅ 1. 设计原则 遵循 RESTful 风格   使用标准 HTTP 方法：GET（查询）、POST（创建）、PUT/PATCH（更新）、DELETE（删除）。 资源路径语义化：/users/{id}/orders。   版本管理   在 URL 或 Hea
         </div>
@@ -541,7 +536,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/231217278/" target="_self">
+          <img src="/covers/231217278.svg" srcset="/img/loading.gif" lazyload alt="Spring的响应式编程">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/231217278/" target="_self">
@@ -550,7 +551,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/231217278/" target="_self">
+      <a class="index-excerpt " href="/yuque/231217278/" target="_self">
         <div>
           Spring的响应式编程时基于Reactive Streams规范的一种编程范式，旨在处理异步数据流，特别适合于高并发、IO密集型的应用场景。它的核心目标是提高系统的 可伸缩性 和 资源利用率，尤其是在微服务架构中非常有价值。 🌟 核心概念 Reactive Programming （响应式编程）   是一种声明式编程范式，强调数据流和变化传播 使用异步、非阻塞的方式处理数据流，避免线程阻塞
         </div>
@@ -613,7 +614,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/175046185/" target="_self">
+          <img src="/covers/175046185.svg" srcset="/img/loading.gif" lazyload alt="03-1 | 推荐阅读">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/175046185/" target="_self">
@@ -622,7 +629,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/175046185/" target="_self">
+      <a class="index-excerpt " href="/yuque/175046185/" target="_self">
         <div>
           国庆策划 | 关于深度学习推荐系统，我有这些资料想推荐给你你好，我是王喆。明天就是国庆和中秋假期了，这里我提前祝你节日快乐！ 专栏上线以来，通过跟同学们在留言区讨论，我发现同学们的基础差别很大。有的同学已经是其他领域的资深工程师，希望借这门课丰富一下知识体系。有的同学确实是 0 基础的新手，可能对于机器学习的一些基本概念都不是特别清楚。 所以，我特意准备了一些适合不同阶段学习的参考书目和一些基础的
         </div>
@@ -685,7 +692,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/84500098/" target="_self">
+          <img src="/covers/84500098.svg" srcset="/img/loading.gif" lazyload alt="基于VIP的Keepalived高可用架构">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/84500098/" target="_self">
@@ -694,7 +707,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/84500098/" target="_self">
+      <a class="index-excerpt " href="/yuque/84500098/" target="_self">
         <div>
           简介Keepalived的特性  配置文件简单：配置文件比较简单，可通过简单配置实现高可用功能 稳定性强：keepalived是一个类似于layer 3/4/7 交换机机制的软件，具备我们平时说的第3层、第4层和第7层交换机的功能，常用于前端负载均衡的高可用服务，当主服务器出现故障时，可快速进行切换，监测机制灵活，成功率高。 成本低廉：开源软件，可直接下载配置使用，没有额外费用 应用范围广：因为k
         </div>
@@ -757,7 +770,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/240428732/" target="_self">
+          <img src="/covers/240428732.svg" srcset="/img/loading.gif" lazyload alt="数据库中的log">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/240428732/" target="_self">
@@ -766,7 +785,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/240428732/" target="_self">
+      <a class="index-excerpt " href="/yuque/240428732/" target="_self">
         <div>
           Redo Log （重做日志） 作用：用于恢复已提交事务的数据，保证事务的持久性（Durability）。  工作机制：  在事务提交前，先将修改记录写入 redo log。  如果数据库崩溃，重启时可以通过 redo log 将已提交但尚未写入磁盘的数据“重做”。  特点：  是 物理日志，记录的是数据页的修改。  通常是 顺序写入，性能高。  应用场景：MySQL 的 InnoDB 引擎使用
         </div>
@@ -831,7 +850,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/235564522/" target="_self">
+          <img src="/covers/235564522.svg" srcset="/img/loading.gif" lazyload alt="Spring Starter快速集成">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/235564522/" target="_self">
@@ -840,7 +865,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/235564522/" target="_self">
+      <a class="index-excerpt " href="/yuque/235564522/" target="_self">
         <div>
           在springboot项目的pom文件中，我们经常会引入starter。 那么starter到底是什么，为什么用了starter之后就不需要引入相应jar了？ 作用启动器（starter）包含许多依赖项；这些依赖项是使项目快速启动和运行所需要的依赖项。 例如：通过spring-boot-starter-data-redis，可以快捷地使用Spring对Redis进行数据访问。避免了引入redis包
         </div>
@@ -1032,31 +1057,6 @@
     </div>
   
   
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
   
   
 </div>
@@ -1107,8 +1107,6 @@
 
 
 
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

@@ -23,32 +23,15 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="Java中锁的概念自旋锁当一个线程在获取锁的时候，如果锁已经被其他线程获取，那么该线程将循环等待，然后不断判断锁是否能够被成功获取，直到获取到锁才会退出循环。 前面一篇其实已经通过CAS机制利用自旋来对变量进行修改了。 乐观锁在加锁的时候，我们假定没有冲突，直接修改，在修改数据时如果发现数据和之前获取的不一致，则读最新数据，修改后重试修改。不会一开始就加锁，只有在修改的时候才会加锁，读取的时候不加">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/5ec525c31dbf4131386bcd47438a51ed487ee2c8dfaa7b11d95c2a967ba5222d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/06eb3dcd7f70179b156115d06cfd7dbb00cae0f1155d97634dadfb8dcfe702b3.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bda2729156fc9c7cf0b675e4acd3e7380ebe67513b1ee501253258cd1e5e40e0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/fc2da1bed4ebc29b62ef6e893233b37662f29931bb31b7ff35cbe0077a500868.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/295a5a14dff1e81ae79aa5607627f276fe7beee4867927b9b4437802bc023a8c.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dd5294220a7a3767e2c76396000ae94943fdcb02fd29686f2b3abcf7a5dd39f5.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/538822b58d5a5edb5065cf841f49eebc515aa6ca41beca391c96458476a12888.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/37db208c0b0c255dd27535215a568cf605cce2de490fa01fee77b97d5d72f939.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/132fb17d4243ef86c5daf5e658c0861fdd24c16f519d5c1df53c67452efb62ea.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a9bfe0520ecfa277613f251352e3773b4376e9f055b61666aeb85c0a2e88b963.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/87dc84475153ca025be3866ad086999305fb28034584512bf50b5839dc98e1df.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/213c278ba4a9907759ec45083494d4301dcf2eb9ba2086f8a49c67879840edb1.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2dbd300f407487179d505d66cc79d95a6a21645e654c5c11e954420aaee70da6.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1ee855ab97837e1b7029ae128117d3ea7ca5804065cadabd5c3626bf3e608f40.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7c7932929fecc46a7cd18bd0db16299a0f6bfb9c1acb3620b5e5f59dbf3bc598.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8f2ed7c225e78e69c8a37b8822063f85e9c57648593152a42f6d1f8f5625009e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1faec2434e91811ae1ec82f9f881cfa87358098c9b636ad052875358f872e620.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/474b57d11cb461200563bbae13b2d7e35f2467c9562bd0eaf1940a47e221397d.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/63207191.svg">
 <meta property="article:published_time" content="2022-01-28T03:56:27.000Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.628Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.574Z">
 <meta property="article:author" content="Jerry JIANG">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="锁">
 <meta property="article:tag" content="Synchronized">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/5ec525c31dbf4131386bcd47438a51ed487ee2c8dfaa7b11d95c2a967ba5222d.png">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/63207191.svg">
   
   
   
@@ -95,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -105,35 +88,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -246,7 +200,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/63207191.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -292,14 +246,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -570,37 +516,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -696,31 +611,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -865,8 +755,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

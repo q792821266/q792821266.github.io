@@ -65,7 +65,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -75,35 +75,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -253,7 +224,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/80147956/" target="_self">
+          <img src="/covers/80147956.svg" srcset="/img/loading.gif" lazyload alt="统一异常处理">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/80147956/" target="_self">
@@ -262,7 +239,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/80147956/" target="_self">
+      <a class="index-excerpt " href="/yuque/80147956/" target="_self">
         <div>
           来自：https://blog.csdn.net/qq_33424446/article/details/123287062  软件开发中对异常的处理是常见而且重要的一步，合理的异常处理可以简化代码。 最基本的方式是使用try{} catch{} finally{} 语法块：  可以看到，缺点很直观，实际的业务代码不过三行。 spring提供了对Controller的增强@ControllerA
         </div>
@@ -325,7 +302,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/79659162/" target="_self">
+          <img src="/covers/79659162.svg" srcset="/img/loading.gif" lazyload alt="SpringBoot配置免费HTTPS">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/79659162/" target="_self">
@@ -334,7 +317,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/79659162/" target="_self">
+      <a class="index-excerpt " href="/yuque/79659162/" target="_self">
         <div>
           由于系统上线之类的需要，系统需要配置HTTPS：  完全摘自：https://mp.weixin.qq.com/s/PORM7HqxQpR-pN4CYWBvnw   申请SSL证书这里选择了免费的https://freessl.cn，实际项目中证书会由企业提供。我选的 离线生成，需要解析验证域名，阿里云用户可选一键生成，但需要提供授权码，不推荐亚洲诚信不支持小程序！！只支持电脑！！别申请错了。
         </div>
@@ -397,7 +380,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/23772385/" target="_self">
+          <img src="/covers/23772385.svg" srcset="/img/loading.gif" lazyload alt="centos7 Hyper配置IP与连接外网">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/23772385/" target="_self">
@@ -406,7 +395,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/23772385/" target="_self">
+      <a class="index-excerpt " href="/yuque/23772385/" target="_self">
         <div>
           参考自：https://www.cnblogs.com/kasnti/p/11727755.html 1.在Hyper新建网络内部虚拟机  起个名字，选择内部网络。  2.给虚拟机的虚拟网卡配置IP 在网络适配器中找到我们刚刚设置的虚拟网卡。  右键-&gt;属性，设置一下IP和子网掩码，我这里设置成了192.168.137.1，原因是我后面想在虚拟机连接上外网，所以选择和宿主机在同一个网段，就是
         </div>
@@ -469,7 +458,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/74997165/" target="_self">
+          <img src="/covers/74997165.svg" srcset="/img/loading.gif" lazyload alt="Spring">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/74997165/" target="_self">
@@ -478,7 +473,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/74997165/" target="_self">
+      <a class="index-excerpt " href="/yuque/74997165/" target="_self">
         <div>
           为什么spring建议构造器注入   https://zhuanlan.zhihu.com/p/395976746  在spring注入中有三种方法  基于setter注入 基于field注入 基于构造器注入  而spring开发团队给出的建议是使用构造器来注入，不建议使用我们常用的field注入，对于必要的依赖，一定要使用断言来确认。 field注入的坏处：  违背单一原则：基于field依赖
         </div>
@@ -543,7 +538,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/72360647/" target="_self">
+          <img src="/covers/72360647.svg" srcset="/img/loading.gif" lazyload alt="Dubbo最佳实践">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/72360647/" target="_self">
@@ -552,7 +553,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/72360647/" target="_self">
+      <a class="index-excerpt " href="/yuque/72360647/" target="_self">
         <div>
           不建议详细看这个文档，过一遍就算了，主要看另一份同名文档。  是前人总结出来的一些使用经验，分三个方面  掌握推荐用法 掌握服务化最佳实践 了解容量规划、优雅停机  推荐用法官网学习：http://dubbo.apache.org/zh-cn/docs/user/recommend.html  超时时间，重试次数，负载方式，并发连接数    可以看到这里配置的都是线程池大小和并发数。 线程池的大
         </div>
@@ -615,7 +616,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/32089987/" target="_self">
+          <img src="/covers/32089987.svg" srcset="/img/loading.gif" lazyload alt="Dubbo">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/32089987/" target="_self">
@@ -624,7 +631,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/32089987/" target="_self">
+      <a class="index-excerpt " href="/yuque/32089987/" target="_self">
         <div>
           一款高性能的Java RPC框架。 架构async：异步调用 sync：同步调用  连通性 注册中心负责服务地址的注册和查找，相当于一个目录服务，服务提供者和消费者都只在启动时与注册中心交互，注册中心不转发请求，压力较小。 监控中心负责统计各个服务被调用的情况，次数或者调用时长等，统计现在内存中汇总一次后每分钟发送一次到监控中心服务器，以报表展示。 服务提供者向注册中心注册服务，向监控中心汇报服务
         </div>
@@ -687,7 +694,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/70659815/" target="_self">
+          <img src="/covers/70659815.svg" srcset="/img/loading.gif" lazyload alt="RocketMQ高性能最佳实践">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/70659815/" target="_self">
@@ -696,7 +709,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/70659815/" target="_self">
+      <a class="index-excerpt " href="/yuque/70659815/" target="_self">
         <div>
           最佳实践分为四大块，通过Producer、Consumer、NameServer、JVM与Linux内核配置四个方面来实现最佳实现。 Producer最佳实践 一个应用尽可用用一个Topic，消息子类型用tags来标识，tags由应用自由设置。只有发送消息设置了tags，消费方再订阅消息时，才可以利用tags在broker做消息过滤。message.setTags("TagA"); 这样可以降低服
         </div>
@@ -759,7 +772,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/70076318/" target="_self">
+          <img src="/covers/70076318.svg" srcset="/img/loading.gif" lazyload alt="Kafka优雅应用">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/70076318/" target="_self">
@@ -768,7 +787,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/70076318/" target="_self">
+      <a class="index-excerpt " href="/yuque/70076318/" target="_self">
         <div>
           消息分发规则producer用partitioner.class来配置消息分发策略 partition.class默认值：org.apache.kafka.clients.producer.internals.DefaultPartitioner，其逻辑为；  如果key为null就会round-rabin 如果key不为null就会进行hash，然后对partition.size取模，类似于ha
         </div>
@@ -816,11 +835,11 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/Kafka/">#Kafka</a>
-            
               <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">#消息队列</a>
             
               <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">#性能优化</a>
+            
+              <a href="/tags/Kafka/">#Kafka</a>
             
           </div>
         
@@ -831,7 +850,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/67841132/" target="_self">
+          <img src="/covers/67841132.svg" srcset="/img/loading.gif" lazyload alt="分布式一致性算法">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/67841132/" target="_self">
@@ -840,7 +865,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/67841132/" target="_self">
+      <a class="index-excerpt " href="/yuque/67841132/" target="_self">
         <div>
           在分布式下处理数据一致性的算法。 一致性先理解一下什么叫一致性。多份数据保持一致性。 有如下场景：  多份相同的数据，在一处修改，又或是一份数据，存储在不同的数据存储节点。保证多份一致。	就比如mysql的主从一致；    业务方面，涉及到多个有状态的服务，一个业务变更多份不同的数据，数据之间也要保持整体一致。比如下单需增加订单数量，扣减库存；   什么情况下会导致不一致？ 只要有一份数据修改失败
         </div>
@@ -905,7 +930,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/68911719/" target="_self">
+          <img src="/covers/68911719.svg" srcset="/img/loading.gif" lazyload alt="基于MQ的分布式事务解决方案">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/68911719/" target="_self">
@@ -914,7 +945,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/68911719/" target="_self">
+      <a class="index-excerpt " href="/yuque/68911719/" target="_self">
         <div>
           这个技术属于分布式消息中间件的实战应用。 事务是一个难点，分布式事务更是难上加难的一个知识点，希望能够理解和掌握。尤其金融类公司，数据非常重要，后台架构是分布式的企业，这个算是基本要求了。且这个是一个实际应用的问题，如果项目上没有用过的话，面试的时候很难应答，所以课后要多练习。本次使用RabbitMQ来作为中间件方案，内容包括：  RabbitMQ的简单介绍以及必须掌握的5个核心概念； 分布式事务
         </div>
@@ -1034,31 +1065,6 @@
     </div>
   
   
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
   
   
 </div>
@@ -1109,8 +1115,6 @@
 
 
 
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

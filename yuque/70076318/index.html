@@ -23,40 +23,15 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="消息分发规则producer用partitioner.class来配置消息分发策略 partition.class默认值：org.apache.kafka.clients.producer.internals.DefaultPartitioner，其逻辑为；  如果key为null就会round-rabin 如果key不为null就会进行hash，然后对partition.size取模，类似于ha">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8ce628e342013746238ac12ebeedf823723eb833b824284ff8faef6ce2e5ea8e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/09a196eafa1439fee4d8f47ad9abf4eff104253bc3277b990fca7b6db88bed4c.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/7ca73d6bd7e5226dbe30be3f848684033f62363026635e52fe139c82d45ca27a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c1f3579a87ef03f2d25c33e5de578d1a8563297418f53109f147c6cffd89b95a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/23b01ceb48dd9a63e69580b8c7c744c7711a07016af47f6c62c73dcde583158a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/dae0193c0ca73cc5d2b0f9cc85d9d9b60d9095e6068ae746d8391f49ec79f08d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0de55031a52c88e37eb789df95f70d4445c559140810f07f59aa1e84b33a763d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e2dcce92f3abf2e681c79bcbced7d1909defebad931518122499e10bb95cb92c.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/458c7da3c002df73d22dd45a77fc22a2f6c822f6d3e3bc8160658cfb388192e3.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/1efa2ede8755bb3f33ed265594d0154373affb901e7f1b9bd24f61f43a0589a9.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a0727f576861e6a82bbe22ce7cb72c32b07a7da748bc6c37e45dfba43f8e2ac0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a0070442f889997efcc14e3d2e115cab55b0f821ebe448f80fc3b80fd8ec4fa4.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8e9dfde712d825963eca5646776db2f46a43faff842013ea8ce64a629003acb5.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/20ccbd67c84298484b9a2406b5c028453b9c49f5ada909fb972150f7356f2a30.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/064baf735da044d726c5e6f60d4fcd29a137a98b94e3465ac35617a17bcce81f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a016d76b7bdb25e4640522a6e869fa1cc57a4a53a213e45b3d553aac475e027c.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/850212d6949ad8fa38583dd6d06ba749090e45ef873e2a6f874978a00553ae03.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a5f575037c92da9461d80479993640f306e6414e44bf8b9d44b823e818199b45.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8a4663eb5d3271ee0d013848ffe4cb81547c9fbb293d682205a4127621497a47.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c7543ce54d4d95ff8d0334e2f39b1ca43c54a7a618db329a0a5ad1207a688181.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/6206c5a294500553f9f7549cda2d0f9e55878e172d94cd3e9dde5625fa44ea6c.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/40da6b1e6981838fd2fc26bc7681d8dd38c6ba0bb9a0fac7be669557f8ce2dee.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f46e2999159e49e5a187932bf7f7899ea218533e2e341e1deef59da7b4a1e838.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/8d89791be300727115329ba5b573d58caf240cc4bd62e954304f4bbf7ae2772f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0f8b43f8a5fae7168e40aeaa2140afb4249bdde30ee5bb9c8ea207a9d12c910d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/2a0fed3a974aaa6efed3860044fba89d8a5ba30b86d17f15d638ade5d64f607d.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/70076318.svg">
 <meta property="article:published_time" content="2022-03-21T03:17:22.000Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.622Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.587Z">
 <meta property="article:author" content="Jerry JIANG">
-<meta property="article:tag" content="Kafka">
 <meta property="article:tag" content="消息队列">
 <meta property="article:tag" content="性能优化">
+<meta property="article:tag" content="Kafka">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/8ce628e342013746238ac12ebeedf823723eb833b824284ff8faef6ce2e5ea8e.png">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/70076318.svg">
   
   
   
@@ -103,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -113,35 +88,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -254,7 +200,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/70076318.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -300,14 +246,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -500,11 +438,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Kafka/" class="print-no-link">#Kafka</a>
-      
         <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="print-no-link">#消息队列</a>
       
         <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="print-no-link">#性能优化</a>
+      
+        <a href="/tags/Kafka/" class="print-no-link">#Kafka</a>
       
     </div>
   
@@ -583,37 +521,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -709,31 +616,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -878,8 +760,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

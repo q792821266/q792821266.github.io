@@ -65,7 +65,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -75,35 +75,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -253,7 +224,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/96108759/" target="_self">
+          <img src="/covers/96108759.svg" srcset="/img/loading.gif" lazyload alt="服务网关Zuul">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/96108759/" target="_self">
@@ -262,7 +239,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/96108759/" target="_self">
+      <a class="index-excerpt " href="/yuque/96108759/" target="_self">
         <div>
           为什么要用网关 存在一些典型的问题：  外部客户端无法发现服务。客户端种类多，并没有集成服务注册发现机制 服务地址无法访问。微服务实例众多，从安全性及ip资源的角度考虑，不会直接对公网开放 安全认证复杂。客户端直调服务实例，处于安全角度，每个角度都需要实现权限认证等功能  网关特性网关相当于进入家里的大门，我们用的智能门锁就提供权限校验的功能，其实这是很类似的。 为了解决上面的典型问题，网关必须有
         </div>
@@ -325,7 +302,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/200588690/" target="_self">
+          <img src="/covers/200588690.svg" srcset="/img/loading.gif" lazyload alt="声明式接口调用Fegin">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/200588690/" target="_self">
@@ -334,7 +317,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/200588690/" target="_self">
+      <a class="index-excerpt " href="/yuque/200588690/" target="_self">
         <div>
           简介Feign是一个声明式的Web服务调用客户端工具，让Web接口调用和普通Java接口调用一样便捷。 支持对请求参数和响应的编码与解码，及自定义编解码器 支持与Ribbon和Eureka、Hystrix等组件的集成 SpringCloud对于Feign的增强和改造  将Spring MVC的注解和Feign客户端的定义进行结合 支持使用Spring Web的HttpMessageConverte
         </div>
@@ -397,7 +380,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/234286897/" target="_self">
+          <img src="/covers/234286897.svg" srcset="/img/loading.gif" lazyload alt="异步日志">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/234286897/" target="_self">
@@ -406,7 +395,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/234286897/" target="_self">
+      <a class="index-excerpt " href="/yuque/234286897/" target="_self">
         <div>
           在 Spring Boot 中集成 异步日志，最常用的方式是通过 **Logback 的 **AsyncAppender。它可以将日志事件异步地发送到目标 appender（如文件、控制台、ELK 等），从而避免日志写入阻塞主线程，提升性能。  ✅ 示例：集成异步日志到审计日志方案一、修改 logback-spring.xml 配置123456789101112131415161718192021
         </div>
@@ -469,7 +458,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/234284174/" target="_self">
+          <img src="/covers/234284174.svg" srcset="/img/loading.gif" lazyload alt="日志集成ELK">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/234284174/" target="_self">
@@ -478,7 +473,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/234284174/" target="_self">
+      <a class="index-excerpt " href="/yuque/234284174/" target="_self">
         <div>
           要实现 异步输出审计日志到 ELK（Elasticsearch + Logstash + Kibana）平台，你可以结合 Logback 的 AsyncAppender 和 Logstash 的 TCP/HTTP 接收器，将日志以结构化格式（如 JSON）发送到 ELK。下面是完整的集成方案：  ✅ 步骤一：配置 Logback 异步输出到 Logstash修改 logback-spring.xm
         </div>
@@ -526,9 +521,9 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/Logback/">#Logback</a>
-            
               <a href="/tags/ELK/">#ELK</a>
+            
+              <a href="/tags/Logback/">#Logback</a>
             
               <a href="/tags/%E5%AE%A1%E8%AE%A1%E6%97%A5%E5%BF%97/">#审计日志</a>
             
@@ -541,7 +536,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/234282948/" target="_self">
+          <img src="/covers/234282948.svg" srcset="/img/loading.gif" lazyload alt="日志中加入TraceID">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/234282948/" target="_self">
@@ -550,7 +551,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/234282948/" target="_self">
+      <a class="index-excerpt " href="/yuque/234282948/" target="_self">
         <div>
           在日志中添加 traceId 是实现分布式链路追踪和审计日志关联性的关键步骤。下面是完整的实现方案，适用于 Spring Boot + Logback + ELK 的场景。  ✅ 什么是 traceId？traceId 是一个唯一标识符，用于标记一次请求在整个系统中的生命周期。它可以帮助你：  追踪请求在多个服务之间的流转 将日志、审计、异常等信息关联起来 在 Kibana 中快速定位某个请求的所
         </div>
@@ -613,7 +614,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/234112295/" target="_self">
+          <img src="/covers/234112295.svg" srcset="/img/loading.gif" lazyload alt="Spring Boot 2.x-Spring Boot 3.x">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/234112295/" target="_self">
@@ -622,7 +629,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/234112295/" target="_self">
+      <a class="index-excerpt " href="/yuque/234112295/" target="_self">
         <div>
           文档根据Microsoft Copilot Chat生成内容整理，请仔细甄别  Spring Boot 3.0是一次重大的升级，相较于Spring Boot 2.0 带来许多关键变化和改进。  🚀 核心升级点对比：Spring Boot 2.0 vs 3.0   升级项 Spring Boot 2.0 Spring Boot 3.0    Java 版本要求 最低 Java 8 最低 Java
         </div>
@@ -685,7 +692,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/233060052/" target="_self">
+          <img src="/covers/233060052.svg" srcset="/img/loading.gif" lazyload alt="限流">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/233060052/" target="_self">
@@ -694,7 +707,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/233060052/" target="_self">
+      <a class="index-excerpt " href="/yuque/233060052/" target="_self">
         <div>
           限流是分布式微服务中需要考虑的一个问题。 常见做法🧠 一、常见限流算法及优缺点   算法 原理 优点 缺点 适用场景    固定窗口计数 在固定时间窗口内计数，如每秒最多100次 实现简单，性能高 边界问题明显，突发流量可能超限 简单接口限流   滑动窗口计数 记录每次请求时间，统计最近时间段内请求数 精度高，平滑流量 实现复杂，性能略低 精细限流控制   令牌桶（Token Bucket） 固
         </div>
@@ -759,7 +772,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/232515563/" target="_self">
+          <img src="/covers/232515563.svg" srcset="/img/loading.gif" lazyload alt="分布式事务">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/232515563/" target="_self">
@@ -768,7 +787,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/232515563/" target="_self">
+      <a class="index-excerpt " href="/yuque/232515563/" target="_self">
         <div>
           分布式事务指在分布式系统中，多个服务和数据库之间需要保持数据一致性的事务操作。由于分布式系统的复杂性，实现一致性具有挑战性。以下是几种主流的分布式事务解决方案。  简介方案没有孰优孰劣，只有适用场景的不同。理解CAP（Consistency, Availability, Partition tolerance）的原理对分布式事务的设计会有一定的帮助。 两阶段提交（2PC，Two-Phase Com
         </div>
@@ -833,7 +852,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/231048501/" target="_self">
+          <img src="/covers/231048501.svg" srcset="/img/loading.gif" lazyload alt="身份验证与鉴权">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/231048501/" target="_self">
@@ -842,7 +867,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/231048501/" target="_self">
+      <a class="index-excerpt " href="/yuque/231048501/" target="_self">
         <div>
           以下内容由Microsoft Copilot提供，请自行甄别  LDAP🧠 LADP是什么？为什么出现？✅ 定义LDAP（Lightweight Directory Access Protocol）是一种用于访问和管理目录服务的协议。目录服务是一种专门优化用于读取的数据库，常用于存储用户、组织、设备等信息 ✅ 出现的背景在企业种，随着用户数量和系统复杂度的增加，传统的数据库或文件系统难以高效管
         </div>
@@ -905,7 +930,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/82563153/" target="_self">
+          <img src="/covers/82563153.svg" srcset="/img/loading.gif" lazyload alt="客户端负载均衡-Ribbon">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/yuque/82563153/" target="_self">
@@ -914,7 +945,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/yuque/82563153/" target="_self">
+      <a class="index-excerpt " href="/yuque/82563153/" target="_self">
         <div>
           客户端负载均衡，由客户端自行选择调用哪个服务提供者。  Ribbon集成 引入jar  1234&lt;dependency&gt;	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;	&lt;artifactId&gt;spring-cloud-starter-netflix-ribbon&lt;/artifactId&gt;&lt;
         </div>
@@ -1032,31 +1063,6 @@
     </div>
   
   
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
   
   
 </div>
@@ -1107,8 +1113,6 @@
 
 
 
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

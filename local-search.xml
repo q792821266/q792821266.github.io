@@ -24,9 +24,9 @@
       
       <tag>成本优化</tag>
       
-      <tag>视频生成</tag>
-      
       <tag>多模态</tag>
+      
+      <tag>视频生成</tag>
       
     </tags>
     
@@ -86,9 +86,9 @@
       
       <tag>Agent</tag>
       
-      <tag>多模态</tag>
-      
       <tag>RAG</tag>
+      
+      <tag>多模态</tag>
       
     </tags>
     
@@ -212,9 +212,9 @@
       
       <tag>Hexo</tag>
       
-      <tag>工作流</tag>
-      
       <tag>提示词</tag>
+      
+      <tag>工作流</tag>
       
     </tags>
     
@@ -735,9 +735,9 @@
     
     <tags>
       
-      <tag>Logback</tag>
-      
       <tag>ELK</tag>
+      
+      <tag>Logback</tag>
       
       <tag>审计日志</tag>
       
@@ -1318,11 +1318,11 @@
     
     <tags>
       
-      <tag>kafka</tag>
-      
       <tag>middileware</tag>
       
       <tag>mq</tag>
+      
+      <tag>kafka</tag>
       
     </tags>
     
@@ -1787,11 +1787,11 @@
     
     <tags>
       
-      <tag>Kafka</tag>
-      
       <tag>消息队列</tag>
       
       <tag>性能优化</tag>
+      
+      <tag>Kafka</tag>
       
     </tags>
     
@@ -1884,11 +1884,11 @@
     
     <tags>
       
-      <tag>消息队列</tag>
-      
       <tag>RabbitMQ</tag>
       
       <tag>AMQP</tag>
+      
+      <tag>消息队列</tag>
       
     </tags>
     

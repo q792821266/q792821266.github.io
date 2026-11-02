@@ -23,44 +23,15 @@
 <meta property="og:site_name" content="Blogs by Jerry">
 <meta property="og:description" content="本文按 JDK 7 与 JDK 8 的实现分别讨论。截图保留原学习笔记，文字对容量、树化条件和跳表结构作了校正；不同 JDK 更新版本的细节应结合对应源码阅读。  学习这部分之前先说明下，这个部分涉及的源码比较多，需要一定的逻辑思维能力及一定的学习能力。每个人的学习方法都不一样，也没办法传授，我们要在学习中找到适合自己的学习方法。推荐一本书《金字塔原理》，能很好的梳理及提升我们的逻辑思维能力和表">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/68b15b2d65ac7a70bf1288919a9b7f7fb7ae8f9190ecc0b700c2e2d5a396ef4e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b3a041874c70e2b02d678ca1c3ae803027bb72ac59b965397dc5ccc27508a022.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3e17647793106d0c2fa30dad8f5e44c4845ace399d11fdb303ecc9f30003ce2f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/05827e2492b89779feed515bbdb0679893fee18c9ea05c9dc23b8478288712d0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/be1bfbb65e50c3f1b893c44511a0786cd18cff8c6af384e64fe601efc2e45447.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/efc1980e5a0ed5df70175ee099d92761e1918681c277119e85ad4d5854a766c9.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/49cf97a1bbe8f6afe1260c43e31ca1ed9376082588f159db197a3086e587434f.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/c5e97838f4ef671e06643251bc4025e4cb7de4df66643efc1de0ccad6669dac6.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/26df04216f28087f871efd9d6eee7dff6adcf4ea465ef241505796b0d38c28d3.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/3f32abf819a4967a4689613399faf83aa5bf6ba0f3f30ef2cf5f6820f7cbbfbe.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/4f970ac44353ab058b57ba518b9f4ca33a5db80492ff08a86d914aad59a3cbe9.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/95e122a431baa772903fa958a0e17a18491e8db35512fdc7d373443459aecfcc.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/b3427f958aff1c23b4cb937e95450e34872e714c9391b8af549de2b9bfb0d5e2.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/88fc9e795d1253f0692a8dd7ad82ba5767e813b5b56baee885ad7bd1ba60ae8d.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d88830f90e18b17f7ba7c2132a4ef3dfda2582b588d1af6b816dcbb31c3c6cdd.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/a93653e9935ce62b6b3b6f287123d58dab609db29c8af900762e967b94dd8176.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/715f6a2fb2796b13a28ef0678542e4914be8918e1e633d2662c1064aa2f2eb67.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/635a2b68ead542c8ecd2b16ba6bf55a5a3147f379b7ba8dedaf6553a92aa4569.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/917704d5a5f64a4a919cedee5b38aba132c60c9d5f18229fae887c254e997659.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/679e8b628eb38366a49d80e26f78d450e93e11887b1978b6e693a224e61cabe0.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/bc2c568c8e80f01c55a248a993293a71453bbfc6dacd37babc585a69ad717126.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e2f1998ba77ba379cd9e0f476025d578ade60f9815a1e5a7154ca4c7a2f615e7.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/23770c3954718a1c81d6799e2723165fec05dd161d98536b996e79b0818ec38c.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/9ef286b0716ac220d57c161cf58aa21ad4ede9db9e8e481ac0f9ce325781e9f7.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/ec826eb752d2a66b581990bf67e5fde41094eb8981e5161b595ae7ab1ce3911e.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/d60d352d66721cb0fe03297de3235ce9eb228ce5fd6e946d01fd7460b7ec13fa.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/0be91ba550cbac658242c51fc95673f00ea1160cb4157e5307742277b9ef170a.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/e68afadbe5fd51df11a4b4de34ab8ac7c1a1b22d4937d9d44577a53b2400345b.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/44e500e3fb7bb7b57d2f9070f1c07cbe253f2bf684fc2611538b82c1eca893a6.png">
-<meta property="og:image" content="https://q792821266.github.io/yuque-assets/f399229d205880aeaa94c617c62094ad2a5ff23e2d05cf9ed39e9984f7160639.png">
+<meta property="og:image" content="https://q792821266.github.io/covers/13526688.svg">
 <meta property="article:published_time" content="2022-02-06T04:46:09.000Z">
-<meta property="article:modified_time" content="2026-11-01T12:03:19.649Z">
+<meta property="article:modified_time" content="2026-11-02T13:24:00.412Z">
 <meta property="article:author" content="Jerry JIANG">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="HashMap">
 <meta property="article:tag" content="ConcurrentHashMap">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://q792821266.github.io/yuque-assets/68b15b2d65ac7a70bf1288919a9b7f7fb7ae8f9190ecc0b700c2e2d5a396ef4e.png">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/13526688.svg">
   
   
   
@@ -107,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","app_key":"7qo176gafyne1QzTEB2XDr6N","server_url":"https://vizjh6mw.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -117,35 +88,6 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
-
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
-      }
-    </script>
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
 
 
   
@@ -258,7 +200,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/covers/13526688.svg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -304,14 +246,6 @@
     
 
     
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
-        </span>
-        
-      
     
   </div>
 
@@ -562,37 +496,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"vIZjh6mwkpaLyR4EGVpYtKnD-gzGzoHsz","appKey":"7qo176gafyne1QzTEB2XDr6N","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -688,31 +591,6 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
   
   
   
@@ -857,8 +735,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
