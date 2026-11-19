@@ -1,0 +1,11 @@
+/* Wider article content on desktop; retain Fluid's mobile spacing. */
+@media (min-width: 1200px) {
+  #board-ctn {
+    max-width: 1280px;
+  }
+
+  .post-content {
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+}
