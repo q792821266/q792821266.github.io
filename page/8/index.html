@@ -226,6 +226,402 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/63207191/" target="_self">
+          <img src="/covers/63207191.svg" srcset="/img/loading.gif" lazyload alt="锁相关：Synchronized从使用到原理">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/yuque/63207191/" target="_self">
+          锁相关：Synchronized从使用到原理
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/yuque/63207191/" target="_self">
+        <div>
+          Java中锁的概念自旋锁当一个线程在获取锁的时候，如果锁已经被其他线程获取，那么该线程将循环等待，然后不断判断锁是否能够被成功获取，直到获取到锁才会退出循环。 前面一篇其实已经通过CAS机制利用自旋来对变量进行修改了。 乐观锁在加锁的时候，我们假定没有冲突，直接修改，在修改数据时如果发现数据和之前获取的不一致，则读最新数据，修改后重试修改。不会一开始就加锁，只有在修改的时候才会加锁，读取的时候不加
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-28 11:56" pubdate>
+              2022-01-28
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="category-chain-item">并发编程</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Java/">#Java</a>
+            
+              <a href="/tags/%E9%94%81/">#锁</a>
+            
+              <a href="/tags/Synchronized/">#Synchronized</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/16436242/" target="_self">
+          <img src="/covers/16436242.svg" srcset="/img/loading.gif" lazyload alt="J.U.C并发编程中的锁">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/yuque/16436242/" target="_self">
+          J.U.C并发编程中的锁
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/yuque/16436242/" target="_self">
+        <div>
+          锁Lock包类的层次结构 ReentrantReadWriteLock是ReadWirteLock接口的典型实现，里面包含两把锁ReadLock和WriteLock，这两个都是Lock接口的实现。本次会先说明Lock接口的结构，与ReentrantLock的使用。 Lock接口中的方法 前四个方法都是提供获取锁的方法：  lock()：不死不休，意味着拿不到锁不会停止，会一直自旋。 tryLock
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-07 13:33" pubdate>
+              2022-01-07
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="category-chain-item">并发编程</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Java/">#Java</a>
+            
+              <a href="/tags/JUC/">#JUC</a>
+            
+              <a href="/tags/ReentrantLock/">#ReentrantLock</a>
+            
+              <a href="/tags/%E9%94%81/">#锁</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/63083367/" target="_self">
+          <img src="/covers/63083367.svg" srcset="/img/loading.gif" lazyload alt="原子性：Atomic相关和CAS机制">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/yuque/63083367/" target="_self">
+          原子性：Atomic相关和CAS机制
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/yuque/63083367/" target="_self">
+        <div>
+          原子操作概念什么是原子性问题，DDDD，简单来说如果你执行的操作中间有可能被别的操作插一脚，那你所执行的操作就不具备原子性。 具备原子性意味着，操作不可分割。 下面用较长的代码示例分析与阐述什么是原子性： 1234567public class Counter {    volatile int i = 0;    public void add() {        i++;    }}  12
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-12-22 13:00" pubdate>
+              2021-12-22
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="category-chain-item">并发编程</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Java/">#Java</a>
+            
+              <a href="/tags/CAS/">#CAS</a>
+            
+              <a href="/tags/Atomic/">#Atomic</a>
+            
+              <a href="/tags/%E5%8E%9F%E5%AD%90%E6%80%A7/">#原子性</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/53639831/" target="_self">
+          <img src="/covers/53639831.svg" srcset="/img/loading.gif" lazyload alt="Spring循环依赖">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/yuque/53639831/" target="_self">
+          Spring循环依赖
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/yuque/53639831/" target="_self">
+        <div>
+          什么是循环依赖  答：循环依赖就是 对象A依赖B 的同时，B也依赖了A。  spring如何解决循环依赖  答：只有在满足 循环依赖的Bean为单例且依赖注入的方式不能全是构造器注入的方式（并不是只能解决setter注入方式） 两种情况时，spring才能解决。spring通过三级缓存解决循环依赖。其中一级缓存为单例池（singletonObjects），二级缓存为早期曝光对象（earlySin
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-09-17 15:29" pubdate>
+              2021-09-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/Spring/" class="category-chain-item">Spring</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Spring/">#Spring</a>
+            
+              <a href="/tags/%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96/">#循环依赖</a>
+            
+              <a href="/tags/%E4%B8%89%E7%BA%A7%E7%BC%93%E5%AD%98/">#三级缓存</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/yuque/47875142/" target="_self">
+          <img src="/covers/47875142.svg" srcset="/img/loading.gif" lazyload alt="centos下配置sftp">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/yuque/47875142/" target="_self">
+          centos下配置sftp
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/yuque/47875142/" target="_self">
+        <div>
+          参考自：https://blog.csdn.net/qq_36735986/article/details/107779756  首先要安装sftp  用ssh -v检查本机是否安装了openssh，如果没有就使用以下命令安装  yum install -y openssh openssh-server  yum install openssh  systemctl enable sshd  sy
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-26 23:49" pubdate>
+              2021-06-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E8%BF%90%E7%BB%B4/" class="category-chain-item">云原生与运维</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E8%BF%90%E7%BB%B4/Linux%E4%B8%8E%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" class="category-chain-item">Linux与环境配置</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/CentOS/">#CentOS</a>
+            
+              <a href="/tags/Linux/">#Linux</a>
+            
+              <a href="/tags/SFTP/">#SFTP</a>
+            
+              <a href="/tags/SSH/">#SSH</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/yuque/47653565/" target="_self">
           <img src="/covers/47653565.svg" srcset="/img/loading.gif" lazyload alt="maven编译出现Java heap space">
         </a>

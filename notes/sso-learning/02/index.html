@@ -1,0 +1,1091 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="第 2 篇：OAuth 授权、JWT 与 OIDC 登录更新日期：2026-11-20覆盖全套第 6～8 节。本系列保留原有章节编号，便于对应先前的讨论。 学习路线 · 上一篇 · 下一篇 先看第三方日程助手怎样被授权读取 OA 日程，再理解令牌格式，最后引入使用公司账号登录助手。 承接第 1 篇：小林已能通过公司身份平台登录 OA¹ 和 CRM²。现在公司接入第三方日程助手，出现资源访问授权和助">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单点登录与身份认证 02：OAuth 授权、JWT 与 OIDC 登录">
+<meta property="og:url" content="https://q792821266.github.io/notes/sso-learning/02/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="第 2 篇：OAuth 授权、JWT 与 OIDC 登录更新日期：2026-11-20覆盖全套第 6～8 节。本系列保留原有章节编号，便于对应先前的讨论。 学习路线 · 上一篇 · 下一篇 先看第三方日程助手怎样被授权读取 OA 日程，再理解令牌格式，最后引入使用公司账号登录助手。 承接第 1 篇：小林已能通过公司身份平台登录 OA¹ 和 CRM²。现在公司接入第三方日程助手，出现资源访问授权和助">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/covers/sso-learning.png">
+<meta property="article:published_time" content="2026-11-20T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-20T14:09:50.329Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="SSO">
+<meta property="article:tag" content="身份认证">
+<meta property="article:tag" content="OAuth">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/sso-learning.png">
+  
+  
+  
+  <title>单点登录与身份认证 02：OAuth 授权、JWT 与 OIDC 登录 - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/banners/sso-learning.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="单点登录与身份认证 02：OAuth 授权、JWT 与 OIDC 登录"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-11-20 12:00" pubdate>
+          2026年11月20日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          68 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">单点登录与身份认证 02：OAuth 授权、JWT 与 OIDC 登录</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="第-2-篇：OAuth-授权、JWT-与-OIDC-登录"><a href="#第-2-篇：OAuth-授权、JWT-与-OIDC-登录" class="headerlink" title="第 2 篇：OAuth 授权、JWT 与 OIDC 登录"></a>第 2 篇：OAuth 授权、JWT 与 OIDC 登录</h1><p>更新日期：2026-11-20<br>覆盖全套第 6～8 节。本系列保留原有章节编号，便于对应先前的讨论。</p>
+<p><a href="/notes/sso-learning/">学习路线</a> · <a href="/notes/sso-learning/01/">上一篇</a> · <a href="/notes/sso-learning/03/">下一篇</a></p>
+<p>先看第三方日程助手怎样被授权读取 OA 日程，再理解令牌格式，最后引入使用公司账号登录助手。</p>
+<p>承接<a href="/notes/sso-learning/01/">第 1 篇</a>：小林已能通过公司身份平台登录 OA<a href="#term-01" title="OA，Office Automation，办公自动化。本文指内部办公系统，常用于请假、报销、审批、公告和日程。">¹</a> 和 CRM<a href="#term-02" title="CRM，Customer Relationship Management，客户关系管理。本文指记录客户资料、联系记录、销售跟进和商机的系统，例如记录某位客户的需求与下次跟进时间。">²</a>。现在公司接入第三方日程助手，出现资源访问授权和助手自身登录两个需求。</p>
+<blockquote>
+<p>悬停名词旁的上标可查看解释，点击上标可跳到本篇文末注释。</p>
+</blockquote>
+<h2 id="6-日程助手想读-OA-数据：引入-OAuth-委托授权"><a href="#6-日程助手想读-OA-数据：引入-OAuth-委托授权" class="headerlink" title="6. 日程助手想读 OA 数据：引入 OAuth 委托授权"></a>6. 日程助手想读 OA 数据：引入 OAuth 委托授权</h2><h3 id="6-1-新需求：让第三方替小林做一件有限的事"><a href="#6-1-新需求：让第三方替小林做一件有限的事" class="headerlink" title="6.1 新需求：让第三方替小林做一件有限的事"></a>6.1 新需求：让第三方替小林做一件有限的事</h3><p>公司接入第三方日程助手，希望它每天读取小林的 OA 日程并提醒他。</p>
+<p>日程助手属于另一套应用。它需要调用 OA 的日程 API<a href="#term-30" title="API，Application Programming Interface，应用程序编程接口。本文通常指后端供程序调用的入口，例如查询小林日程的接口。">³⁰</a>，却不应该拿到小林的 OA 密码，也不应该拥有删除报销、读取所有员工资料等权限。</p>
+<p>这时的问题是：</p>
+<blockquote>
+<p>小林如何允许日程助手，在有限范围和时间内，代表自己访问 OA 日程？</p>
+</blockquote>
+<p>这叫委托授权。OAuth 2.0<a href="#term-37" title="OAuth 2.0：开放授权框架。应用申请受限的资源访问能力。">³⁷</a> 就是处理这类问题的授权框架。</p>
+<p>这个名称对应的正是本例要做的事：小林不给日程助手自己的密码，而是通过身份平台授予有限的访问范围；平台按规则签发访问令牌，助手用令牌调用 OA，OA 再检查是否允许访问。</p>
+<p>OAuth 2.0 为这类交互约定参与角色、申请授权、取得令牌和使用令牌等规则。它不是另一个需要登录的业务系统，也不是某种令牌文件格式。接下来几节会把上述步骤具体展开。</p>
+<p>后文为简洁而写的“OAuth”，均指这里的 OAuth 2.0，不是在引入另一个概念。先记住它解决的问题：让应用在没有用户密码的情况下，获得受限的资源访问能力。</p>
+<h3 id="6-2-不能直接复用-OA-的浏览器会话吗"><a href="#6-2-不能直接复用-OA-的浏览器会话吗" class="headerlink" title="6.2 不能直接复用 OA 的浏览器会话吗"></a>6.2 不能直接复用 OA 的浏览器会话吗</h3><p>OA Session<a href="#term-38" title="Session：会话。应用维持登录状态。">³⁸</a> Cookie 是 OA 为浏览器交互建立的凭据，通常代表较广的应用会话。把它交给第三方，难以清楚表达“只读日程”，也会让第三方获得不必要的能力。</p>
+<p>我们需要一种专门的访问凭证，说明被允许的范围，并能管理有效期和撤销。OAuth 把这种凭证称为 Access Token<a href="#term-39" title="Access Token：访问令牌。给 API 验证访问授权。">³⁹</a>，访问令牌。</p>
+<h3 id="6-3-谁来签发-Access-Token"><a href="#6-3-谁来签发-Access-Token" class="headerlink" title="6.3 谁来签发 Access Token"></a>6.3 谁来签发 Access Token</h3><p>系统需要一个组件来完成这些职责：</p>
+<ul>
+<li>识别提出申请的应用。</li>
+<li>确认用户身份及授权依据，必要时让用户确认范围。</li>
+<li>按策略签发和管理令牌。</li>
+</ul>
+<p>OAuth 把承担这组职责的角色叫 Authorization Server，即授权服务器。</p>
+<p><strong>它是职责名称，不要求物理上增加一套服务器。</strong> 现有统一认证平台如果支持 OAuth，就可以同时承担这组职责。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs text">同一套身份平台<br>  ├─ 面向用户认证：验证小林身份，维护中心会话<br>  └─ 面向 OAuth 授权：处理授权请求，签发访问令牌<br><br>它可以同时被描述为“认证中心”和“OAuth 授权服务器”。<br></code></pre></td></tr></table></figure>
+
+<p>也可以将这些职责拆到不同服务。但拆分是部署与产品设计选择，不是看到新术语就必须增加一台服务器。</p>
+<h3 id="6-4-四个角色，一一对应到本例"><a href="#6-4-四个角色，一一对应到本例" class="headerlink" title="6.4 四个角色，一一对应到本例"></a>6.4 四个角色，一一对应到本例</h3><table>
+<thead>
+<tr>
+<th>OAuth 角色</th>
+<th>本例是谁</th>
+<th>做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Resource Owner，资源所有者</td>
+<td>小林</td>
+<td>决定是否允许日程助手访问自己的日程，受平台策略限制</td>
+</tr>
+<tr>
+<td>Client<a href="#term-28" title="Client，客户端。在这里指接入某种服务或协议的应用，例如接入 CAS 的 OA；OAuth 中则指申请访问授权的应用，不一定是浏览器。">²⁸</a>，客户端</td>
+<td>日程助手</td>
+<td>申请访问，并携带令牌调用 API</td>
+</tr>
+<tr>
+<td>Authorization Server，授权服务器</td>
+<td>具备 OAuth 能力的统一身份平台</td>
+<td>处理授权并签发令牌</td>
+</tr>
+<tr>
+<td>Resource Server<a href="#term-40" title="Resource Server：资源服务器。提供受保护的 API。">⁴⁰</a>，资源服务器</td>
+<td>提供日程 API 的 OA</td>
+<td>验证令牌并执行访问控制</td>
+</tr>
+</tbody></table>
+<p>这里的 Client 是申请访问资源的应用，不专指浏览器。OA 被叫作资源服务器，是因为它提供受保护的 API；它仍然是原来的 OA。</p>
+<h3 id="6-5-新问题：访问令牌怎样安全交给日程助手后端"><a href="#6-5-新问题：访问令牌怎样安全交给日程助手后端" class="headerlink" title="6.5 新问题：访问令牌怎样安全交给日程助手后端"></a>6.5 新问题：访问令牌怎样安全交给日程助手后端</h3><p>先明确本例的部署：日程助手有自己的后端，后端负责定时读取 OA 日程，浏览器只负责用户点击、跳转和交互。访问令牌需要交给日程助手后端，由后端保存和使用。</p>
+<p>一个直观想法是沿用浏览器转交数据的方式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">认证中心 → 把访问令牌交给浏览器 → 浏览器转交日程助手<br></code></pre></td></tr></table></figure>
+
+<p>为什么这时要继续考虑另一种交付方式？因为这里的访问令牌具有实际的 API 访问能力。对于“持有即可使用”的访问令牌，拿到令牌的人可能在有效期和授权范围内调用接口，不需要知道小林的密码。</p>
+<p>如果令牌经过浏览器，就需要防止它进入不该接触它的脚本、存储、URL 历史、日志等位置。并非每次浏览器传递都会泄露，但在本例有受保护后端的前提下，可以选择减少真正访问令牌暴露给浏览器的机会。</p>
+<p><strong>这里才出现新的设计目标：浏览器必须参与跳转，但访问令牌应通过受保护的服务端连接交给符合条件的日程助手后端。</strong></p>
+<p>这不同于前面“让 OA 验证用户并建立本地会话”的问题，也不意味着<a href="/notes/sso-learning/01/">第 4 节</a>的签名凭证方案无法实现安全 SSO。</p>
+<h3 id="6-6-方案：浏览器转交授权码，后端再兑换访问令牌"><a href="#6-6-方案：浏览器转交授权码，后端再兑换访问令牌" class="headerlink" title="6.6 方案：浏览器转交授权码，后端再兑换访问令牌"></a>6.6 方案：浏览器转交授权码，后端再兑换访问令牌</h3><p>为了达到这个目标，认证中心先通过浏览器返回一个短期、一次性的授权码<a href="#term-42" title="授权码是用于兑换令牌的短期一次性中间凭证。它不是用于长期调用业务接口的访问令牌。">⁴²</a>，下面记为 T。真实协议用参数名 <code>code</code> 传递这份授权码，所以后面看到的 <code>code</code> 就是这里的 T。T 用于后续兑换，不能直接拿去读取 OA 日程；访问令牌暂时不经过浏览器。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">浏览器传递：认证中心 → 授权码 T → 浏览器 → 日程助手后端<br>服务端交付：日程助手后端 → 携带 T 等必要信息请求认证中心<br>                         ← 接收访问令牌<br></code></pre></td></tr></table></figure>
+
+<p>日程助手后端通过 HTTPS 向认证中心兑换。认证中心不仅检查 T，还按协议检查目标应用、回调约束、适用的客户端身份验证和兑换绑定条件，之后才把访问令牌直接返回给后端。<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc9700.html">R2</a></p>
+<p>以能保管应用凭据的后端为例：攻击者只截获 T，却无法满足客户端身份验证或相应兑换绑定条件，就不应兑换成功。因此，增加这一阶段的意义不只是把令牌换成一个更短的字符串，而是把“浏览器转交”与“符合条件的后端取得真正令牌”分开。</p>
+<p>现在才引入“中间凭证”这个分类：授权码位于申请授权与取得访问令牌之间，所以属于中间凭证。它不是所有登录流程都必须增加的一层，而是本节所选授权码流程中的交付机制。</p>
+<p><img src="/img/sso-learning/02_OAuth%E6%8E%88%E6%9D%83%E4%B8%8E%E6%8D%A2%E7%A0%81.svg" srcset="/img/loading.gif" lazyload alt="日程助手通过授权码取得访问令牌并调用 OA"></p>
+<p>服务端之间直接通信称为后通道<a href="#term-41" title="后通道指服务端之间直接通信，前通道指通过浏览器转交消息。">⁴¹</a>。实际接入还需要正确的事务关联和 PKCE<a href="#term-43" title="PKCE：Proof Key for Code Exchange。把授权码兑换绑定到持有 verifier 的客户端事务。">⁴³</a> 等保护，<a href="/notes/sso-learning/03/">第 9 节</a>会具体解释。不能因为使用了授权码，就省略这些规则。<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc9700.html">R2</a></p>
+<h3 id="6-7-授权码和访问令牌为什么不是同一个东西"><a href="#6-7-授权码和访问令牌为什么不是同一个东西" class="headerlink" title="6.7 授权码和访问令牌为什么不是同一个东西"></a>6.7 授权码和访问令牌为什么不是同一个东西</h3><table>
+<thead>
+<tr>
+<th>数据</th>
+<th>接收它的主要服务</th>
+<th>可以做什么</th>
+<th>被截获后要关注什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>授权码 T</td>
+<td>认证中心的令牌端点</td>
+<td>满足协议条件时，一次性兑换后续令牌</td>
+<td>防止未被授权的兑换者成功使用</td>
+</tr>
+<tr>
+<td>Access Token</td>
+<td>OA 日程 API</td>
+<td>在有效期和授权范围内访问资源</td>
+<td>防止泄露、重放和越权使用</td>
+</tr>
+</tbody></table>
+<p>只有“短期、一次性”还不够。若任何人拿着 T 都能无条件兑换，它就缺少关键的兑换约束。</p>
+<p>授权码流程主要保护取得令牌的过程。真正的持有者访问令牌如果随后从后端泄露，攻击者仍可能使用它；后端保存、传输和 API 校验仍然重要。公开客户端不能可靠保管秘密，需采用适合它的绑定机制；不能把本例的后端秘密写进前端。 </p>
+<h3 id="6-8-为什么签名或加密不能单独代替这些交付规则"><a href="#6-8-为什么签名或加密不能单独代替这些交付规则" class="headerlink" title="6.8 为什么签名或加密不能单独代替这些交付规则"></a>6.8 为什么签名或加密不能单独代替这些交付规则</h3><p>签名让 API 确认令牌来自可信签发者、内容未被改动，但不自动证明发送令牌的人就是最初得到它的应用。</p>
+<p>加密能隐藏内容，但要区分两种使用方式。如果 API 直接接受加密后的令牌 E，攻击者拿到 E 后可能原样提交，无需先解密。若将真正令牌包装后只加密给指定应用后端，只有后端能解密取出令牌，则可以保护交付，但需要相应的密钥和协议设计。</p>
+<p>因此，签名、加密和授权码不是三个互相替代的版本。它们分别涉及来源和完整性、内容保密，以及带条件的凭证交付。是否组合使用取决于协议和需求；“加密后就不会被冒用”也不是通用结论。<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7519.html">R11</a><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc6750.html">R16</a></p>
+<h3 id="6-9-授权服务器与业务权限判断并不重复"><a href="#6-9-授权服务器与业务权限判断并不重复" class="headerlink" title="6.9 授权服务器与业务权限判断并不重复"></a>6.9 授权服务器与业务权限判断并不重复</h3><p>scope<a href="#term-44" title="scope：授权范围。表达允许读取日程等能力。">⁴⁴</a> 可以按平台约定表达访问范围，例如 <code>calendar.read</code>。这个名称只是本例约定，不是所有 OAuth 平台都内置的标准 scope。</p>
+<p>平台可以签发“允许读日程”的令牌；OA 仍需检查令牌是否面向自己、是否允许当前操作，以及目标日程是否属于被授权访问的资源。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs text">授权服务器：是否向日程助手授予 calendar.read，签发什么令牌？<br>OA API：这个令牌现在有效吗？允许读哪个用户的哪条日程？<br></code></pre></td></tr></table></figure>
+
+<p>把 <code>userId=别人</code> 放进 API 参数，不应该绕过数据权限。令牌里的范围与业务资源权限要共同检查。</p>
+<p>用户授权不一定每次弹确认框，是否交互确认还取决于既有授权、管理员同意和组织策略。</p>
+<h3 id="本阶段回顾"><a href="#本阶段回顾" class="headerlink" title="本阶段回顾"></a>本阶段回顾</h3><p>基础 SSO 已在<a href="/notes/sso-learning/01/">第 3～5 节</a>完成。本节先引入受限 API 访问需求，再发现访问令牌的交付风险，最后选择授权码加后端兑换来处理。OAuth 2.0 是组织这些授权交互的框架；认证中心与授权服务器可以是同一平台承担的不同职责。</p>
+<h2 id="7-API-越来越多：为什么有时会选择-JWT"><a href="#7-API-越来越多：为什么有时会选择-JWT" class="headerlink" title="7. API 越来越多：为什么有时会选择 JWT"></a>7. API 越来越多：为什么有时会选择 JWT</h2><p>第 6 节已经用 OAuth 2.0 说明了日程助手怎样申请权限、取得访问令牌，并用令牌调用 OA。接下来保持这套交互不变，只继续追问：这份访问令牌具体长什么样，OA 怎样验证它？</p>
+<h3 id="7-1-先别假设-Access-Token-一定是-JWT"><a href="#7-1-先别假设-Access-Token-一定是-JWT" class="headerlink" title="7.1 先别假设 Access Token 一定是 JWT"></a>7.1 先别假设 Access Token 一定是 JWT</h3><p>上一步签发的 Access Token<a href="#term-45" title="Token：令牌、凭证。按其类型证明访问能力或表达认证结果。">⁴⁵</a> 完全可以只是一个随机字符串：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs text">日程助手持有：t_random_7K...<br><br>授权服务器记录：<br>  t_random_7K... → 小林、日程助手、calendar.read、OA API、到期时间等<br></code></pre></td></tr></table></figure>
+
+<p>OA 收到这个令牌后，可通过受保护的 introspection<a href="#term-46" title="introspection：令牌内省、状态查询。向授权服务器询问令牌是否有效。">⁴⁶</a> 接口向授权服务器查询它是否有效及相关元数据。这种令牌对 OA 表现为不透明令牌。OA 不能仅从这个随机字符串中读出身份和权限。<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7662.html">R7</a></p>
+<h3 id="7-2-新问题：每次都查询中心有成本"><a href="#7-2-新问题：每次都查询中心有成本" class="headerlink" title="7.2 新问题：每次都查询中心有成本"></a>7.2 新问题：每次都查询中心有成本</h3><p>如果大量 API 请求都远程查询，可能增加延迟、中心负载与可用性依赖。缓存可以减少请求，但缓存期间的撤销和权限变更又会有延迟。</p>
+<p>一种选择是让令牌携带可验证的声明，由 API 使用可信公钥本地验证。JWT<a href="#term-36" title="JWT：JSON Web Token。声明格式，可用于表达令牌，不是完整登录协议。">³⁶</a> 是可以采用的格式之一。这里先讨论常见的签名形式。</p>
+<p>这只是说明一个常见的采用动机。JWT 并不是为这一家公司发明，也不是只有这一种用途。</p>
+<h3 id="7-3-JWT-改变的是令牌表示与验证方式"><a href="#7-3-JWT-改变的是令牌表示与验证方式" class="headerlink" title="7.3 JWT 改变的是令牌表示与验证方式"></a>7.3 JWT 改变的是令牌表示与验证方式</h3><p>常见的签名 JWT 可以理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">Header：使用什么约定算法，密钥标识是什么<br>Payload：谁签发、主体是谁、给谁用、何时到期，以及约定的权限声明<br>Signature：对约定内容的数字签名<br></code></pre></td></tr></table></figure>
+
+<p>常见签名 JWT 采用 JWS<a href="#term-47" title="JWS：JSON Web Signature。JSON 数据的签名表示规范。">⁴⁷</a> 紧凑形式，由三段 Base64URL<a href="#term-48" title="Base64URL：适合 URL 等场景的文本编码。编码可还原，不提供加密保密性。">⁴⁸</a> 编码的数据组成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">header.payload.signature<br></code></pre></td></tr></table></figure>
+
+<h4 id="能解码，内容会不会泄露"><a href="#能解码，内容会不会泄露" class="headerlink" title="能解码，内容会不会泄露"></a>能解码，内容会不会泄露</h4><p>会。常见签名型 JWT 的 Header 和 Payload 可以被拿到令牌的人解码读取。签名保护来源与完整性，不隐藏内容；解码第三段只能得到签名字节，并不会得到签名私钥。</p>
+<p>因此，JWT 中只放完成目的所需、允许接收方看到的信息，不放密码或其他秘密。用户标识也可能涉及隐私。即使内容不敏感，访问令牌本身仍是凭证，被复制后可能被使用。需要隐藏内容时，可以评估加密形式或不透明令牌；HTTPS 则保护网络传输。</p>
+<h4 id="OA-API-怎样在本地验证-JWT"><a href="#OA-API-怎样在本地验证-JWT" class="headerlink" title="OA API 怎样在本地验证 JWT"></a>OA API 怎样在本地验证 JWT</h4><p>假设 Header 是下面这样。<code>kid</code> 是密钥标识，帮助接收方挑选候选公钥；<code>alg</code> 声明算法。两项在验证前都只是来自令牌的提示，不能由令牌自行决定信任规则。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;alg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;RS256&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;kid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;key-2026-01&quot;</span> <span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>OA 事先配置可信签发方、允许的算法和可信公钥来源。收到 JWT 后，OA 根据允许列表检查算法，再根据 kid 从可信公钥集合中选择候选公钥，验证 Header 与 Payload 对应的签名。OA 不能因为令牌提供了某个陌生密钥地址，就无条件相信并使用它。</p>
+<p><img src="/img/sso-learning/02_JWT%E6%9C%AC%E5%9C%B0%E9%AA%8C%E8%AF%81.svg" srcset="/img/loading.gif" lazyload alt="OA 使用可信配置和公钥在本地验证 JWT"></p>
+<p>这里的“本地验证”指验签时不必逐个令牌询问中心。OA 首次获取公钥、遇到密钥轮换时仍可能需要从可信来源更新缓存。<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc8725.html#section-3.1">JWT 安全最佳实践</a></p>
+<p>验签通过后，OA API 还要检查声明。常见检查包括：</p>
+<table>
+<thead>
+<tr>
+<th>字段或约束</th>
+<th>要回答的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>签名与允许的算法</td>
+<td>内容是否由可信签发方按约定签发、是否被改动</td>
+</tr>
+<tr>
+<td><code>iss</code></td>
+<td>是否来自我们信任的签发者</td>
+</tr>
+<tr>
+<td><code>aud</code></td>
+<td>是否发给 OA API，而不是另一个服务</td>
+</tr>
+<tr>
+<td><code>exp</code>、适用时的 <code>nbf</code></td>
+<td>现在是否处于允许使用的时间范围</td>
+</tr>
+<tr>
+<td>scope 等授权声明</td>
+<td>是否允许当前操作</td>
+</tr>
+<tr>
+<td>业务数据规则</td>
+<td>是否允许访问目标日程，租户<a href="#term-49" title="租户：需要隔离数据和权限的客户组织。同一 CRM 中的甲公司和乙公司。">⁴⁹</a>是否一致</td>
+</tr>
+</tbody></table>
+<p>不同令牌规范对字段有不同要求，不能把这张表当作任意 JWT 都通用的完整验证程序。</p>
+<h3 id="7-4-本地验证带来了什么代价"><a href="#7-4-本地验证带来了什么代价" class="headerlink" title="7.4 本地验证带来了什么代价"></a>7.4 本地验证带来了什么代价</h3><p>假设令牌还有 5 分钟到期，小林现在撤销日程助手的授权。OA 如果只验签与检查时间，不查最新状态，就可能仍接受这个令牌。</p>
+<p>因此 JWT 需要配合短有效期、撤销记录、账号状态查询或事件通知等策略。要求更及时地撤销，就要承担相应的状态和通信成本。</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>优势</th>
+<th>需要面对的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>不透明令牌加在线查询</td>
+<td>集中检查当前状态较直接</td>
+<td>查询成本、中心依赖、缓存窗口</td>
+</tr>
+<tr>
+<td>自包含 JWT 加本地验证</td>
+<td>减少逐请求远程查询</td>
+<td>撤销与权限变化、密钥轮换、声明验证</td>
+</tr>
+</tbody></table>
+<h3 id="7-5-三个不能混淆的结论"><a href="#7-5-三个不能混淆的结论" class="headerlink" title="7.5 三个不能混淆的结论"></a>7.5 三个不能混淆的结论</h3><ol>
+<li>回看第 6 节，OAuth 2.0 规定日程助手怎样申请授权和取得令牌；本节的 JWT 则回答令牌中的声明怎样表达和验证。同一套 OAuth 2.0 流程可以使用不透明令牌，也可以使用 JWT，二者不是互相替代的协议。</li>
+<li>JWT 的签名通常不隐藏内容，Base64URL 解码即可看到常见签名 JWT 的载荷。</li>
+<li>SAML 与 JWT 不构成“旧协议升级为新协议”的关系。SAML 常用 XML 身份声明，JWT 可用于不同协议与场景；不能把替换数据格式当作完成了协议迁移。</li>
+</ol>
+<p>现代 Web、移动应用和 API 场景促使团队重视 HTTP&#x2F;JSON 生态与轻量接入，但“REST<a href="#term-50" title="REST / RESTful：网络服务的架构风格 / 遵循该风格。用资源与统一接口组织服务。">⁵⁰</a> 兴起，所以 JWT 取代 SAML”不是准确的因果链。</p>
+<h2 id="8-新增“用公司账号登录日程助手”：引入-OIDC"><a href="#8-新增“用公司账号登录日程助手”：引入-OIDC" class="headerlink" title="8. 新增“用公司账号登录日程助手”：引入 OIDC"></a>8. 新增“用公司账号登录日程助手”：引入 OIDC</h2><h3 id="8-1-先区分两个需求：允许读日程，与登录日程助手"><a href="#8-1-先区分两个需求：允许读日程，与登录日程助手" class="headerlink" title="8.1 先区分两个需求：允许读日程，与登录日程助手"></a>8.1 先区分两个需求：允许读日程，与登录日程助手</h3><p>第 6～7 节解决的是：小林允许日程助手读取自己的 OA 日程，助手后端取得 Access Token，再携带它调用 OA API。这个功能叫“连接 OA 日程”，并不自动等于小林已经登录了日程助手自己的账号。</p>
+<p>现在日程助手增加另一个入口：“使用公司账号登录日程助手”。它不想再让小林注册一套独立密码，而是希望信任公司身份平台的认证，找到对应的助手账号，并创建日程助手自己的本地会话。</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>日程助手需要得到什么</th>
+<th>得到之后做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>连接 OA 日程</td>
+<td>允许访问 OA 日程 API 的 Access Token</td>
+<td>在后端调用 OA，读取获准访问的日程</td>
+</tr>
+<tr>
+<td>使用公司账号登录助手</td>
+<td>能可靠确认“小林是谁、她已完成适用认证”的登录凭证</td>
+<td>对应到助手自己的用户记录，建立助手本地会话</td>
+</tr>
+</tbody></table>
+<p>本节里的“用户”一直指小林；“客户端”指申请授权或发起登录的日程助手；“资源服务器”指 OA 日程 API。OA API 是被调用方，不是这次登录流程中的客户端。</p>
+<p>这里没有要求“小林每次使用 Access Token 时再登录一次”。调用 OA API 仍按前面的令牌与权限规则处理。我们新增的是让小林进入日程助手自己账号的登录功能。</p>
+<h3 id="8-2-为什么需要标准身份规则，以及-OIDC-怎样补上"><a href="#8-2-为什么需要标准身份规则，以及-OIDC-怎样补上" class="headerlink" title="8.2 为什么需要标准身份规则，以及 OIDC 怎样补上"></a>8.2 为什么需要标准身份规则，以及 OIDC 怎样补上</h3><p>小林可能已经在公司身份平台登录过，但日程助手仍需要获得面向自己的可信身份说明，才能建立助手的本地会话。这与前面 OA 信任中心登录凭证后建立本地会话的思想相同。</p>
+<p>日程助手可能想：“我已经拿到 Access Token，能不能直接把它当作小林登录助手的凭证？”</p>
+<p>前面的 Access Token 用于日程助手访问 OA 日程 API，OAuth 2.0 解决的是小林允许助手访问哪些资源的问题。</p>
+<p><strong>OIDC 解决的是另一个明确问题：</strong></p>
+<blockquote>
+<p>日程助手要让小林“使用公司账号登录助手”，怎样获得并验证小林的身份认证结果？</p>
+</blockquote>
+<p>这不等于 Access Token 永远不包含用户标识，也不等于 OA API 无法知道授权用户是谁。OA 可以按约定从令牌或查询结果中识别小林，并检查日程权限；这里缺少的是日程助手用来完成用户登录的一套标准身份认证规则。</p>
+<p>如果助手调用提供方自定义的用户接口来实现登录，还需要遵守提供方额外规定的身份与安全语义。为了让不同应用按统一规则接入，我们引入 OIDC。</p>
+<h4 id="从日程助手的需求，回到官方定义"><a href="#从日程助手的需求，回到官方定义" class="headerlink" title="从日程助手的需求，回到官方定义"></a>从日程助手的需求，回到官方定义</h4><p>上面的例子说明了我们想做什么。现在再看规范，里面的“客户端”“最终用户”“身份层”就可以对应到已经认识的参与方和功能。</p>
+<p>OIDC<a href="#term-52" title="OIDC：OpenID Connect。在 OAuth 2.0 上增加标准身份认证层。">⁵²</a> 全称 OpenID Connect。依据《OpenID Connect Core 1.0》摘要与第 1 节，其定义可以转述为：</p>
+<blockquote>
+<p>OpenID Connect 是构建在 OAuth 2.0 之上的身份层。它让客户端依据授权服务器完成的认证来验证最终用户的身份，并以可互操作的方式获取用户的基本资料。</p>
+</blockquote>
+<p>以上是官方定义的中文转述，不是逐字引文；正式表述和规则以规范为准。<a target="_blank" rel="noopener" href="https://openid.net/specs/openid-connect-core-1_0.html">R1</a><a target="_blank" rel="noopener" href="https://openid.net/developers/how-connect-works/">R17</a></p>
+<p>把定义中的表述放回本例：</p>
+<table>
+<thead>
+<tr>
+<th>定义中的表述</th>
+<th>在本例中是什么意思</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OAuth 2.0 之上的身份层</td>
+<td>沿用前面已经认识的请求、授权码与换令牌流程，再增加面向用户登录的标准身份结果及规则</td>
+</tr>
+<tr>
+<td>客户端验证最终用户的身份</td>
+<td>日程助手确认“小林是谁、她已完成适用认证”；最终用户是小林，客户端是日程助手</td>
+</tr>
+<tr>
+<td>依据授权服务器完成的认证</td>
+<td>公司身份平台负责认证小林，助手按规则验证平台交付的结果，不需要拿到小林的公司密码</td>
+</tr>
+<tr>
+<td>可互操作地获取基本资料</td>
+<td>平台和应用遵守共同的消息、字段含义与处理规则；不必每次都重新约定用户标识、姓名、邮箱等如何表达</td>
+</tr>
+</tbody></table>
+<p>这里的“身份层”不表示又增加一台服务器，而是给原有授权交互补充身份认证方面的标准规则。</p>
+<h4 id="标准具体约定了什么"><a href="#标准具体约定了什么" class="headerlink" title="标准具体约定了什么"></a>标准具体约定了什么</h4><p>仅说“返回一个表示用户身份的令牌”还不够。平台和助手还需要对请求、消息内容、交付方式和验证步骤达成一致：</p>
+<table>
+<thead>
+<tr>
+<th>约定的部分</th>
+<th>规则要点</th>
+<th>日程助手怎样使用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>如何发起认证</td>
+<td>OIDC 请求必须包含 <code>openid</code> scope，并符合所选流程的参数规则</td>
+<td>明确请求用户认证，而不只是申请某个 API 的访问权限</td>
+</tr>
+<tr>
+<td>ID Token 表达什么</td>
+<td>使用标准声明，必需项包括签发者 <code>iss</code>、主体 <code>sub</code>、受众 <code>aud</code>、到期时间 <code>exp</code> 和签发时间 <code>iat</code></td>
+<td>知道谁签发、对应谁、发给谁，以及相关时间条件</td>
+</tr>
+<tr>
+<td>结果怎样交付</td>
+<td>按所选 OIDC 流程交付结果；本篇采用授权码流程，由后端兑换取得令牌</td>
+<td>按约定处理响应，不自行发明回调字段和兑换语义</td>
+</tr>
+<tr>
+<td>结果怎样验证</td>
+<td>按流程检查签名、可信签发者、预期受众、时间及适用的请求关联；请求发送了 <code>nonce</code> 时，要检查对应返回值</td>
+<td>确认结果可以用于当前助手的这次登录，而不只是解码查看姓名</td>
+</tr>
+<tr>
+<td>用户资料怎样表达与取得</td>
+<td>规范定义姓名、邮箱等声明及相应获取方式，具体返回受请求、授权和平台策略限制</td>
+<td>按标准语义处理资料；不假设每次登录都一定返回所有字段</td>
+</tr>
+</tbody></table>
+<p>这张表是学习提纲，不是完整的合规检查清单。具体实现还要遵守所选流程和平台的全部适用要求。<a target="_blank" rel="noopener" href="https://openid.net/specs/openid-connect-core-1_0.html">R1</a><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc">R18</a></p>
+<p>因此，OIDC 的重点是：<strong>应用按标准流程取得并验证标准化的用户认证结果。ID Token 是承载这个结果的核心凭证，但不是 OIDC 的全部。</strong></p>
+<p>例如，一个自定义接口返回包含小林姓名、邮箱的 JWT，并把字段命名为 <code>id_token</code>，并不自动说明它符合 OIDC。还要看请求、令牌语义、签发、交付和验证是否符合相应规则。</p>
+<h4 id="再对应到日程助手的登录"><a href="#再对应到日程助手的登录" class="headerlink" title="再对应到日程助手的登录"></a>再对应到日程助手的登录</h4><p>日程助手请求 <code>openid</code> scope，按约定获得 ID Token<a href="#term-53" title="ID Token：身份令牌。给 OIDC 客户端确认认证结果。">⁵³</a>，验证后用它确认小林的认证结果，再关联助手自己的账号并建立本地会话。后面第 8.3、8.4 节会继续展开这份结果与 Access Token 的分工，以及一次完整登录。</p>
+<p>这里依然可以使用原来的统一身份平台。</p>
+<table>
+<thead>
+<tr>
+<th>已有参与方</th>
+<th>在这次 OIDC 登录中的职责</th>
+<th>协议名称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>小林</td>
+<td>用公司身份登录日程助手的人</td>
+<td>用户</td>
+</tr>
+<tr>
+<td>公司身份平台</td>
+<td>认证小林，签发登录结果</td>
+<td>OP<a href="#term-54" title="OP / RP：OpenID Provider / Relying Party。OIDC 中的身份提供方 / 依赖身份结果的应用。">⁵⁴</a>，身份提供方</td>
+</tr>
+<tr>
+<td>日程助手</td>
+<td>发起登录，接收并验证小林的登录凭证</td>
+<td>RP，也是这次交互中的 OAuth Client</td>
+</tr>
+<tr>
+<td>OA 日程 API</td>
+<td>接收助手携带 Access Token 的资源访问调用</td>
+<td>Resource Server，资源服务器</td>
+</tr>
+</tbody></table>
+<p>SAML 里常说 IdP、SP，OIDC 里常说 OP、RP。这些是对应协议中的角色名，不表示多了四个服务器。</p>
+<h3 id="8-3-ID-Token-与-Access-Token-分工"><a href="#8-3-ID-Token-与-Access-Token-分工" class="headerlink" title="8.3 ID Token 与 Access Token 分工"></a>8.3 ID Token 与 Access Token 分工</h3><p>先对应已有概念：第 6 节记为 T 的临时授权码，在协议中的参数名是 <code>code</code>，它仍然是用于兑换的中间凭证。OIDC 在后续返回的数据中增加 ID Token，用来承载前面基础 SSO 所关心的用户身份和认证信息。</p>
+<p>为了与还需要兑换的 code 区分，从这里把可用于确认用户认证情况的数据称为“最终认证结果”。ID Token 承载这种结果，助手仍必须按协议验证它；Access Token 则用于 API 访问，不等于最终身份认证结果。</p>
+<p>这不是给<a href="/notes/sso-learning/01/">第 3～5 节</a>补上一层必需步骤，而是将已理解的授权码交付流程用于 OIDC 登录，并明确两种令牌的用途。</p>
+<table>
+<thead>
+<tr>
+<th>凭证</th>
+<th>本例中谁使用它</th>
+<th>用来判断什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ID Token</td>
+<td>日程助手后端</td>
+<td>这次登录的小林是谁，结果是否来自可信平台、面向本助手且满足本次登录要求</td>
+</tr>
+<tr>
+<td>Access Token</td>
+<td>获得授权的资源 API，本例可包括 OA 日程 API</td>
+<td>本次资源访问是否具有有效授权，并符合 API 的业务权限</td>
+</tr>
+</tbody></table>
+<p>ID Token 的受众通常是日程助手的 client ID<a href="#term-55" title="client_id 是应用的注册标识，通常不需要保密。client_secret 是按所选认证方式使用的应用秘密凭据，必须保密，不能放在前端代码中。">⁵⁵</a>；Access Token 应面向约定的资源 API。不能用 ID Token 代替 Access Token 调用任意业务接口。</p>
+<p>OIDC 的 ID Token 使用 JWT 格式；Access Token 可以是 JWT，也可以是不透明字符串。JWT 帮助表达声明，但它本身没有定义完整登录流程。</p>
+<h3 id="8-4-在日程助手上完成一次登录，不等于登录两遍"><a href="#8-4-在日程助手上完成一次登录，不等于登录两遍" class="headerlink" title="8.4 在日程助手上完成一次登录，不等于登录两遍"></a>8.4 在日程助手上完成一次登录，不等于登录两遍</h3><p><img src="/img/sso-learning/02_OIDC%E5%8F%8C%E4%BB%A4%E7%89%8C.svg" srcset="/img/loading.gif" lazyload alt="登录助手与读取日程：ID Token 和 Access Token 的不同去向"></p>
+<p>本例假设平台支持日程助手的公司账号登录，以及相应的 OA 日程访问授权。不是任意 OIDC 流程返回的 Access Token 都能访问 OA，它还需要面向正确的 API，并具有所需授权。</p>
+<p>同一次认证与授权流程可以同时满足登录和资源访问需求，不必为了这两种令牌各让小林输入一次密码。若小林在中心已有符合要求的会话，新的助手登录流程也可能无需再次输入密码。</p>
+<p>“日程助手验证 ID Token”的具体意思是：助手后端按 OIDC 规则检查签名、可信签发者、面向自己的受众、有效期、本次请求关联等，确认结果可用于建立这次助手会话。它不表示 OA API 要求用户在每次令牌调用时重新打开登录页面。<a target="_blank" rel="noopener" href="https://openid.net/specs/openid-connect-core-1_0.html">R1</a></p>
+<h3 id="8-5-换回-OA-的-SSO-时，OA-才是登录客户端"><a href="#8-5-换回-OA-的-SSO-时，OA-才是登录客户端" class="headerlink" title="8.5 换回 OA 的 SSO 时，OA 才是登录客户端"></a>8.5 换回 OA 的 SSO 时，OA 才是登录客户端</h3><p>上面讨论的是“小林登录日程助手”。现在明确换回<a href="/notes/sso-learning/01/">第 3 节</a>的场景：“小林登录 OA”。在这次交互中，OA 发起 OIDC 登录、接收 ID Token 并建立自己的会话，因此 OA 是登录客户端。</p>
+<p>同一个系统可以承担不同角色，角色取决于正在讨论的交互：提供日程 API 时，OA 是资源服务器；让小林登录 OA 网站时，OA 又可以是 OIDC 客户端。不能把这两次交互混成一个角色。</p>
+<p>我们可以选择 OIDC 作为 OA、CRM 与认证中心之间的协议，代替自定义协议或采用另一种现有接入方式。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">小林 → OA<br>       ↓ 无本地会话<br>       跳转到身份平台，发起 OIDC 登录<br>       ↓ 认证小林，或复用符合要求的中心会话<br>       返回 code（就是前文的临时授权码 T）<br>       ↓ OA 后端兑换并验证<br>       ID Token → 确认小林的身份 → 创建 OA 本地会话<br>       Access Token → 仅在需要并获准时，用来调用相应 API<br></code></pre></td></tr></table></figure>
+
+<p>如果 OA 只需要用户登录，不需要调用额外 API，就不必为了演示令牌种类而强行设计更多资源服务。</p>
+<p>CRM 使用相同平台登录时，复用符合要求的中心会话，再取得面向 CRM 的登录结果并建立本地会话。这仍然是<a href="/notes/sso-learning/01/">第 3 节</a>的 SSO 思想，只是使用了 OIDC 标准。</p>
+<h3 id="8-6-本阶段回顾与实际选型顺序"><a href="#8-6-本阶段回顾与实际选型顺序" class="headerlink" title="8.6 本阶段回顾与实际选型顺序"></a>8.6 本阶段回顾与实际选型顺序</h3><p>本节先新增“小林登录日程助手”的需求，用 OIDC 规定助手怎样取得并验证用户认证结果，再明确切换回“小林登录 OA”的场景。API 访问和应用登录是两个功能，可以在一次适当的流程中同时满足，不等于让用户重复登录。</p>
+<p>本文先介绍企业 SSO，再讨论第三方授权，最后介绍 OIDC，是为了沿问题展开。实际系统可以从一开始就用 OIDC 建统一登录，也可以单独使用 OAuth 做 API 委托授权，不需要按本文顺序逐级升级。</p>
+<h2 id="本篇参考资料"><a href="#本篇参考资料" class="headerlink" title="本篇参考资料"></a>本篇参考资料</h2><table>
+<thead>
+<tr>
+<th>编号</th>
+<th>官方资料</th>
+<th>查看内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>R1</td>
+<td><a target="_blank" rel="noopener" href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect Core 1.0</a></td>
+<td>身份层、ID Token 与验证规则</td>
+</tr>
+<tr>
+<td>R2</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc9700.html">RFC 9700：OAuth 2.0 安全最佳实践</a><a href="#term-90" title="RFC 是互联网技术规范等文档的编号体系，并非所有 RFC 都是标准；W3C 是制定 Web 技术规范的组织；OWASP 是提供应用安全资料和项目的开放社区。">⁹⁰</a></td>
+<td>授权码、PKCE 与安全接入原则</td>
+</tr>
+<tr>
+<td>R7</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7662.html">RFC 7662：Token Introspection</a></td>
+<td>令牌有效状态查询</td>
+</tr>
+<tr>
+<td>R11</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7519.html">RFC 7519：JWT</a></td>
+<td>JWT 的格式、声明及签名&#x2F;加密表示</td>
+</tr>
+<tr>
+<td>R16</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc6750.html">RFC 6750：Bearer Token 用法</a></td>
+<td>持有者令牌的使用、泄露风险与传输保护</td>
+</tr>
+<tr>
+<td>R17</td>
+<td><a target="_blank" rel="noopener" href="https://openid.net/developers/how-connect-works/">OpenID Foundation：How OpenID Connect Works</a></td>
+<td>结合官方概述理解身份层、身份令牌与互操作</td>
+</tr>
+<tr>
+<td>R18</td>
+<td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc">Microsoft 身份平台：OpenID Connect</a></td>
+<td>查看身份平台如何实现认证请求、结果交付和验证</td>
+</tr>
+</tbody></table>
+<h2 id="本篇名词注释"><a href="#本篇名词注释" class="headerlink" title="本篇名词注释"></a>本篇名词注释</h2><p><small id="term-01">¹ OA，Office Automation，办公自动化。本文指内部办公系统，常用于请假、报销、审批、公告和日程。</small></p>
+<p><small id="term-02">² CRM，Customer Relationship Management，客户关系管理。本文指记录客户资料、联系记录、销售跟进和商机的系统，例如记录某位客户的需求与下次跟进时间。</small></p>
+<p><small id="term-28">²⁸ Client，客户端。在这里指接入某种服务或协议的应用，例如接入 CAS 的 OA；OAuth 中则指申请访问授权的应用，不一定是浏览器。</small></p>
+<p><small id="term-30">³⁰ API，Application Programming Interface，应用程序编程接口。本文通常指后端供程序调用的入口，例如查询小林日程的接口。</small></p>
+<p><small id="term-36">³⁶ JWT：JSON Web Token。声明格式，可用于表达令牌，不是完整登录协议。</small></p>
+<p><small id="term-37">³⁷ OAuth 2.0：开放授权框架。应用申请受限的资源访问能力。</small></p>
+<p><small id="term-38">³⁸ Session：会话。应用维持登录状态。</small></p>
+<p><small id="term-39">³⁹ Access Token：访问令牌。给 API 验证访问授权。</small></p>
+<p><small id="term-40">⁴⁰ Resource Server：资源服务器。提供受保护的 API。</small></p>
+<p><small id="term-41">⁴¹ 后通道指服务端之间直接通信，前通道指通过浏览器转交消息。</small></p>
+<p><small id="term-42">⁴² 授权码是用于兑换令牌的短期一次性中间凭证。它不是用于长期调用业务接口的访问令牌。</small></p>
+<p><small id="term-43">⁴³ PKCE：Proof Key for Code Exchange。把授权码兑换绑定到持有 verifier 的客户端事务。</small></p>
+<p><small id="term-44">⁴⁴ scope：授权范围。表达允许读取日程等能力。</small></p>
+<p><small id="term-45">⁴⁵ Token：令牌、凭证。按其类型证明访问能力或表达认证结果。</small></p>
+<p><small id="term-46">⁴⁶ introspection：令牌内省、状态查询。向授权服务器询问令牌是否有效。</small></p>
+<p><small id="term-47">⁴⁷ JWS：JSON Web Signature。JSON 数据的签名表示规范。</small></p>
+<p><small id="term-48">⁴⁸ Base64URL：适合 URL 等场景的文本编码。编码可还原，不提供加密保密性。</small></p>
+<p><small id="term-49">⁴⁹ 租户：需要隔离数据和权限的客户组织。同一 CRM 中的甲公司和乙公司。</small></p>
+<p><small id="term-50">⁵⁰ REST &#x2F; RESTful：网络服务的架构风格 &#x2F; 遵循该风格。用资源与统一接口组织服务。</small></p>
+<p><small id="term-52">⁵² OIDC：OpenID Connect。在 OAuth 2.0 上增加标准身份认证层。</small></p>
+<p><small id="term-53">⁵³ ID Token：身份令牌。给 OIDC 客户端确认认证结果。</small></p>
+<p><small id="term-54">⁵⁴ OP &#x2F; RP：OpenID Provider &#x2F; Relying Party。OIDC 中的身份提供方 &#x2F; 依赖身份结果的应用。</small></p>
+<p><small id="term-55">⁵⁵ client_id 是应用的注册标识，通常不需要保密。client_secret 是按所选认证方式使用的应用秘密凭据，必须保密，不能放在前端代码中。</small></p>
+<p><small id="term-90">⁹⁰ RFC 是互联网技术规范等文档的编号体系，并非所有 RFC 都是标准；W3C 是制定 Web 技术规范的组织；OWASP 是提供应用安全资料和项目的开放社区。</small></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SSO/" class="print-no-link">#SSO</a>
+      
+        <a href="/tags/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/" class="print-no-link">#身份认证</a>
+      
+        <a href="/tags/OAuth/" class="print-no-link">#OAuth</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>单点登录与身份认证 02：OAuth 授权、JWT 与 OIDC 登录</div>
+      <div>https://q792821266.github.io/notes/sso-learning/02/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年11月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/notes/sso-learning/" title="单点登录与身份认证：学习路线">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">单点登录与身份认证：学习路线</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/yuque/263612873/" title="视频生成2">
+                        <span class="hidden-mobile">视频生成2</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

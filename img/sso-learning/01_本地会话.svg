@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1005" viewBox="0 0 1400 1005" role="img" aria-label="单个 OA：登录之后怎么记住小林">
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#31577f"/></marker></defs><rect width="100%" height="100%" fill="#fff"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="700" y="55" text-anchor="middle" font-size="30" fill="#153653" font-weight="600">单个 OA：登录之后怎么记住小林</text>
+<text x="700" y="92" text-anchor="middle" font-size="19" fill="#536c82" font-weight="400">示例：会话记录存在 OA 服务端，浏览器保存会话标识</text>
+<rect x="17.5" y="130" width="285" height="72" rx="11" fill="#193f69"/>
+<text x="160" y="174" text-anchor="middle" font-size="22" fill="#fff" font-weight="600">小林的浏览器</text>
+<line x1="160" x2="160" y1="202" y2="850" stroke="#b9c9d7" stroke-width="1.5" stroke-dasharray="7 7"/>
+<rect x="557.5" y="130" width="285" height="72" rx="11" fill="#193f69"/>
+<text x="700" y="174" text-anchor="middle" font-size="22" fill="#fff" font-weight="600">OA 后端</text>
+<line x1="700" x2="700" y1="202" y2="850" stroke="#b9c9d7" stroke-width="1.5" stroke-dasharray="7 7"/>
+<rect x="1097.5" y="130" width="285" height="72" rx="11" fill="#193f69"/>
+<text x="1240" y="174" text-anchor="middle" font-size="22" fill="#fff" font-weight="600">用户库与会话库</text>
+<line x1="1240" x2="1240" y1="202" y2="850" stroke="#b9c9d7" stroke-width="1.5" stroke-dasharray="7 7"/>
+<rect x="292.8" y="301" width="274.4" height="28" fill="#fff"/>
+<text x="430" y="324" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">1. 通过 HTTPS 提交账号密码</text>
+<line x1="160" y1="342" x2="700" y2="342" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="849.9" y="391" width="240.2" height="28" fill="#fff"/>
+<text x="970" y="414" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">2. 校验密码，创建会话 A</text>
+<line x1="700" y1="432" x2="1240" y2="432" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="255.18000000000012" y="481" width="349.63999999999976" height="28" fill="#fff"/>
+<text x="430" y="504" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">3. 返回 Set-Cookie：oa_session=A</text>
+<line x1="700" y1="522" x2="160" y2="522" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="270.3800000000001" y="571" width="319.23999999999984" height="28" fill="#fff"/>
+<text x="430" y="594" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">4. 请求日程，携带 oa_session=A</text>
+<line x1="160" y1="612" x2="700" y2="612" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="849.9" y="661" width="240.2" height="28" fill="#fff"/>
+<text x="970" y="684" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">5. 查询会话 A，识别小林</text>
+<line x1="700" y1="702" x2="1240" y2="702" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="273.03999999999996" y="751" width="313.92" height="28" fill="#fff"/>
+<text x="430" y="774" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">6. 检查业务权限，返回允许的数据</text>
+<line x1="700" y1="792" x2="160" y2="792" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="35" y="875" width="1330" height="105" rx="10" fill="#f1f5f9" stroke="#d7e1eb"/>
+<text x="55" y="907" text-anchor="start" font-size="18" fill="#40596f" font-weight="400">浏览器的 Cookie 装的是会话标识 A；OA 服务端的会话记录保存登录状态。两者配合，但不是同一份数据。</text>
+</g></svg>

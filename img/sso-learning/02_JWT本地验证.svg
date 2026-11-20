@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1013" viewBox="0 0 1400 1013" role="img" aria-label="OA 怎样在本地验证签名型 JWT">
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#31577f"/></marker></defs><rect width="100%" height="100%" fill="#fff"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="700" y="55" text-anchor="middle" font-size="30" fill="#153653" font-weight="600">OA 怎样在本地验证签名型 JWT</text>
+<text x="700" y="92" text-anchor="middle" font-size="19" fill="#536c82" font-weight="400">示例：访问令牌采用 RS256 签名，OA 预先配置可信签发者与公钥来源</text>
+<rect x="17.5" y="130" width="285" height="72" rx="11" fill="#193f69"/>
+<text x="160" y="174" text-anchor="middle" font-size="22" fill="#fff" font-weight="600">公司身份平台</text>
+<line x1="160" x2="160" y1="202" y2="858" stroke="#b9c9d7" stroke-width="1.5" stroke-dasharray="7 7"/>
+<rect x="557.5" y="130" width="285" height="72" rx="11" fill="#193f69"/>
+<text x="700" y="174" text-anchor="middle" font-size="22" fill="#fff" font-weight="600">日程助手后端</text>
+<line x1="700" x2="700" y1="202" y2="858" stroke="#b9c9d7" stroke-width="1.5" stroke-dasharray="7 7"/>
+<rect x="1097.5" y="130" width="285" height="72" rx="11" fill="#193f69"/>
+<text x="1240" y="174" text-anchor="middle" font-size="22" fill="#fff" font-weight="600">OA 日程 API</text>
+<line x1="1240" x2="1240" y1="202" y2="858" stroke="#b9c9d7" stroke-width="1.5" stroke-dasharray="7 7"/>
+<rect x="289.76" y="301" width="280.47999999999996" height="28" fill="#fff"/>
+<text x="430" y="324" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">1. 身份平台签发访问令牌 JWT</text>
+<line x1="160" y1="342" x2="700" y2="342" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="814.94" y="391" width="310.11999999999995" height="28" fill="#fff"/>
+<text x="970" y="414" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">2. 后端携带 JWT 请求小林的日程</text>
+<line x1="700" y1="432" x2="1240" y2="432" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="1055" y="450" width="330" height="114" rx="9" fill="#eaf5ef" stroke="#96c6a8"/>
+<text x="1220" y="478" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">OA 按配置限制允许的算法</text>
+<text x="1220" y="508" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">按 kid 从可信公钥集合选密钥</text>
+<text x="1220" y="538" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">验证签名是否匹配内容</text>
+<rect x="1055" y="604" width="330" height="84" rx="9" fill="#eaf5ef" stroke="#96c6a8"/>
+<text x="1220" y="632" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">检查签发者、受众、有效期和权限</text>
+<text x="1220" y="662" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">再检查小林与目标日程的业务关系</text>
+<rect x="813.04" y="759" width="313.92" height="28" fill="#fff"/>
+<text x="970" y="782" text-anchor="middle" font-size="19" fill="#20354b" font-weight="400">3. 校验通过后返回允许读取的日程</text>
+<line x1="1240" y1="800" x2="700" y2="800" stroke="#31577f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="35" y="883" width="1330" height="105" rx="10" fill="#f1f5f9" stroke="#d7e1eb"/>
+<text x="55" y="915" text-anchor="start" font-size="18" fill="#40596f" font-weight="400">alg 和 kid 只是待验证的提示。首次获取公钥或密钥轮换时可能访问中心；本地验签不等于永不联网。</text>
+</g></svg>

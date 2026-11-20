@@ -1,0 +1,1076 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry JIANG">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="发送方约束令牌与 DPoP：从“拿到令牌就能用”到“还要证明持有密钥”更新日期：2026-11-20阅读定位：完成单点登录基础学习后的进阶材料。 建议先按单点登录与身份认证学习路线完成第 1～3 篇，尤其是访问令牌、授权码、JWT 与数字签名部分。 本文继续使用同一组参与方：员工小林、第三方日程助手、统一身份平台，以及提供日程 API 的 OA。日程助手有自己的后端，后端取得并保存访问令牌，再调用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单点登录与身份认证进阶：发送方约束令牌与 DPoP">
+<meta property="og:url" content="https://q792821266.github.io/notes/sso-learning/dpop/index.html">
+<meta property="og:site_name" content="Blogs by Jerry">
+<meta property="og:description" content="发送方约束令牌与 DPoP：从“拿到令牌就能用”到“还要证明持有密钥”更新日期：2026-11-20阅读定位：完成单点登录基础学习后的进阶材料。 建议先按单点登录与身份认证学习路线完成第 1～3 篇，尤其是访问令牌、授权码、JWT 与数字签名部分。 本文继续使用同一组参与方：员工小林、第三方日程助手、统一身份平台，以及提供日程 API 的 OA。日程助手有自己的后端，后端取得并保存访问令牌，再调用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://q792821266.github.io/covers/sso-learning.png">
+<meta property="article:published_time" content="2026-11-20T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-20T14:09:50.332Z">
+<meta property="article:author" content="Jerry JIANG">
+<meta property="article:tag" content="SSO">
+<meta property="article:tag" content="身份认证">
+<meta property="article:tag" content="OAuth">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://q792821266.github.io/covers/sso-learning.png">
+  
+  
+  
+  <title>单点登录与身份认证进阶：发送方约束令牌与 DPoP - Blogs by Jerry</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/math/katex.min.css">
+<link rel="stylesheet" href="/math/layout.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"q792821266.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"","app_key":"","server_url":"","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Jerry&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/banners/sso-learning.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="单点登录与身份认证进阶：发送方约束令牌与 DPoP"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-11-20 12:00" pubdate>
+          2026年11月20日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          55 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">单点登录与身份认证进阶：发送方约束令牌与 DPoP</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="发送方约束令牌与-DPoP：从“拿到令牌就能用”到“还要证明持有密钥”"><a href="#发送方约束令牌与-DPoP：从“拿到令牌就能用”到“还要证明持有密钥”" class="headerlink" title="发送方约束令牌与 DPoP：从“拿到令牌就能用”到“还要证明持有密钥”"></a>发送方约束令牌与 DPoP：从“拿到令牌就能用”到“还要证明持有密钥”</h1><p>更新日期：2026-11-20<br>阅读定位：完成单点登录基础学习后的进阶材料。</p>
+<p>建议先按<a href="/notes/sso-learning/">单点登录与身份认证学习路线</a>完成第 1～3 篇，尤其是访问令牌、授权码、JWT 与数字签名部分。</p>
+<p>本文继续使用同一组参与方：员工小林、第三方日程助手、统一身份平台，以及提供日程 API 的 OA。日程助手有自己的后端，后端取得并保存访问令牌，再调用 OA 查询小林授权开放的日程。</p>
+<p>本篇只解决一个问题：如果攻击者复制到了访问令牌，怎样让他不能仅凭这份令牌在其他环境中使用？</p>
+<blockquote>
+<p>悬停名词旁的上标可看释义，点击可跳到文末小字注释。请求、密钥和 JWT 示例用于解释结构，包含占位值，不是可以直接使用的凭据或生产代码。</p>
+</blockquote>
+<p>第一次阅读先看第 1～6 节，理解完整机制。第 7～10 节用于区分相关技术与准备实现，第 11 节用于面试复习。</p>
+<h2 id="1-先回到已经学过的访问令牌"><a href="#1-先回到已经学过的访问令牌" class="headerlink" title="1. 先回到已经学过的访问令牌"></a>1. 先回到已经学过的访问令牌</h2><h3 id="1-1-当前方案已经能完成什么"><a href="#1-1-当前方案已经能完成什么" class="headerlink" title="1.1 当前方案已经能完成什么"></a>1.1 当前方案已经能完成什么</h3><p>小林通过浏览器在身份平台完成认证与授权。日程助手后端按授权码流程取得访问令牌，然后调用 OA：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/api/calendar</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>oa.example.net<br><span class="hljs-attribute">Authorization</span><span class="hljs-punctuation">: </span>Bearer &lt;访问令牌&gt;<br></code></pre></td></tr></table></figure>
+
+<p>OA 检查令牌是否有效、是否面向 OA API、是否允许读取小林的日程，再返回相应数据。</p>
+<p>这种用法常采用 Bearer Token<a href="#dpop-term-1" title="Bearer Token，持有者令牌。使用方通常持有有效令牌即可访问相应资源，无需额外证明持有某把密钥。">¹</a>。它的关键特征是：令牌持有者通常不需要再证明拥有某把密钥。</p>
+<h3 id="1-2-新问题：令牌是真的，但发送请求的人换了"><a href="#1-2-新问题：令牌是真的，但发送请求的人换了" class="headerlink" title="1.2 新问题：令牌是真的，但发送请求的人换了"></a>1.2 新问题：令牌是真的，但发送请求的人换了</h3><p>假设令牌从日志或其他不该暴露的位置泄露，攻击者复制它并发送相同形式的请求。</p>
+<p>OA 验证令牌签名，发现签名是真的，授权范围和有效期也符合要求。问题在于，令牌中的内容仍然与被复制之前一样。</p>
+<p>即使令牌写着“签发给日程助手”，这也只是可信签发方对令牌归属的声明。攻击者复制后，这句话不会自动变成“现在是攻击者在用”。</p>
+<p>因此，API 只检查令牌本身，不能据此判断当前请求方是否持有助手独有的秘密。</p>
+<h3 id="1-3-方案：令牌与密钥绑定，调用时再提供持有证明"><a href="#1-3-方案：令牌与密钥绑定，调用时再提供持有证明" class="headerlink" title="1.3 方案：令牌与密钥绑定，调用时再提供持有证明"></a>1.3 方案：令牌与密钥绑定，调用时再提供持有证明</h3><p>我们增加一个要求：OA 既要看到有效令牌，也要看到请求方能使用令牌绑定的私钥生成合格证明。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs text">原来：有效令牌 → 继续检查权限并处理请求<br><br>现在：有效令牌 + 对应私钥的请求证明<br>                 → 检查绑定和其他协议条件<br>                 → 继续检查权限并处理请求<br></code></pre></td></tr></table></figure>
+
+<p>这称为发送方约束。它限制的是令牌能够由什么密钥持有者来使用；仅复制令牌不再足够。[R1]</p>
+<h2 id="2-引入具体机制：DPoP"><a href="#2-引入具体机制：DPoP" class="headerlink" title="2. 引入具体机制：DPoP"></a>2. 引入具体机制：DPoP</h2><p>DPoP<a href="#dpop-term-2" title="DPoP，Demonstrating Proof of Possession，通过应用层的签名证明密钥持有，并约束访问令牌的发送方。">²</a> 在应用层使用签名证明密钥持有。它可以与 OAuth 授权码流程组合，并不要求先取消授权码或改变小林的授权范围。</p>
+<p>先记住两个动作：</p>
+<ol>
+<li>签发令牌时，认证中心在可信的令牌信息中记录绑定的公钥。</li>
+<li>调用 API 时，助手使用对应私钥生成请求证明，API 检查证明与令牌之间的关联。</li>
+</ol>
+<p>在本例中，DPoP 密钥由日程助手后端生成并使用，浏览器不用拿到这把私钥。</p>
+<h3 id="2-1-这里有两对职责不同的密钥"><a href="#2-1-这里有两对职责不同的密钥" class="headerlink" title="2.1 这里有两对职责不同的密钥"></a>2.1 这里有两对职责不同的密钥</h3><table>
+<thead>
+<tr>
+<th>密钥</th>
+<th>由谁掌握</th>
+<th>用来做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>认证中心的签名私钥</td>
+<td>认证中心</td>
+<td>给访问令牌签名</td>
+</tr>
+<tr>
+<td>认证中心的可信公钥</td>
+<td>OA API 通过可信配置取得</td>
+<td>验证访问令牌的签名</td>
+</tr>
+<tr>
+<td>日程助手的 DPoP 私钥 K</td>
+<td>日程助手后端</td>
+<td>给请求证明签名</td>
+</tr>
+<tr>
+<td>与 K 配对的公钥 P</td>
+<td>可以传给中心和 API</td>
+<td>验证助手生成的请求证明</td>
+</tr>
+</tbody></table>
+<p>这些是职责上的区分，不要求每种密钥都单独部署一台服务器。中心的签名密钥与助手的 DPoP 密钥不是同一把。</p>
+<h2 id="3-第一步：签发时怎样把令牌绑定到公钥"><a href="#3-第一步：签发时怎样把令牌绑定到公钥" class="headerlink" title="3. 第一步：签发时怎样把令牌绑定到公钥"></a>3. 第一步：签发时怎样把令牌绑定到公钥</h2><h3 id="3-1-助手生成密钥，并在取令牌时证明持有私钥"><a href="#3-1-助手生成密钥，并在取令牌时证明持有私钥" class="headerlink" title="3.1 助手生成密钥，并在取令牌时证明持有私钥"></a>3.1 助手生成密钥，并在取令牌时证明持有私钥</h3><p>日程助手生成一对密钥：私钥 K 保密，公钥 P 可以公开。</p>
+<p>后端向身份平台的令牌端点提交授权码等必要数据时，同时附带一份用 K 签名的 DPoP 证明，证明中包含公钥 P。身份平台验证这份证明，并继续执行 OAuth 原本要求的授权码、客户端认证和兑换绑定等检查。</p>
+<p><strong>DPoP 证明本身不等于注册应用的身份认证。</strong> 任何人都可以生成自己的密钥对；平台不能仅因一个人能用某把私钥签名，就认定他是登记的日程助手。DPoP 与客户端身份验证承担不同职责。</p>
+<h3 id="3-2-平台记录公钥-P-的指纹"><a href="#3-2-平台记录公钥-P-的指纹" class="headerlink" title="3.2 平台记录公钥 P 的指纹"></a>3.2 平台记录公钥 P 的指纹</h3><p>平台不需要把私钥写入令牌。私钥始终留在助手后端。</p>
+<p>在常见 JWT 访问令牌方案中，平台计算公钥指纹<a href="#dpop-term-3" title="公钥指纹，thumbprint。按指定规范对公钥表示计算出的摘要，用于稳定标识这把公钥。">³</a>，把指纹写入令牌的绑定声明。Keycloak 的 DPoP 文档展示了这一处理方式。[R2]</p>
+<p>公钥通常使用 JWK<a href="#dpop-term-4" title="JWK，JSON Web Key，以 JSON 对象表示密钥。本文在证明头部传递公钥 JWK，不能包含私钥。">⁴</a> 格式表示。指纹必须按规范选取字段、规范化表示，再计算摘要，不能任意对一段格式化后的 JSON 文本做散列。[R3]</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">公钥 P → 按规范计算 JWK SHA-256 指纹 → 指纹 H<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-3-JWT-中的绑定信息长什么样"><a href="#3-3-JWT-中的绑定信息长什么样" class="headerlink" title="3.3 JWT 中的绑定信息长什么样"></a>3.3 JWT 中的绑定信息长什么样</h3><p>下面仅展示一部分声明，不是完整令牌：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;iss&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://login.example.com&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;sub&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user-1001&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;aud&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;oa-calendar-api&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;scope&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;calendar.read&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;cnf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;jkt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&lt;公钥P的指纹H&gt;&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p><code>cnf</code><a href="#dpop-term-5" title="cnf，confirmation，令牌中表达密钥确认信息的声明。DPoP 使用其 jkt 成员表示公钥指纹。">⁵</a> 表示密钥确认信息。<code>jkt</code><a href="#dpop-term-6" title="jkt，JWK thumbprint，DPoP 令牌绑定使用的 JWK SHA-256 指纹成员。">⁶</a> 在 DPoP 中表达绑定公钥的 JWK SHA-256 指纹。JWT 的密钥确认声明有专门规范，DPoP 在其中规定了自己的指纹成员。[R4][R5]</p>
+<p>认证中心使用自己的签名私钥签发整个访问令牌。因此，公钥指纹 H 和用户、受众等声明一起受到签名保护。</p>
+<h3 id="3-4-不透明令牌也可以绑定"><a href="#3-4-不透明令牌也可以绑定" class="headerlink" title="3.4 不透明令牌也可以绑定"></a>3.4 不透明令牌也可以绑定</h3><p>发送方约束不要求访问令牌一定是 JWT。如果它是不透明字符串，平台可以在服务端保存令牌与公钥指纹的关联，OA 通过受保护的令牌状态查询取得该关联，再验证请求证明。</p>
+<p>差别在于绑定信息从哪里取得：JWT 可以携带已受保护的声明，不透明令牌则通过服务端记录和查询取得。OA 都必须可靠识别它是 DPoP 绑定令牌，不能忽略绑定后按普通 Bearer 令牌放行。[R5]</p>
+<h2 id="4-第二步：助手调用-API-时怎样证明持有私钥"><a href="#4-第二步：助手调用-API-时怎样证明持有私钥" class="headerlink" title="4. 第二步：助手调用 API 时怎样证明持有私钥"></a>4. 第二步：助手调用 API 时怎样证明持有私钥</h2><h3 id="4-1-同时发送访问令牌和请求证明"><a href="#4-1-同时发送访问令牌和请求证明" class="headerlink" title="4.1 同时发送访问令牌和请求证明"></a>4.1 同时发送访问令牌和请求证明</h3><p>助手调用 OA 时，请求形式为：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/api/calendar</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>oa.example.net<br><span class="hljs-attribute">Authorization</span><span class="hljs-punctuation">: </span>DPoP &lt;访问令牌&gt;<br><span class="hljs-attribute">DPoP</span><span class="hljs-punctuation">: </span>&lt;用助手私钥K签名的本次请求证明&gt;<br></code></pre></td></tr></table></figure>
+
+<p>这里有两个不同的数据：访问令牌由认证中心签发，请求证明由日程助手生成。<code>Authorization: DPoP</code> 与普通持有者令牌的 <code>Authorization: Bearer</code> 也不是可以随意互换的写法。</p>
+<h3 id="4-2-请求证明的头部包含公钥"><a href="#4-2-请求证明的头部包含公钥" class="headerlink" title="4.2 请求证明的头部包含公钥"></a>4.2 请求证明的头部包含公钥</h3><p>请求证明采用签名 JWT。头部结构可以是：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;typ&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;dpop+jwt&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;alg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ES256&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;jwk&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;kty&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;EC&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;crv&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;P-256&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;x&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&lt;公钥P的x坐标&gt;&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;y&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&lt;公钥P的y坐标&gt;&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p><code>typ</code> 标明这是 DPoP 证明，不能拿其他用途的 JWT 来替代。<code>alg</code> 是约定的签名算法，示例中的 ES256<a href="#dpop-term-7" title="ES256，一种基于椭圆曲线的数字签名算法标识。示例采用这个名字，不表示所有部署必须使用它。">⁷</a> 使用椭圆曲线签名。<code>jwk</code> 只包含公钥，OA 可以用它验签。[R2]</p>
+<h3 id="4-3-证明还要关联本次调用"><a href="#4-3-证明还要关联本次调用" class="headerlink" title="4.3 证明还要关联本次调用"></a>4.3 证明还要关联本次调用</h3><p>只签一句“我是日程助手”不够，因为这句话可能被复制到别的调用里。调用 API 的证明还包含请求和令牌关联信息。以下字段只用于说明结构，示例时间与编号不能复制到真实请求中重复使用：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;htm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;GET&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;htu&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://oa.example.net/api/calendar&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;iat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1795132800</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;jti&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;example-request-id-replace-every-time&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;ath&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&lt;当前访问令牌的摘要&gt;&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>本例的含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>htm</td>
+<td>本次请求的 HTTP 方法</td>
+</tr>
+<tr>
+<td>htu</td>
+<td>按协议处理的目标 URI，不包含查询部分和片段</td>
+</tr>
+<tr>
+<td>iat<a href="#dpop-term-8" title="iat，issued at，签发或生成时间。这里表示请求证明的生成时间，使用 Unix 时间戳秒数。">⁸</a></td>
+<td>证明的生成时间，单位是秒</td>
+</tr>
+<tr>
+<td>jti<a href="#dpop-term-9" title="jti，JWT ID，JWT 的唯一标识。这里为每次请求证明生成新值，服务端配合记录检测重复使用。">⁹</a></td>
+<td>本次证明的唯一编号</td>
+</tr>
+<tr>
+<td>ath<a href="#dpop-term-10" title="ath，access token hash，访问令牌值的 SHA-256 摘要经 Base64URL 编码后的值，用来绑定证明与当前令牌。">¹⁰</a></td>
+<td>当前提交的访问令牌摘要</td>
+</tr>
+</tbody></table>
+<p>助手使用私钥 K 给证明签名。OA 检查方法、目标、时间及令牌摘要等条件，避免仅凭一份与当前调用不匹配的证明放行。<code>ath</code> 用来关联证明与访问令牌，不能单独替代时间和重放检查。[R5]</p>
+<p>不同请求应生成新的证明。取令牌时的证明与调用 API 时的证明也不同，不能直接重复使用；其中 <code>ath</code> 针对需要提交访问令牌的资源请求。</p>
+<h2 id="5-OA-API-怎样校验：两层验证，加一次绑定检查"><a href="#5-OA-API-怎样校验：两层验证，加一次绑定检查" class="headerlink" title="5. OA API 怎样校验：两层验证，加一次绑定检查"></a>5. OA API 怎样校验：两层验证，加一次绑定检查</h2><h3 id="5-1-第一层：验证访问令牌"><a href="#5-1-第一层：验证访问令牌" class="headerlink" title="5.1 第一层：验证访问令牌"></a>5.1 第一层：验证访问令牌</h3><p>OA 先按约定验证访问令牌。JWT 方案需要可信签发方、公钥、受众和时间等检查；不透明令牌需要可靠取得其当前状态及元数据。</p>
+<p>OA 从通过验证的令牌信息中读取绑定指纹 H。不能从未经验证的任意 JSON 中取一个 H，然后当作可信绑定。</p>
+<h3 id="5-2-第二层：验证请求证明与绑定"><a href="#5-2-第二层：验证请求证明与绑定" class="headerlink" title="5.2 第二层：验证请求证明与绑定"></a>5.2 第二层：验证请求证明与绑定</h3><p>DPoP 中间件还需要验证证明的类型、允许的算法和签名，并按协议检查请求关联、时效与重放条件。必要时处理服务端要求的 nonce<a href="#dpop-term-11" title="nonce，服务端给出的挑战值。DPoP 中适用时由客户端放进后续证明；它不同于基础文档中 OIDC ID Token 的 nonce。">¹¹</a> 挑战。</p>
+<p>两层之间最重要的连接是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs text">证明头部中的公钥 P<br>        ↓ 按规范计算指纹<br>        得到 H2<br><br>经过验证的访问令牌声明：cnf.jkt = H<br><br>只有 H2 等于 H，证明所用的公钥才与令牌绑定一致。<br></code></pre></td></tr></table></figure>
+
+<p>“证明签名有效”还不够，它可能只是攻击者用自己的私钥签的一份证明；“令牌有效”也不够，它可能已被复制。必须把两者对应起来。</p>
+<h3 id="5-3-验证成功后，仍要检查业务权限"><a href="#5-3-验证成功后，仍要检查业务权限" class="headerlink" title="5.3 验证成功后，仍要检查业务权限"></a>5.3 验证成功后，仍要检查业务权限</h3><p>私钥持有证明不表示可以读取任意员工的日程。OA 仍要检查授权范围、用户状态、租户和资源归属等规则。</p>
+<p>从业务角度看，API 的判断链为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs text">令牌可信且适用<br>  → 请求证明有效<br>  → 证明的公钥与令牌绑定一致<br>  → 请求上下文和重放控制符合要求<br>  → 业务权限满足<br>  → 返回数据<br></code></pre></td></tr></table></figure>
+
+<p>具体校验顺序可由可靠中间件安排，不能把这条概念链当作完整的验证实现。</p>
+<h3 id="5-4-把完整交互画在一起"><a href="#5-4-把完整交互画在一起" class="headerlink" title="5.4 把完整交互画在一起"></a>5.4 把完整交互画在一起</h3><pre><code class=" mermaid">sequenceDiagram
+    participant C as 日程助手后端
+    participant I as 认证中心
+    participant A as OA API
+    C-&gt;&gt;C: 生成并保护私钥K与公钥P
+    Note over C,I: 已按OAuth流程取得授权码等必要上下文
+    C-&gt;&gt;I: 提交授权码、适用客户端认证和取令牌的DPoP证明
+    I-&gt;&gt;I: 检查OAuth条件和证明，计算P的指纹H
+    I--&gt;&gt;C: 返回绑定H的访问令牌
+    C-&gt;&gt;C: 用K生成面向本次API调用的新证明
+    C-&gt;&gt;A: 提交访问令牌和请求证明
+    A-&gt;&gt;A: 验证令牌、证明、公钥绑定及请求条件
+    A-&gt;&gt;A: 检查日程访问权限
+    A--&gt;&gt;C: 返回允许读取的数据
+</code></pre>
+
+<h2 id="6-攻击者为什么不能换一把自己的密钥"><a href="#6-攻击者为什么不能换一把自己的密钥" class="headerlink" title="6. 攻击者为什么不能换一把自己的密钥"></a>6. 攻击者为什么不能换一把自己的密钥</h2><h3 id="6-1-只有令牌，没有助手的私钥"><a href="#6-1-只有令牌，没有助手的私钥" class="headerlink" title="6.1 只有令牌，没有助手的私钥"></a>6.1 只有令牌，没有助手的私钥</h3><p>攻击者能复制令牌，也能看见其中的公钥指纹，但不能仅凭公钥生成助手的有效签名。因此，他无法为自己的新调用生成合格的请求证明。</p>
+<h3 id="6-2-攻击者用自己的密钥签证明"><a href="#6-2-攻击者用自己的密钥签证明" class="headerlink" title="6.2 攻击者用自己的密钥签证明"></a>6.2 攻击者用自己的密钥签证明</h3><p>攻击者当然可以生成另一对密钥，制作一份签名完全有效的证明。问题在于，这份证明的公钥指纹不等于令牌记录的 H。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs text">被盗令牌：绑定公钥 P 的指纹 H<br>攻击者证明：用另一个公钥 Q 验证，指纹是 HQ<br><br>HQ 不等于 H → 拒绝<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-3-攻击者修改令牌中的指纹"><a href="#6-3-攻击者修改令牌中的指纹" class="headerlink" title="6.3 攻击者修改令牌中的指纹"></a>6.3 攻击者修改令牌中的指纹</h3><p>如果攻击者把 <code>cnf.jkt</code> 改成 HQ，认证中心对访问令牌的签名就不能通过验证。攻击者需要中心签名私钥才能伪造这份受保护的绑定，单靠助手的公钥做不到。</p>
+<p>因此，绑定不是一段“请相信我使用这把公钥”的自述，而是由认证中心保护的关联。</p>
+<h3 id="6-4-令牌和一份请求证明都被复制"><a href="#6-4-令牌和一份请求证明都被复制" class="headerlink" title="6.4 令牌和一份请求证明都被复制"></a>6.4 令牌和一份请求证明都被复制</h3><p>此时要依赖时效、请求关联、唯一编号记录和适用的挑战机制降低证明重复使用的风险。不能只检查签名就接受任意旧证明，也不能承诺任何截获情形都绝无抢先使用的可能。</p>
+<p>如果攻击者还能使用助手的私钥，或控制助手程序让它代签请求，保护条件就被破坏了。DPoP 不能修复已失守的应用执行环境，私钥和应用安全仍然重要。[R1]</p>
+<h2 id="7-它与授权码、客户端认证、签名和加密的关系"><a href="#7-它与授权码、客户端认证、签名和加密的关系" class="headerlink" title="7. 它与授权码、客户端认证、签名和加密的关系"></a>7. 它与授权码、客户端认证、签名和加密的关系</h2><h3 id="7-1-授权码与-DPoP-保护的阶段不同"><a href="#7-1-授权码与-DPoP-保护的阶段不同" class="headerlink" title="7.1 授权码与 DPoP 保护的阶段不同"></a>7.1 授权码与 DPoP 保护的阶段不同</h3><table>
+<thead>
+<tr>
+<th>机制</th>
+<th>在本例中重点处理什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户认证与授权</td>
+<td>小林是谁，她是否允许日程助手读取日程</td>
+</tr>
+<tr>
+<td>授权码与相应兑换保护</td>
+<td>将此次授权交接给符合兑换条件的应用，并减少真正令牌经过浏览器的机会</td>
+</tr>
+<tr>
+<td>客户端身份验证</td>
+<td>兑换方是否能按注册方式证明应用身份</td>
+</tr>
+<tr>
+<td>DPoP</td>
+<td>请求方是否持有访问令牌所绑定的私钥，并提供适用的请求证明</td>
+</tr>
+<tr>
+<td>OA 业务授权</td>
+<td>即使上述校验通过，是否仍允许本次数据访问</td>
+</tr>
+</tbody></table>
+<p>一个应用可以同时使用授权码、客户端身份验证、PKCE 和 DPoP。DPoP 不是“更高级的授权码”，也不表示只要证明持有某把自建密钥就能读取小林的数据。[R1][R6]</p>
+<h3 id="7-2-这里有两种签名，不能混为一谈"><a href="#7-2-这里有两种签名，不能混为一谈" class="headerlink" title="7.2 这里有两种签名，不能混为一谈"></a>7.2 这里有两种签名，不能混为一谈</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs text">中心给访问令牌签名：<br>  我授予这些访问能力，并将令牌绑定到公钥P。<br><br>助手给请求证明签名：<br>  我能使用P配套的私钥，为这些请求关联信息生成证明。<br></code></pre></td></tr></table></figure>
+
+<p>API 要同时信任中心签发的授权信息，并检查发送方满足密钥绑定要求。中心的签名不会自动替助手生成每次请求的持有证明。</p>
+<h3 id="7-3-加密内容不等于防止复制使用"><a href="#7-3-加密内容不等于防止复制使用" class="headerlink" title="7.3 加密内容不等于防止复制使用"></a>7.3 加密内容不等于防止复制使用</h3><p>如果 API 直接接受加密后的令牌，攻击者可能原样提交那段密文，而不必理解其中内容。内容保密与限制使用者是不同要求。</p>
+<p>如果把真正令牌加密给指定后端，只允许后端解密取出令牌，则可以保护交付，但它需要相应的密钥管理和协议设计。不能仅凭“用了加密”就判断是否已防止令牌滥用。</p>
+<p>DPoP 主要增加密钥持有约束，不负责把访问令牌内容加密。仍然需要 HTTPS 保护传输。[R1][R7]</p>
+<h2 id="8-DPoP-的边界与工程上的状态"><a href="#8-DPoP-的边界与工程上的状态" class="headerlink" title="8. DPoP 的边界与工程上的状态"></a>8. DPoP 的边界与工程上的状态</h2><h3 id="8-1-请求证明不等于给整个-HTTP-请求签名"><a href="#8-1-请求证明不等于给整个-HTTP-请求签名" class="headerlink" title="8.1 请求证明不等于给整个 HTTP 请求签名"></a>8.1 请求证明不等于给整个 HTTP 请求签名</h3><p>标准证明关联方法和目标 URI，并在 API 访问时关联令牌摘要，但不覆盖整个请求体和所有请求头。<code>htu</code> 也不包含查询部分和片段。</p>
+<p>因此，不应声称“DPoP 让整个请求都无法被修改”。传输完整性仍依赖 HTTPS；如果业务还需要额外的消息完整性保护，应单独设计，而不是默认 DPoP 已覆盖所有内容。[R5]</p>
+<h3 id="8-2-防重放需要状态和时间策略"><a href="#8-2-防重放需要状态和时间策略" class="headerlink" title="8.2 防重放需要状态和时间策略"></a>8.2 防重放需要状态和时间策略</h3><p>接收方要按规则处理证明的时间窗口、唯一编号和适用的 nonce。只把 <code>jti</code> 放入证明而完全不检查重复，不会自动产生防重放效果。</p>
+<p>用于检测重复的记录可以放在短期缓存中，保存与已接受证明及其密钥、上下文相关的标识，保留时长依据协议接受窗口和挑战策略确定。不要无限保存完整请求证明。</p>
+<p>多个 API 实例必须确保这些检查在部署范围内有效，不能让相同证明换个实例就绕过需要的重复检查。具体存储和一致性方式属于实现选择。</p>
+<p>DPoP 的 nonce 不应机械理解成“每个请求都向中心再要一个值”。是否要求挑战、由哪个服务要求、何时更新，应按协议与平台实现处理。</p>
+<h3 id="8-3-私钥和令牌要作为一组管理"><a href="#8-3-私钥和令牌要作为一组管理" class="headerlink" title="8.3 私钥和令牌要作为一组管理"></a>8.3 私钥和令牌要作为一组管理</h3><table>
+<thead>
+<tr>
+<th>数据</th>
+<th>本例中适合的保存位置或管理方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DPoP 私钥</td>
+<td>助手后端受保护的密钥存储或签名设施</td>
+</tr>
+<tr>
+<td>公钥及其指纹</td>
+<td>可以保存或传递，不属于保密凭据</td>
+</tr>
+<tr>
+<td>访问令牌</td>
+<td>助手后端受保护的令牌存储，并记录对应密钥</td>
+</tr>
+<tr>
+<td>请求证明</td>
+<td>每次生成并发送，通常不作为长期业务数据保存</td>
+</tr>
+<tr>
+<td>已接受证明的识别信息</td>
+<td>API 按防重放策略短期保存</td>
+</tr>
+</tbody></table>
+<p>如果多个助手实例都要使用同一个绑定令牌，它们需要能安全地使用对应的签名能力，或者采用按实例管理令牌与密钥的方案。不能让一个实例拿到令牌，却没有对应密钥。</p>
+<p>轮换密钥时，已经绑定旧公钥的令牌不会自动改绑新公钥。要协调旧令牌过期、重新取令牌和旧密钥保留；若刷新令牌也受密钥绑定约束，还要纳入同一生命周期设计。</p>
+<h2 id="9-另一条实现路径：mTLS-证书绑定"><a href="#9-另一条实现路径：mTLS-证书绑定" class="headerlink" title="9. 另一条实现路径：mTLS 证书绑定"></a>9. 另一条实现路径：mTLS 证书绑定</h2><p>mTLS<a href="#dpop-term-12" title="mTLS，mutual TLS，双向 TLS。客户端与服务端按配置使用证书进行认证，可用于证书绑定访问令牌。">¹²</a> 可以在 TLS 连接阶段要求客户端使用证书证明身份。授权服务器把访问令牌与客户端证书绑定，资源 API 检查当前连接使用的证书是否与令牌绑定一致。</p>
+<p>它与 DPoP 的共同目标是：令牌之外还需要发送方的密钥证明。区别在于，证明主要发生在什么层：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>证明主要发生在哪里</th>
+<th>常见工程关注点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DPoP</td>
+<td>应用层请求证明</td>
+<td>签名、请求关联、证明校验与重放控制</td>
+</tr>
+<tr>
+<td>mTLS</td>
+<td>TLS 连接与客户端证书</td>
+<td>证书发放、连接终止位置、可信证书信息的传递</td>
+</tr>
+</tbody></table>
+<p>只是启用了双向 TLS，并不代表所有令牌都已经完成绑定。令牌签发方与 API 还需要执行证书绑定和匹配规则。对于 JWT，可用 <code>cnf</code> 下的 <code>x5t#S256</code> 表达证书指纹。[R8]</p>
+<p>当前学习阶段先掌握“可信令牌中的密钥关联 + 请求方的密钥持有证明”，再分别学习 DPoP 和 mTLS 的部署细节即可。</p>
+<h2 id="10-怎样接入和验证，而不是自行拼算法"><a href="#10-怎样接入和验证，而不是自行拼算法" class="headerlink" title="10. 怎样接入和验证，而不是自行拼算法"></a>10. 怎样接入和验证，而不是自行拼算法</h2><h3 id="10-1-实现职责"><a href="#10-1-实现职责" class="headerlink" title="10.1 实现职责"></a>10.1 实现职责</h3><p>先确认身份平台、客户端库和资源 API 中间件支持相同的 DPoP 能力，再选择集成方式。</p>
+<ul>
+<li>身份平台检查取令牌请求中的证明，签发绑定令牌。</li>
+<li>客户端库管理密钥和对应令牌，为每次调用生成适用的新证明。</li>
+<li>API 中间件识别绑定令牌，完成令牌、证明、绑定和重放等校验。</li>
+<li>业务代码在验证成功的身份与授权上下文中，执行日程访问规则。</li>
+</ul>
+<p>应使用经过维护的协议库和平台能力，不要把本文的字段说明拼成一套自制验证器。接口代理、URL 规范化和多实例状态都会影响实际校验。</p>
+<h3 id="10-2-建议的学习实验"><a href="#10-2-建议的学习实验" class="headerlink" title="10.2 建议的学习实验"></a>10.2 建议的学习实验</h3><p>以下是验证思路，本文没有实际搭建或运行这些系统。</p>
+<table>
+<thead>
+<tr>
+<th>实验</th>
+<th>操作</th>
+<th>预期观察</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正常调用</td>
+<td>使用绑定令牌和正确密钥生成新证明</td>
+<td>协议校验通过后，按业务权限处理</td>
+</tr>
+<tr>
+<td>只有令牌</td>
+<td>去掉请求证明</td>
+<td>API 拒绝，不能按普通 Bearer 回退放行</td>
+</tr>
+<tr>
+<td>换一把密钥</td>
+<td>保留原令牌，用另一私钥签证明</td>
+<td>公钥绑定不一致，被拒绝</td>
+</tr>
+<tr>
+<td>改令牌指纹</td>
+<td>修改令牌中的绑定声明</td>
+<td>令牌完整性验证失败</td>
+</tr>
+<tr>
+<td>换请求目标</td>
+<td>将证明用于不符合其目标与方法约束的调用</td>
+<td>请求关联检查失败</td>
+</tr>
+<tr>
+<td>换令牌</td>
+<td>证明不变，提交另一个令牌</td>
+<td>令牌摘要关联检查失败</td>
+</tr>
+<tr>
+<td>重复提交证明</td>
+<td>按测试环境设置重复相同证明</td>
+<td>相应的防重放策略应生效</td>
+</tr>
+<tr>
+<td>使用错误权限</td>
+<td>协议证明都正确，但访问未授权日程</td>
+<td>业务授权仍应拒绝</td>
+</tr>
+</tbody></table>
+<p>测试只在自己授权的环境进行。不要把真实令牌、私钥和完整证明复制到公开调试网站，日志也应避免记录这些数据。</p>
+<h2 id="11-面试复习"><a href="#11-面试复习" class="headerlink" title="11. 面试复习"></a>11. 面试复习</h2><h3 id="11-1-一分钟讲解"><a href="#11-1-一分钟讲解" class="headerlink" title="11.1 一分钟讲解"></a>11.1 一分钟讲解</h3><blockquote>
+<p>Bearer Token 的问题是，令牌被复制后，攻击者可能直接使用。发送方约束令牌在有效令牌之外，还要求调用方证明持有绑定密钥。</p>
+<p>以 DPoP 为例，助手生成一对密钥，平台在签发令牌时记录公钥指纹。助手每次调用 API 都用私钥生成新的请求证明，关联请求方法、目标和访问令牌。API 同时验证令牌、证明、密钥绑定和适用的时效与重放条件，最后检查业务权限。</p>
+<p>只有被盗令牌，没有对应私钥，攻击者就无法为自己的新调用生成合格证明。DPoP 不代替用户授权、客户端认证或 HTTPS，也不能解决客户端已被控制的问题。</p>
+</blockquote>
+<h3 id="11-2-高频追问"><a href="#11-2-高频追问" class="headerlink" title="11.2 高频追问"></a>11.2 高频追问</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>回答要点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>令牌怎样绑定到密钥</td>
+<td>由签发方保护令牌与公钥指纹的关联，API 必须执行匹配检查</td>
+</tr>
+<tr>
+<td>为什么不能换成攻击者自己的公钥</td>
+<td>证明的公钥指纹必须匹配令牌中经过验证的绑定</td>
+</tr>
+<tr>
+<td>修改令牌中的绑定不就可以了吗</td>
+<td>会破坏中心签发令牌的完整性保护</td>
+</tr>
+<tr>
+<td>公钥也公开，为什么攻击者不能签名</td>
+<td>公钥用于验签，生成签名需要对应私钥</td>
+</tr>
+<tr>
+<td>为什么需要两层签名</td>
+<td>中心签令牌，助手签请求证明，分别表达授权与密钥持有</td>
+</tr>
+<tr>
+<td>与授权码是不是重复</td>
+<td>授权码处理授权交接和令牌取得，DPoP 约束令牌使用，职责不同</td>
+</tr>
+<tr>
+<td>DPoP 就证明了注册应用身份吗</td>
+<td>不必然。自建密钥持有证明与注册应用的客户端认证不同</td>
+</tr>
+<tr>
+<td>能替代 HTTPS 吗</td>
+<td>不能，证明不覆盖所有请求内容，也不提供传输保密</td>
+</tr>
+<tr>
+<td>有 jti 就能防重放吗</td>
+<td>不能，还要按协议结合状态记录、时间及适用挑战检查</td>
+</tr>
+<tr>
+<td>私钥被盗后呢</td>
+<td>攻击者可能生成证明，需要保护密钥、撤销相关授权并处理受影响凭据</td>
+</tr>
+</tbody></table>
+<h2 id="12-官方规范与延伸阅读"><a href="#12-官方规范与延伸阅读" class="headerlink" title="12. 官方规范与延伸阅读"></a>12. 官方规范与延伸阅读</h2><table>
+<thead>
+<tr>
+<th>编号</th>
+<th>资料</th>
+<th>阅读重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>R1</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc9700.html#section-4.10.1">RFC 9700：OAuth 安全最佳实践</a></td>
+<td>发送方约束的目标、机制与边界</td>
+</tr>
+<tr>
+<td>R2</td>
+<td><a target="_blank" rel="noopener" href="https://www.keycloak.org/securing-apps/dpop">Keycloak：DPoP 接入与机制</a></td>
+<td>查看平台怎样处理密钥绑定和请求证明</td>
+</tr>
+<tr>
+<td>R3</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7638.html">RFC 7638：JWK 公钥指纹</a></td>
+<td>指纹计算的字段与规范化规则</td>
+</tr>
+<tr>
+<td>R4</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7800.html">RFC 7800：JWT 密钥持有声明</a></td>
+<td>理解 cnf 的角色</td>
+</tr>
+<tr>
+<td>R5</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc9449.html">RFC 9449：DPoP</a></td>
+<td>正式的消息字段、验证与重放控制规则</td>
+</tr>
+<tr>
+<td>R6</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1">RFC 6749：OAuth 授权码流程</a></td>
+<td>区分用户授权、应用换令牌与资源访问</td>
+</tr>
+<tr>
+<td>R7</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc6750.html">RFC 6750：Bearer Token</a></td>
+<td>持有者令牌与传输保护</td>
+</tr>
+<tr>
+<td>R8</td>
+<td><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc8705.html">RFC 8705：mTLS 与证书绑定令牌</a></td>
+<td>另一种发送方约束实现</td>
+</tr>
+</tbody></table>
+<h2 id="13-名词注释"><a href="#13-名词注释" class="headerlink" title="13. 名词注释"></a>13. 名词注释</h2><p><small id="dpop-term-1">¹ Bearer Token，持有者令牌。使用方通常持有有效令牌即可访问相应资源，无需额外证明持有某把密钥。</small></p>
+<p><small id="dpop-term-2">² DPoP，Demonstrating Proof of Possession，通过应用层的签名证明密钥持有，并约束访问令牌的发送方。</small></p>
+<p><small id="dpop-term-3">³ 公钥指纹，thumbprint。按指定规范对公钥表示计算出的摘要，用于稳定标识这把公钥。</small></p>
+<p><small id="dpop-term-4">⁴ JWK，JSON Web Key，以 JSON 对象表示密钥。本文在证明头部传递公钥 JWK，不能包含私钥。</small></p>
+<p><small id="dpop-term-5">⁵ cnf，confirmation，令牌中表达密钥确认信息的声明。DPoP 使用其 jkt 成员表示公钥指纹。</small></p>
+<p><small id="dpop-term-6">⁶ jkt，JWK thumbprint，DPoP 令牌绑定使用的 JWK SHA-256 指纹成员。</small></p>
+<p><small id="dpop-term-7">⁷ ES256，一种基于椭圆曲线的数字签名算法标识。示例采用这个名字，不表示所有部署必须使用它。</small></p>
+<p><small id="dpop-term-8">⁸ iat，issued at，签发或生成时间。这里表示请求证明的生成时间，使用 Unix 时间戳秒数。</small></p>
+<p><small id="dpop-term-9">⁹ jti，JWT ID，JWT 的唯一标识。这里为每次请求证明生成新值，服务端配合记录检测重复使用。</small></p>
+<p><small id="dpop-term-10">¹⁰ ath，access token hash，访问令牌值的 SHA-256 摘要经 Base64URL 编码后的值，用来绑定证明与当前令牌。</small></p>
+<p><small id="dpop-term-11">¹¹ nonce，服务端给出的挑战值。DPoP 中适用时由客户端放进后续证明；它不同于基础文档中 OIDC ID Token 的 nonce。</small></p>
+<p><small id="dpop-term-12">¹² mTLS，mutual TLS，双向 TLS。客户端与服务端按配置使用证书进行认证，可用于证书绑定访问令牌。</small></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" class="category-chain-item">后端开发</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SSO/" class="print-no-link">#SSO</a>
+      
+        <a href="/tags/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/" class="print-no-link">#身份认证</a>
+      
+        <a href="/tags/OAuth/" class="print-no-link">#OAuth</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>单点登录与身份认证进阶：发送方约束令牌与 DPoP</div>
+      <div>https://q792821266.github.io/notes/sso-learning/dpop/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry JIANG</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年11月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/notes/sso-learning/04/" title="单点登录与身份认证 04：会话生命周期与面试">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">单点登录与身份认证 04：会话生命周期与面试</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/notes/sso-learning/" title="单点登录与身份认证：学习路线">
+                        <span class="hidden-mobile">单点登录与身份认证：学习路线</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
